@@ -106,7 +106,7 @@
             <div class="slds-form__row">
                 <div class="slds-form__item" role="listitem">
                     <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
-                        <label class="slds-align_absolute-center slds-form-element__label" for="single-form-element-id-02">Hospital Number HN : </label>
+                        <label class="slds-align_absolute-center slds-form-element__label" for="single-form-element-id-02">Hospital_Number_HN : </label>
                         <div class="slds-form-element__control">
                             <input type="text" readonly="true" id="single-form-element-id-02" class="slds-input" value="{!v.tmp_Hospital_Number_HN}" />
                         </div>

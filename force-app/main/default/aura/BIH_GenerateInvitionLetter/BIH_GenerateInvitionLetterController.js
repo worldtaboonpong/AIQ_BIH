@@ -10,6 +10,7 @@
 		helper.startSpinner(component);
 		action.setParams({ "caseId": caseId });
 		action.setCallback(this, function (response) {
+            	console.log('response**** : ', response);
 				var state = response.getState();
 				if (state === "SUCCESS") {
 					var returnValues = response.getReturnValue();
@@ -82,6 +83,7 @@
 						var focusedTabId = response.tabId;
 						var focusedParentTabId = response.parentTabId;
 						console.log('focusedParentTabId :', focusedParentTabId);
+                        console.log('////////////////// 14 = '+returnValues.Id);
 						workspaceAPI.openSubtab({
 							parentTabId: focusedParentTabId,
 							url: '/apex/GeneratePDFInvitation?Id=' + returnValues.Id + '&isCopy=false',

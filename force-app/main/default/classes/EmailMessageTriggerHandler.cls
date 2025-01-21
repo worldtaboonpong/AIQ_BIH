@@ -60,11 +60,7 @@ public class EmailMessageTriggerHandler {
         List<Case> closeCaselist = new List<Case>();
         List<Case> cloneCloseCaselist = new List<Case>();
         Set<Id> refCaseIdSet = new Set<Id>();
-        System.debug(' 1****** updateCaselist'+updateCaselist);
-        System.debug(' 1****** updateCaseCClist'+updateCaseCClist);
-        System.debug(' 1****** closeCaselist'+closeCaselist);
-        System.debug(' 1****** cloneCloseCaselist'+cloneCloseCaselist);
-        System.debug(' 1****** refCaseIdSet'+refCaseIdSet);
+        
         for(EmailMessage eml : emailList){
             if(eml.RelatedToId !=null){
                 relatedIdSet.add(eml.RelatedToId);
@@ -93,7 +89,7 @@ public class EmailMessageTriggerHandler {
 
         DescribeSObjectResult describeResult2 = Case.getSObjectType().getDescribe();
         List<String> fieldNames2 = new List<String>( describeResult2.fields.getMap().keySet() );
-		System.debug(' 2****** relatedIdSet'+relatedIdSet);
+
         String query2 = 'SELECT ' + String.join( fieldNames2, ',' ) +
                        ' FROM ' +  describeResult2.getName()  +
                        ' Where Close_Case_Ref__c = :relatedIdSet and Close_Case_Ref__c!=null and status != \'Closed\'';
@@ -102,8 +98,6 @@ public class EmailMessageTriggerHandler {
         if(listexistingcase.size() > 0){
             for(Case c : listexistingcase){
                 string closeIdwithChannel  = c.Close_Case_Ref__c+c.Channel__c;
-                System.debug(' 3****** Close_Case_Ref__c'+c.Close_Case_Ref__c);
-                System.debug(' 3****** Channel__c'+c.Channel__c);
                 existingCloneCase.put(closeIdwithChannel,c);
             }
         }
@@ -127,16 +121,12 @@ public class EmailMessageTriggerHandler {
                 
         
         if(caseMaps.size() > 0){
-            System.debug(' 4****** caseMaps'+caseMaps.size());
             for(EmailMessage eml : emailList){
                 //check new email is found existing case and incoming from external email
                 if(caseMaps.get(eml.RelatedToId) !=null && eml.Incoming){//&& mapEmailList.get(eml.FromAddress)!=null
-                    System.debug(' 4****** eml.RelatedToId'+eml.RelatedToId);
-                    System.debug(' 4****** eml.Incoming'+eml.Incoming);
                     Case c = caseMaps.get(eml.RelatedToId);
 
                     if(c.Status == 'Pending'){
-                        System.debug(' 5****** c.Status'+c.Status);
                         c.Status = 'In Progress';
                         c.Pending_team__c = null;
                     	c.Pending_Reason__c = null;
@@ -146,22 +136,17 @@ public class EmailMessageTriggerHandler {
 
                     //Check CC mail for not auto response
                     if(c.CC_Address__c == null && mapQueue.get(c.ownerid) !=null){
-                        System.debug(' 6****** c.CC_Address__c'+c.CC_Address__c);
-                        System.debug(' 6****** mapQueue.get(c.ownerid)'+mapQueue.get(c.ownerid));
+                        
                         c.CC_Address__c  = (eml.CcAddress!=null)?eml.CcAddress:'-';
 
                         if(eml.CcAddress !=null){ 
-                            System.debug(' 7****** eml.CcAddress'+eml.CcAddress);
                             //map mapEmailToTeam for check CC email
                             string ownerName = mapQueue.get(c.ownerid).Name;
                             if(ownerName !=null &&  mapEmailToTeam.get(ownerName)!=null){
-                                System.debug(' 8****** ownerName'+ownerName);
-                                System.debug(' 8****** mapEmailToTeam.get(ownerName)'+mapEmailToTeam.get(ownerName));
                                 string emailToList = mapEmailToTeam.get(ownerName).Email__c;
                                 List<String> lstEmail = emailToList.split(';');//get email team list
 
                                 if(!lstEmail.contains(eml.ToAddress)){
-                                    System.debug(' 9****** lstEmail.contains(eml.ToAddress)'+eml.ToAddress);
                                     //not found cc from email ToAddress => case create from cc 
                                     c.Is_From_CC__c = true;
                                 }
@@ -176,65 +161,52 @@ public class EmailMessageTriggerHandler {
                 
                 //check case status is closed.
                 if(caseMaps.get(eml.RelatedToId) !=null){
-                    System.debug(' 10****** check case status is closed.'+eml.RelatedToId);
                     Case c = caseMaps.get(eml.RelatedToId);
                     if(c.IsClosed && eml.Incoming){
-                        System.debug(' 11****** c.IsClosed'+c.IsClosed);
-                        System.debug(' 11****** eml.Incoming'+eml.Incoming);
+                        
                         String OwnerID = c.OwnerId;    
                         System.debug('@@' + OwnerID);
                         if (OwnerID.startsWith('005')) {
-                            System.debug(' 12****** Owner005');
                             //If Owner is user auto assign user team to owner
                             String userTeam;
                             String queueName;
                             if(mapUserTeam.get(OwnerId)!=null){
-                                System.debug(' 13****** User');
                                 userTeam = mapUserTeam.get(OwnerId).User_Team__c;
                                 queueName = mapUserTeamwithQueue.get(userTeam);
                             }
                             
                             if(queueName!=null && mapQueueTeam.get(queueName)!=null){
-                                System.debug(' 14****** Owner');
                                 c.OwnerId = mapQueueTeam.get(queueName).Id;
                             }
                             
                         }
 
                         //get email ToAddress list
-                        string toAddressEmail = eml.ToAddress != null? eml.ToAddress : '';
+                        string toAddressEmail = eml.ToAddress;
                         List<String> lstToAdressEmail = toAddressEmail.split(';');//split toAddress
                         //string firstEmail = lstToAdressEmail.get(0); => change to check all email.
-                        System.debug(' 15****** listEmailToTeam'+listEmailToTeam);
+                        
                         //check queue not match email ToAddress change channel&owner to right queue
                             for(Mapping_Email_To_Team_Set__c lstMailTeam : listEmailToTeam){
-                                System.debug(' 16****** lstMailTeam'+lstMailTeam);
                                 //check channel & mail is matching,If not modify channel and owner queue
                                 List<String> lstEmail = lstMailTeam.Email__c.split(';');
                                 Boolean foundEmail = false; 
 
                                 for(String tomail : lstToAdressEmail){
-                                    System.debug(' 17****** tomail'+tomail);
                                     string trimToAddress = tomail.trim();
                                     if(lstEmail.contains(trimToAddress) && !foundEmail){
-                                        System.debug(' 18****** trimToAddress'+trimToAddress);
                                         foundEmail = true;
                                         System.debug('Check team '+lstMailTeam.channel__c+'Email :'+tomail);
                                         
                                         if(lstMailTeam.channel__c!= c.channel__c){
-                                            System.debug(' 19****** lstMailTeam.channel__c'+lstMailTeam.channel__c);
-                                            System.debug(' 19****** c.channel__c'+c.channel__c);
                                             c.channel__c = lstMailTeam.channel__c; //modify channel
                                             //change owner of case to right queue
-                                            if (lstMailTeam.Name != null && mapQueueTeam.containsKey(lstMailTeam.Name)) { // Added by Tej | 2nd Jan 2024 | Null Check
-                                                c.ownerid = mapQueueTeam.get(lstMailTeam.Name).id;
-                                            }
+                                            c.ownerid = mapQueueTeam.get(lstMailTeam.Name).id;
                                         }
                                     }
                                 }
                                
                                 if(foundEmail){
-                                    System.debug(' 20****** ');
                                     closeCaselist.add(c);
                                     break;
                                 }
@@ -245,7 +217,6 @@ public class EmailMessageTriggerHandler {
             }
             
             if(updateCaselist.size()>0){
-                System.debug(' 21****** ');
                 try{
                     update updateCaselist;
                 }catch(Exception e){
@@ -255,7 +226,6 @@ public class EmailMessageTriggerHandler {
             }
 
             if(updateCaseCClist.size()>0){
-                System.debug(' 22****** ');
                 try{
                     update updateCaseCClist;
                 }catch(Exception e){
@@ -265,7 +235,7 @@ public class EmailMessageTriggerHandler {
             }
             system.debug('@@ ===>' + closeCaselist.size());
             if(closeCaselist.size()>0){
-				System.debug(' 23****** ');
+
                 for(Case c : closeCaselist){
                     
 
@@ -275,7 +245,6 @@ public class EmailMessageTriggerHandler {
                     
                     Case cloneCase = new Case();
                     if(c.Channel__c !=null){
-                        System.debug(' 24******c.Channel__c '+c.Channel__c);
                         String activeRecordTypeDevName;
                         Id activeRecordTypeId;
                         String channelCase = c.Channel__c;
@@ -285,25 +254,19 @@ public class EmailMessageTriggerHandler {
                         
                         //get channel mapping active record type
                         if(mapChannelWithClosedCase.get(channelCase)!=null){
-                            System.debug(' 25******mapChannelWithClosedCase.get(channelCase) '+mapChannelWithClosedCase.get(channelCase));
                             activeRecordTypeDevName = mapChannelWithClosedCase.get(channelCase).Active_Record_Type__c;
                         }else{
-                            System.debug(' 26******Else');
                             channelCase = 'Default';
                             activeRecordTypeDevName = mapChannelWithClosedCase.get(channelCase).Active_Record_Type__c;
                         }
 
                         //get record type id from activeRecordType
                         if(activeRecordTypeDevName !=null &&  recordTypeMap.get(activeRecordTypeDevName) !=null){
-                            System.debug(' 27******activeRecordTypeDevName'+activeRecordTypeDevName);
-                            System.debug(' 27******recordTypeMap.get(activeRecordTypeDevName)'+recordTypeMap.get(activeRecordTypeDevName));
                             activeRecordTypeId = recordTypeMap.get(activeRecordTypeDevName).Id;
                         }
 
                         //find out existing clone case
-                        System.debug(' 28.0******existingCloneCase.get(closeIdwithChannel)'+existingCloneCase.get(closeIdwithChannel));
                         if(existingCloneCase.get(closeIdwithChannel)!=null){
-                            System.debug(' 28******existingCloneCase.get(closeIdwithChannel)'+existingCloneCase.get(closeIdwithChannel));
                             cloneCase = existingCloneCase.get(closeIdwithChannel);
                             cloneCase.id = existingCloneCase.get(closeIdwithChannel).id;
                             cloneCase.RecordTypeId = (activeRecordTypeId!=null)?activeRecordTypeId:CASE_RECORD_ID;
@@ -321,7 +284,6 @@ public class EmailMessageTriggerHandler {
                             cloneCase.Case_Solution__c = null;
 
                         }else{
-                            System.debug(' 29******Else');
                             cloneCase = c.clone();
                             cloneCase.Status = 'New';
                             cloneCase.origin = 'Email';
@@ -343,7 +305,6 @@ public class EmailMessageTriggerHandler {
                         }
 
                         refCaseIdSet.add(c.id);
-                        System.debug(' 29******refCaseIdSet'+refCaseIdSet);
                         cloneCloseCaselist.add(cloneCase);
                     
                     }
@@ -351,7 +312,6 @@ public class EmailMessageTriggerHandler {
                 }
                 
                 if(cloneCloseCaselist.size() > 0){
-                    System.debug(' 30******cloneCloseCaselist.size()'+cloneCloseCaselist.size());
                     try{
                         upsert cloneCloseCaselist;
                     }catch(Exception e){
@@ -364,12 +324,11 @@ public class EmailMessageTriggerHandler {
 
             
             if(refCaseIdSet.size() > 0 && cloneCloseCaselist.size() >0){
-                System.debug(' 30******refCaseIdSet.size()'+refCaseIdSet.size());
-                System.debug(' 30******cloneCloseCaselist.size()'+cloneCloseCaselist.size());
                 //Auto close email from closed case.
                 system.debug('refCaseIdSet'+refCaseIdSet);
-                BIH_CloneEmailFromClosedCase cloneEmail2Case = new BIH_CloneEmailFromClosedCase();
-                cloneEmail2Case.cloneCase(refCaseIdSet);
+                BIH_CloneEmailFromClosedCase cloneEmail2Case = new BIH_CloneEmailFromClosedCase(refCaseIdSet);
+                //Id BatchProcessId2 = Database.ExecuteBatch(cloneEmail2Case,200);
+                Id BatchProcessId2 = System.enqueueJob(cloneEmail2Case);
 
             }
         }

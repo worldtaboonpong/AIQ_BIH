@@ -5,7 +5,7 @@
         
         var caseObj = component.get('v.caseObj');
         //caseObj.RecordTypeId = getRecordTypeId;
-        //component.set('v.caseObj', caseObj);
+        component.set('v.caseObj', caseObj);
        // console.log('caseObj' + caseObj.RecordTypeId);
             
         //helper.stopSpinner(component);
@@ -23,12 +23,12 @@
     onChangeCatelvl1: function (component, event, helper) {
         // console.log(component.find('case_category_lvl_1').get("v.validity"));
         var main = event.getSource().get("v.value");
-        //console.log('main: ', main);
+        console.log('main: ', main);
         
         var getCate1 = component.get('v.caseObj.Case_Category_Level1__c');
-        //console.log('getCate1: ', getCate1);
+        console.log('getCate1: ', getCate1);
         var sub = component.get('v.MapCaseCateLVL_2');
-        //console.log('sub: ', sub);
+        console.log('sub: ', sub);
         // component.set('v.CaseCateLVL_1', sub[getCate1]);
         component.set('v.CaseCateLVL_2', sub[main]);
         //component.set('v.CaseCateLVL_3', '');
@@ -49,10 +49,9 @@
         var catLvL2 = component.get('v.caseObj.Case_Category_Level2__c');
         var catLvL3 = component.get('v.caseObj.Case_Category_Level3__c');
         
-        /*console.log('catLvL1', catLvL1);
+        console.log('catLvL1', catLvL1);
         console.log('catLvL2', catLvL2);
-        console.log('catLvL3', catLvL3);*/
-        
+        console.log('catLvL3', catLvL3);
         if(catLvL1 == 'Undefined' ||  catLvL1 == '' || catLvL2 == '' || catLvL3 == '' ){
             component.set('v.validSaveBtn',true);
         }else{
@@ -83,10 +82,9 @@
         var catLvL2 = component.get('v.caseObj.Case_Category_Level2__c');
         var catLvL3 = component.get('v.caseObj.Case_Category_Level3__c');
         
-        /*console.log('catLvL1', catLvL1);
+        console.log('catLvL1', catLvL1);
         console.log('catLvL2', catLvL2);
-        console.log('catLvL3', catLvL3);*/
-        
+        console.log('catLvL3', catLvL3);
         if(catLvL1 == 'Undefined' ||     catLvL1 == '' || catLvL2 == '' || catLvL3 == '' ){
             component.set('v.validSaveBtn',true);
         }else{
@@ -111,10 +109,9 @@
         var catLvL2 = component.get('v.caseObj.Case_Category_Level2__c');
         var catLvL3 = component.get('v.caseObj.Case_Category_Level3__c');
         
-        /*console.log('catLvL1', catLvL1);
+        console.log('catLvL1', catLvL1);
         console.log('catLvL2', catLvL2);
-        console.log('catLvL3', catLvL3);*/
-        
+        console.log('catLvL3', catLvL3);
         if(catLvL1 == 'Undefined' || catLvL1 == '' || catLvL2 == '' || catLvL3 == '' ){
             component.set('v.validSaveBtn',true);
         }else{
@@ -123,7 +120,7 @@
         
         var tmp = catLvL3 + ':' + catLvL2 + ':' + catLvL1;
         var PayorType = component.get('v.caseObj.Payor_Type__c');
-        //console.log('PayorType: ',PayorType);
+        console.log('PayorType: ',PayorType);
         component.set('v.caseObj.Payor_Type__c',PayorType);
         
         component.set('v.numberDynamicGroup', mapDynmicGrp[tmp]);
@@ -150,12 +147,12 @@
         component.set('v.isResetCate', true);
         
         
-        //console.log('--- on change quick case ---');
+        console.log('--- on change quick case ---');
         var mapsla = component.get('v.MapSLA');
         var map_quick_case = component.get('v.MapQuickCase');
         var val = event.getSource().get("v.value");
-        //console.log('map_quick_case : ', JSON.parse(JSON.stringify(map_quick_case)));
-        //console.log('val : ', val);
+        console.log('map_quick_case : ', JSON.parse(JSON.stringify(map_quick_case)));
+        console.log('val : ', val);
         
         var cate1 = map_quick_case[val].split(":")[2];
         var cate2 = map_quick_case[val].split(":")[1];
@@ -187,8 +184,8 @@
             scriptInfo = mapScriptEN[map_quick_case[val]];
             serviceDetailInfo = mapServiceDetailEN[map_quick_case[val]];
         }
-        //console.log('scriptInfo : ', scriptInfo);
-        //console.log('serviceDetailInfo : ', serviceDetailInfo);
+        console.log('scriptInfo : ', scriptInfo);
+        console.log('serviceDetailInfo : ', serviceDetailInfo);
         setTimeout(() => {
             var caseObj = component.get('v.caseObj');
             
@@ -215,21 +212,29 @@
     },
     onSave: function (component, event, helper) {
         helper.startSpinner(component);
-        //console.log('===onSave===');
+        console.log('===onSave===');
         var validate = true;//helper.validateField(component, event, helper);
-        /*console.log( 'Case_Category_Level1__c : ' ,component.get('v.caseObj.Case_Category_Level1__c'));
+        console.log( 'Case_Category_Level1__c : ' ,component.get('v.caseObj.Case_Category_Level1__c'));
         console.log( 'Case_Category_Level2__c : ' ,component.get('v.caseObj.Case_Category_Level2__c'));
-        console.log( 'Case_Category_Level3__c : ' ,component.get('v.caseObj.Case_Category_Level3__c'));*/
+        console.log( 'Case_Category_Level3__c : ' ,component.get('v.caseObj.Case_Category_Level3__c'));
 
         if(component.get('v.caseObj.Case_Category_Level1__c') == '' || component.get('v.caseObj.Case_Category_Level1__c') == undefined  || component.get('v.caseObj.Case_Category_Level2__c')  == '' ||  component.get('v.caseObj.Case_Category_Level3__c' ) == '' )
             validate = false;
+        
+        
         if (validate) {
-            //console.log('====Validation Passed====');
+            console.log('====Validation Passed====');
+            
+            
+            
+            
             // console.log('Checking 1');
             if (component.get('v.caseObj.Channel__c') == "Contact Center" && component.get('v.caseObj.Origin') != 'Email' ){
                 component.set('v.caseObj.Subject', component.get('v.caseObj.Case_Category_Level1__c') + ' , ' + component.get('v.caseObj.Case_Category_Level2__c') + ' , ' + component.get('v.caseObj.Case_Category_Level3__c' ) );
             }
-            //console.log('CASE SAVE :::: ',JSON.parse(JSON.stringify(component.get('v.caseObj'))));
+            
+            
+            console.log('CASE SAVE :::: ',JSON.parse(JSON.stringify(component.get('v.caseObj'))));
             var caseObj = component.get('v.caseObj');
             
             component.set('v.patientObj.sobjectType','Account'); 
@@ -242,7 +247,7 @@
             //senderObj = component.get('v.senderObj');
             
             
-            //console.log( 'caseObj : ' ,JSON.parse(JSON.stringify(caseObj)));
+            console.log( 'caseObj : ' ,JSON.parse(JSON.stringify(caseObj)));
             //console.log( 'patientObj : ' ,JSON.parse(JSON.stringify(patientObj)));
             //console.log( 'senderObj : ' ,JSON.parse(JSON.stringify(senderObj)));
             
@@ -253,13 +258,13 @@
             });
             action.setCallback(this, function (response) {
                 var state = response.getState();
-                //console.log('state on save :', state);
+                console.log('state on save :', state);
                 
                 if (state === "SUCCESS") {
                     var getReturnValue = response.getReturnValue();
                     var isNew = component.get("v.recordId");
                     
-                    //console.log(getReturnValue);
+                    console.log(getReturnValue);
                     var toastEventSuccess = $A.get('e.force:showToast');
                     toastEventSuccess.setParams({
                         type: 'Success',
@@ -279,14 +284,14 @@
                     });
                     toastEvent.fire();
                     helper.stopSpinner(component);                    
-                    //console.log(errors[0].message);  
+                    console.log(errors[0].message);  
                     //helper.displayToast(component, "Error", errors[0].message);
                 }
                 helper.stopSpinner(component);
             });
             $A.enqueueAction(action);
         } else {
-            //console.log('====Validation failed====');
+            console.log('====Validation failed====');
         }
     },
     doCancel: function(component, event, helper) {

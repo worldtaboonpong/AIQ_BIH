@@ -1,6 +1,6 @@
 @IsTest
 public class PreregistrationclsTest {
-    @IsTest
+	@IsTest
     static void unitTest01() {
         List<Account> accList = BIH_TestUtils.createPersonAccounts(1, 'test','test@mail.com', true);
         List<Case> caseList = BIH_TestUtils.createCases(1, 'test','Request','Email', true);
@@ -16,10 +16,8 @@ public class PreregistrationclsTest {
         pdCtrl.getLanguages();
         pdCtrl.getCountries();
         pdCtrl.getNationality();
-        pdCtrl.getPatientAllergy();
-        pdCtrl.getRelationship();
         Preregistrationcls.fileUpload('Test', 'Test', caseList.get(0).Id);
-        Preregistrationcls.updateCase(JSON.serialize(caseList.get(0)), '1', 'Test');
+		Preregistrationcls.updateCase(JSON.serialize(caseList.get(0)));
         Test.stopTest();
     }
 }

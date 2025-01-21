@@ -6,7 +6,7 @@ public class BatchAutoSendEmailFirstTimeTest {
         system.schedule('StampScheduledAutoSendEmailFirstTime 1 day 11',  '0 1 * * * ?', pp);
 
         BatchAutoSendEmailFirstTime obj = new BatchAutoSendEmailFirstTime();
-        //Database.executeBatch(obj);
+        Database.executeBatch(obj);
     }
 
 }

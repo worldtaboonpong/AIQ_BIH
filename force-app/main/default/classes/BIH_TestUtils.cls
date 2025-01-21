@@ -220,39 +220,6 @@ public class BIH_TestUtils {
         
     }
     
-    public static List<Case> createCases2(Integer size , String Subject,String Category1,String origin, Boolean doInsert){
-        List<Case> casesToCreate = new List<Case>();
-    
-        for(Integer i =0 ; i<size ;++i)
-        {   
-            Case c = new Case(); 
-            c.Subject = Subject;
-            c.Case_Category_Level1__c = Category1;
-            //c.your_question__c = 'Your Question';
-            c.origin = origin;
-            
-            c.Cancellation_Appointment__c =  true;
-            c.Status = 'Closed';
-            c.channel__c = 'Contact Center';
-            c.Close_Case_Reason__c = 'Normal Case';
-            
-            
-            
-            
-            
-       		casesToCreate.add(c);
-            
-        }
-        caseList = casesToCreate;
-        
-        if(doInsert){
-            insert casesToCreate;
-        }
-        
-        return casesToCreate;
-        
-    }
-    
     public static List<EmailMessage> createEmailMessages(Integer size , String subject,Id relatedId, Boolean doInsert)
     {
         List<EmailMessage> emailMessToCreate = new List<EmailMessage>();

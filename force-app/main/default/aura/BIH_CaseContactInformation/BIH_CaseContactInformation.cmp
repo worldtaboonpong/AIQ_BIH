@@ -104,6 +104,7 @@
                                 
                                     <!-- <lightning:formattedUrl value="{! '/lightning/r/Account/' + v.caseObj.Patient__c + '/view'}"
                                         label="{!v.caseObj.Patient__r.Name}" target="_parent" /> -->
+
                                     <aura:if isTrue="{! v.caseObj.Verified_Patient__c }" >
                                        
                                         <aura:if isTrue="{! v.isNew }">

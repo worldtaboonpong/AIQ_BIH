@@ -1,0 +1,94 @@
+<template>
+    <lightning-layout multiple-rows>
+		<!-- Hospital -->
+        <lightning-layout-item size="6" padding="around-small">
+            <lightning-combobox
+                name="hospital"
+                label="Hospital"
+                value={selHospital}
+                placeholder="Select Hospital"
+                options={hospitals}
+                onchange={handleHospitalChange}
+            >
+            </lightning-combobox>
+        </lightning-layout-item>
+		<!-- Location -->
+        <lightning-layout-item size="6" padding="around-small">
+            <lightning-combobox
+                name="location"
+                label="Location"
+                value={selLocation}
+                placeholder="Select Location"
+                options={locations}
+                onchange={handleLocationChange}
+            >
+            </lightning-combobox>
+        </lightning-layout-item>
+		<!-- Specialty -->
+        <lightning-layout-item size="6" padding="around-small">
+            <template if:true={isReset}>
+                <c-search-and-select-picklist
+                    field-id="selSpecialtyId"
+                    label="Specialty"
+                    options={specialties}
+                    value={selSpecialty}
+					onselectitem={handleSpecialtyChange}
+                >
+                </c-search-and-select-picklist>
+            </template>
+        </lightning-layout-item>
+		<!-- Sub Specialty -->
+        <lightning-layout-item size="6" padding="around-small">
+            <template if:true={isReset}>
+                <c-search-and-select-picklist
+                    field-id="selSubSpecialtyId"
+                    label="Sub Specialty"
+                    options={subSpecialties}
+                    value={selSubSpecialty}
+					onselectitem={handleSubSpecialtyChange}
+                >
+                </c-search-and-select-picklist>
+            </template>
+        </lightning-layout-item>
+		<!-- Resource -->
+        <lightning-layout-item size="6" padding="around-small">
+            <template if:true={isReset}>
+                <c-search-and-select-picklist
+                    field-id="resourceId"
+                    label="Resource"
+                    options={resources}
+                    value={selResource}
+					onselectitem={handleResourceChange}
+                >
+                </c-search-and-select-picklist>
+            </template>
+        </lightning-layout-item>
+        <!-- <lightning-layout-item size="6" padding="around-small">
+            <lightning-input type="date" label="Date" value={selDate} onchange={handleDateChange}> </lightning-input>
+        </lightning-layout-item>
+        <lightning-layout-item size="6" padding="around-small">
+            <lightning-combobox
+                name="startTime"
+                label="Start Time"
+                value={selStartTime}
+                placeholder="Select Start Time"
+                options={startTimes}
+            >
+            </lightning-combobox>
+        </lightning-layout-item>
+        <lightning-layout-item size="6" padding="around-small">
+            <lightning-combobox
+                name="endTime"
+                label="End Time"
+                value={selEndTime}
+                placeholder="Select End Time"
+                options={endTimes}
+            >
+            </lightning-combobox>
+        </lightning-layout-item> -->
+    </lightning-layout>
+    <center>
+        <lightning-button label="Reset" title="Reset" onclick={handleReset}> </lightning-button>
+        <lightning-button variant="brand" label="Find" title="Find" onclick={handleFind}> </lightning-button>
+    </center>
+</template>

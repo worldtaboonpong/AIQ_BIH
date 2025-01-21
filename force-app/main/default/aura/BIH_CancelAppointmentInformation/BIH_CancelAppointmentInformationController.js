@@ -10,7 +10,7 @@
 			});
 			action.setCallback(this, function (response) {
 				var state = response.getState();
-				//console.log('state: ',state);
+				console.log('state: ',state);
 				
 				if (state === "SUCCESS") {
 					// console.log('----');
@@ -22,7 +22,7 @@
 					// 	console.log('WHAT');
 					// 	component.set('v.isCancel',true);
 					// }
-					//console.log('v.CASEOBJ:',response.getReturnValue());
+					console.log('v.CASEOBJ:',response.getReturnValue());
 					
 					// response.getReturnValue().forEach(function (item, index) {
 					// 	console.dir(item.doctorName);

@@ -39,24 +39,19 @@ public class MultipleAppointmentCardPDFCtrl {
         cardDetails.patientNationality = acc.Preferred_Language__c;
         
         Map<String, Object> mapObj = TC_AppointmentListCtrl.fetchAppointments(recordId);
-        if (Test.isRunningTest() || mapObj.containsKey('Upcoming')) {
+        if (mapObj.containsKey('Upcoming')) {
             List<TC_AppointmentListCtrl.AppointmentWrapper> upcomingAppointments = (List<TC_AppointmentListCtrl.AppointmentWrapper>) mapObj.get('Upcoming');
-            if (Test.isRunningTest()) {
-                upcomingAppointments = (List<TC_AppointmentListCtrl.AppointmentWrapper>) mapObj.get('Past');
-            }
             List<AppointmentWrapper> apprapperList = new List<AppointmentWrapper>();
             for (TC_AppointmentListCtrl.AppointmentWrapper aw: upcomingAppointments) {
                 String count = String.valueOf(aw.appIndex);
                 if (indexList.contains(count)) {
                     AppointmentWrapper appWrap = new AppointmentWrapper();
-                    appWrap.appDay = calculateAppDay(acc.Preferred_Language__c, aw.appDateStr);
                     appWrap.appDate = calculateAppDate(acc.Preferred_Language__c, aw.appDateStr);
-                    //system.debug(aw.appNonFixedTime +' === '+ aw.appTime);
+                    system.debug(aw.appNonFixedTime +' === '+ aw.appTime);
                     appWrap.appTime = (String.isEmpty(aw.appNonFixedTime) ? aw.appTime : aw.appNonFixedTime);
                     appWrap.appResource = aw.appDoctor;
                     appWrap.appLocation = aw.appLocation;
-                    appWrap.appPatientLetterNotes = (aw.patientLetterNotes != null ? aw.patientLetterNotes.replaceAll('\n', '<br />').replaceAll('\r', '') : '');
-                    appWrap.isNonFixed = (String.isNotEmpty(aw.appNonFixedTime) ? true : false);
+                    appWrap.appPatientLetterNotes = aw.patientLetterNotes;
                     apprapperList.add(appWrap);
                     //cardDetails.appointments.add(appWrap);
                 }
@@ -131,45 +126,6 @@ public class MultipleAppointmentCardPDFCtrl {
         return (years + 'Y ' + months + 'M ' + days + 'D');
     }
     
-    public String calculateAppDay(String preferredLanguage, String appointmentDate) {
-        String dayName = '';
-        if (String.isNotEmpty(appointmentDate)) {
-            List<String> listDt = appointmentDate.split('/');
-            DateTime dt = DateTime.newInstance(Integer.valueOf(listDt.get(2)), Integer.valueOf(listDt.get(1)), Integer.valueOf(listDt.get(0)));
-        	dayName = dt.format('EEEE');
-        }
-        
-        if (preferredLanguage == 'Thai') {
-            switch on dayName {
-                when 'Sunday' {
-                    dayName = 'วันอาทิตย์ ที่';
-                }
-                when 'Monday' {
-                    dayName = 'วันจันทร์ ที่';
-                }
-                when 'Tuesday' {
-                    dayName = 'วันอังคาร ที่';
-                }
-                when 'Wednesday' {
-                    dayName = 'วันพุธ ที่';
-                }
-                when 'Thursday' {
-                    dayName = 'วันพฤหัสบดี ที่';
-                }
-                when 'Friday' {
-                    dayName = 'วันศุกร์ ที่';
-                }
-                when 'Saturday' {
-                    dayName = 'วันเสาร์ ที่';
-                }
-                when else {
-                    dayName = '';
-                }
-            }
-        }
-        return dayName;
-    }
-    
     //Card Wrapper
     public class CardWrapper {
         public String hnNumber{get; set;}
@@ -183,12 +139,10 @@ public class MultipleAppointmentCardPDFCtrl {
     
     //Appointment Wrapper
     public class AppointmentWrapper {
-        public String appDay{get; set;}
         public String appDate{get; set;}
         public String appTime{get; set;}
         public String appResource{get; set;}
         public String appLocation{get; set;}
         public String appPatientLetterNotes{get; set;}
-        public Boolean isNonFixed{get; set;}
     }
 }

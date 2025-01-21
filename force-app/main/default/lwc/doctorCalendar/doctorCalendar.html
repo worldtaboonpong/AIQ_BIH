@@ -1,0 +1,56 @@
+<template>
+    <div class="calendar-container">
+		<div class="calendar-header">
+			<lightning-button-icon icon-name="utility:left" alternative-text="Previous Month" onclick={goToPreviousMonth}></lightning-button-icon>
+			<span class="month-year">{formattedMonthYear}</span>
+			<lightning-button-icon icon-name="utility:right" alternative-text="Next Month" onclick={goToNextMonth}></lightning-button-icon>
+		</div>
+		<div class="calendar-grid">
+			<template for:each={calendarDays} for:item="day">
+				<div class="calendar-container">
+					<div class="calendar-header">
+						<!-- Month and Year Selectors -->
+						<select class="month-select" onchange={handleMonthChange}>
+							<template for:each={months} for:item="month">
+								<option key={month.value} value={month.value} selected={month.value === currentMonth}>
+									{month.label}
+								</option>
+							</template>
+						</select>
+						<select class="year-select" onchange={handleYearChange}>
+							<template for:each={years} for:item="year">
+								<option key={year} value={year} selected={year === currentYear}>
+									{year}
+								</option>
+							</template>
+						</select>
+					</div>
+
+					<!-- Calendar Grid -->
+					<div class="calendar-grid">
+						<!-- Weekday Labels -->
+						<template for:each={weekdays} for:item="day">
+							<div key={day} class="weekday">{day}</div>
+						</template>
+
+						<!-- Days of the Month -->
+						<template for:each={calendarDays} for:item="day">
+							<div
+								key={day.date}
+								class="calendar-day"
+								class={day.isToday ? 'today' : ''}
+								style={day.style}
+								onmouseover={handleDateHover}
+								onmouseout={handleDateHoverOut}
+								onclick={handleDateClick}
+								data-date={day.date}
+							>
+								{day.display}
+							</div>
+						</template>
+					</div>
+				</div>
+			</template>
+		</div>
+	</div>
+</template>

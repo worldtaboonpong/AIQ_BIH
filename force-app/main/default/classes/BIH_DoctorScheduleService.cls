@@ -28,9 +28,7 @@ global without sharing  class BIH_DoctorScheduleService {
         // Set Request Header
         String params = 'MDCode='+mdCode+'&'+'StartDate='+tmpStartDate+'&'+'EndDate='+tmpEndDate;
         req.setHeader('Ocp-Apim-Subscription-Key',BIH_Constants.SUBSCRIPTION_KEY);
-        //String endpoint = BIH_Constants.END_POINT_DOCTOR_SCHEDULE+params;
-        //Change Endpoint by Kwanhatai 5-1-2024
-        String endpoint = 'https://salesforceapitest.bumrungrad.com/ex-sfdc/api/v1/schedules?doctor=53101&resource=&location=BICF15N15A&service=&dateForm=2023-06-12&dateTo=&userName=&ipAddress= ';
+        String endpoint = BIH_Constants.END_POINT_DOCTOR_SCHEDULE+params;
         req.setEndpoint(endpoint);//app config end point
 		System.debug(endpoint);
 

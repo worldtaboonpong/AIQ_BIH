@@ -105,7 +105,7 @@ public class BatchStampFirstResponseValueTest {
             
             
             BatchStampFirstResponseValue obj = new BatchStampFirstResponseValue();
-            //Database.executeBatch(obj);
+            Database.executeBatch(obj);
           }
         /*
         //create case

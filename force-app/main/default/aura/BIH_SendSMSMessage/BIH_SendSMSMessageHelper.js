@@ -28,8 +28,7 @@
 			console.log('MapSVTM: ',mapSVTM);
 			var caseObj = component.get('v.caseObj');
 			var cat =caseObj.Case_Category_Level1__c + caseObj.Case_Category_Level2__c+caseObj.Case_Category_Level3__c;
-			//cat = 'AppointmentMake Appointment, Allocate Doctor New patient - Multiple Appointments';
-            cat = 'AppointmentMake Appointment, Allocate DoctorNew patient - Multiple Appointments';
+			cat = 'AppointmentMake Appointment, Allocate DoctorNew patient - Multiple Appointments';
 			console.log('cat',cat);
 			if(mapSVTM.hasOwnProperty(cat)){
 				console.log('Have/Has Cat');

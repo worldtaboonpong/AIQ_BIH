@@ -101,7 +101,7 @@ public class RequestContactCenterOverDueTest {
             
             
             BatchContactCenterOverDue obj = new BatchContactCenterOverDue();
-        	//Database.executeBatch(obj);
+        	Database.executeBatch(obj);
             
             Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator2());
           }

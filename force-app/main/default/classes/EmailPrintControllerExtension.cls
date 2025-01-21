@@ -3,7 +3,7 @@ public with sharing class EmailPrintControllerExtension {
 
     public EmailPrintControllerExtension(ApexPages.StandardController stdController) {
         // Include the HtmlBody field in the SOQL query
-        this.emailMessage = [SELECT Id, HtmlBody,TextBody FROM EmailMessage WHERE Id = :stdController.getId()];
+        this.emailMessage = [SELECT Id, HtmlBody FROM EmailMessage WHERE Id = :stdController.getId()];
     }
 
     public String getEmailContent() {

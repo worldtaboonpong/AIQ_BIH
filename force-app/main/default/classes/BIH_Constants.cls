@@ -31,8 +31,5 @@ public without sharing class BIH_Constants {
     public static final String  NAME_INVITATION_LETTER          =  Constants.containsKey('NAME_INVITATION_LETTER') 		? Constants.get('NAME_INVITATION_LETTER').Value_1__c 		: 'Dr. Nipat Kulabkaw';
     public static final String  POSITION_INVITATION_LETTER      =  Constants.containsKey('POSITION_INVITATION_LETTER') 	? Constants.get('POSITION_INVITATION_LETTER').Value_1__c 	: 'Senior Director, International Patient Experience';
     public static final Boolean IS_RUNTRIGGER      				=  Constants.containsKey('IS_RUNTRIGGER') 				? Boolean.valueOf(Constants.get('IS_RUNTRIGGER').Value_1__c): Boolean.valueOf('True');
-    public static final String  END_POINT_PUSH_NOTI     	    =  Constants.containsKey('END_POINT_PUSH_NOTI') 	    ? Constants.get('END_POINT_PUSH_NOTI').Value_1__c 	        : 'https://bih.azure-api.net/cmprod/v1/notifications/send-via-hn';
-    public static final String  SUBSCRIPTION_PUSH_NOTI_KEY     	=  Constants.containsKey('SUBSCRIPTION_PUSH_NOTI_KEY') 	? Constants.get('SUBSCRIPTION_PUSH_NOTI_KEY').Value_1__c 	: '45998ce200fe42cfbd9964004eccf64a';
-    
-    //public static final String  DELETE_CTI_CONTACT_DAYS     	=  Constants.containsKey('DELETE_CTI_CONTACT_DAYS') 		? Constants.get('DELETE_CTI_CONTACT_DAYS').Value_1__c 			: '1';
+    public static final String  DELETE_CTI_CONTACT_DAYS     	=  Constants.containsKey('DELETE_CTI_CONTACT_DAYS') 		? Constants.get('DELETE_CTI_CONTACT_DAYS').Value_1__c 			: '1';
 }

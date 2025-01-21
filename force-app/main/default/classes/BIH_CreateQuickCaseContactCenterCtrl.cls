@@ -1,5 +1,9 @@
 public without sharing class BIH_CreateQuickCaseContactCenterCtrl {
-
+    // public class Wrapper{
+    //     public String status{get;set;}
+    //     public String message{get;set;}
+    //     public String caseId{get;set;}
+    // }
     @AuraEnabled
     public static User getUserProfile(){
         User us = [SELECT id,User_Team__c,Profile.Name,ProfileId FROM User WHERE id=:UserInfo.getUserId()];
@@ -8,7 +12,8 @@ public without sharing class BIH_CreateQuickCaseContactCenterCtrl {
     @AuraEnabled
     public static Case createQuickCase(String recordId){
         Case caseObj = new Case();
-        
+        // Wrapper wrp = new Wrapper();
+        // User us = [SELECT id,User_Team__c,Profile.Name,ProfileId FROM User WHERE id=:UserInfo.getUserId()];
         if(recordId.startsWith('003')){
             Contact ct = [SELECT id,Name,Phone FROM Contact WHERE id=:recordId ];
 
@@ -37,17 +42,7 @@ public without sharing class BIH_CreateQuickCaseContactCenterCtrl {
         caseObj.Contact_Center_Channel__c = 'Inbound';
         caseObj.Channel__c = 'Contact Center';
         caseObj.Is_Quick_Case_Create__c =true;
-        User us = getUserProfile();
-        //User us = [SELECT id,User_Team__c,Profile.Name,ProfileId FROM User WHERE id=:UserInfo.getUserId()];
-        if(us.User_Team__c == 'Contact Center Team' ){
-            caseObj.RecordTypeId = BIH_Constants.CONTACT_CENTER_CASE_RECORDTYPE;
-        }else if (us.User_Team__c == 'Insurance Team'){
-            caseObj.RecordTypeId = '012BB0000004NFkYAM';
-        }else if (us.User_Team__c == 'BH Phuket'){
-            caseObj.RecordTypeId = '012Nn000002F0bFIAS';
-        }
-        
-        
+        caseObj.RecordTypeId = BIH_Constants.CONTACT_CENTER_CASE_RECORDTYPE;
         insert caseObj;
         return caseObj;
     }

@@ -105,7 +105,7 @@ public class BatchContactCenterOverDueTest {
             
             
             BatchContactCenterOverDue obj = new BatchContactCenterOverDue();
-            //Database.executeBatch(obj);
+            Database.executeBatch(obj);
           }
       
         

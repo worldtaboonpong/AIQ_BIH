@@ -1,3 +1,7 @@
+/**
+ * CHANGE LOG:
+ * - (16 Jan 2025): init AppointmentTriggerHandler to perform logic on Appointment__c
+ */
 public with sharing class AppointmentTriggerHandler {
     public static AppointmentTriggerHandler instance;
     public static AppointmentTriggerHandler getInstance() {

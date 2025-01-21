@@ -12,9 +12,6 @@ public class BIH_ChildCaseDynamicCtrlTest {
         BIH_ChildCaseDynamicCtrl.mapDataChildcase();
         BIH_ChildCaseDynamicCtrl.ownerMap();
         BIH_ChildCaseDynamicCtrl.recordTypeMap();
-        BIH_ChildCaseDynamicCtrl.getPatientDetails(casesList.get(0).id);
-        
-     
         
         Test.stopTest();
     }

@@ -1,11 +1,3 @@
-/*------------------------------------------------------------
-Author      : 
-Company     : AIQ
-Description : 
-Test Class  : BIH_GeneralWebInformationCtrlTest
-History     : 
-11102022      ParthT     Clean-Up.
-------------------------------------------------------------*/
 public with sharing class BIH_GeneralWebInformationCtrl {
     
     @AuraEnabled
@@ -17,7 +9,7 @@ public with sharing class BIH_GeneralWebInformationCtrl {
         
         String query = 'SELECT Id,' +
             getFields('Case','BIH_GeneralWebInformationCtrl')+
-            ' ,Parent.CaseNumber,App_Date__c,CreatedBy.Name,LastModifiedBy.Name,Account.Name,Patient__r.Name,Account.Hospital_Number_HN__c,Patient__r.Hospital_Number_HN__c,Appointment_Date_2__c'+
+            ' ,Parent.CaseNumber,CreatedBy.Name,LastModifiedBy.Name,Account.Name,Patient__r.Name,Account.Hospital_Number_HN__c,Patient__r.Hospital_Number_HN__c'+
             ' FROM Case Where id = :caseId ';
         
         caseObj = Database.query( query );

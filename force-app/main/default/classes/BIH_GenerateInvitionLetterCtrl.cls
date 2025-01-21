@@ -1,11 +1,3 @@
-/*------------------------------------------------------------
-Author      : 
-Company     : AIQ
-Description : 
-Test Class  : BIH_GenerateInvitionLetterCtrlTest
-History     : 
-11102022      ParthT     Clean-Up.
-------------------------------------------------------------*/
 global with sharing class BIH_GenerateInvitionLetterCtrl {
 	global class InvitationLetterWrapper{
 		@AuraEnabled
@@ -111,6 +103,7 @@ global with sharing class BIH_GenerateInvitionLetterCtrl {
 	global static Case saveInvitationLetterWrapper(InvitationLetterWrapper wrapper){
 		List<Invitation_Letter_Person__c> tmpPatientList = new List<Invitation_Letter_Person__c>();
 		List<Invitation_Letter_Person__c> tmpAttendantList = new List<Invitation_Letter_Person__c>();
+        System.debug('***********Wrapper**********');
 		System.debug(wrapper.letterObj);
 		System.debug(wrapper.letterPersonTypePatientObj);
 		System.debug(wrapper.letterPersonTypeAttendantObj);

@@ -54,7 +54,6 @@
                     <lightning:select aura:id="sms_language" name="sms_language" label="SMS Language" onchange="{! c.onChangeLanguage }">
                         <option value="TH">Thai</option>
                         <option value="EN">English</option>
-                        <option value="JP">Japan</option>
                     </lightning:select>
                 </div>
             </div>

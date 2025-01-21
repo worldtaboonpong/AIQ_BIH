@@ -4,7 +4,7 @@ public class RequestCloseRegistCase implements Queueable{
         List<case> listAutoCloseCaseCase = [select id,OwnerId, Reply_From_Registration_Patient__c,Sent_Registration_Email_DateTime__c ,
         								Sent_Email_Regist_2nd_Time__c,Status
             						from case 
-            						where Sent_Registration_Email_DateTime__c  <    : datetime.now().AddDays(-3)
+            						where Sent_Registration_Email_DateTime__c  <    : datetime.now().AddDays(-4)
             						//where Escalate_Date__c  <    : datetime.now().addMinutes(-2)
            			 				and (Owner.name = 'Registration Team' or   
                     					Owner.UserRole.name =  'BIH Registration Manager' )

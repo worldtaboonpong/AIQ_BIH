@@ -1,7 +1,9 @@
-public class BIH_EditCategories 
-{
-    public class pickListValueWrapper 
-    {
+public class BIH_EditCategories {
+    
+    
+    
+    
+    public class pickListValueWrapper {
         @AuraEnabled
         public string DefalutRecordId {get; set;}
         @AuraEnabled
@@ -37,14 +39,7 @@ public class BIH_EditCategories
         @AuraEnabled
         public Set<String> keyQuickCase {get; set;}
         //@AuraEnabled
-        @AuraEnabled
-        public Map<String,String> mapQuickCase1 {get; set;}
-        @AuraEnabled
-        public Set<String> keyQuickCase1 {get; set;}
-         @AuraEnabled
-        public Map<String,String> mapQuickCase2 {get; set;}
-        @AuraEnabled
-        public Set<String> keyQuickCase2 {get; set;}
+        //public Set<String> keyBuilding {get; set;}
         
     }
     public class CaseAndPatientInformationWrapper {
@@ -70,8 +65,8 @@ public class BIH_EditCategories
     }
     
     @AuraEnabled
-        public static Case UpdateCaseRecord(Case caseObj)
-        { 
+        public static Case UpdateCaseRecord(Case caseObj){ 
+        system.debug('Enter UpdateCaseRecord++++++++++++++');
 
         try {
             Case tmpCaseObj = (Case)caseObj;
@@ -87,7 +82,6 @@ public class BIH_EditCategories
                                                         FROM BIH_Building__c 
                                                         WHERE Building_EN__c=:tmpCaseObj.Building__c AND BIH_Department__c=:tmpCaseObj.Department__c];
 
-
                 if(bulidingList.size() > 0){
                     BIH_Building__c buildObj = bulidingList[0];
                     tmpCaseObj.Building_TH__c = buildObj.Building_TH__c;
@@ -96,17 +90,9 @@ public class BIH_EditCategories
                     tmpCaseObj.Floor__c = buildObj.Floor__c;
                 }
             }
-            List<Service_Type_Matrix__c> serviceTypeMatrix = [
-                SELECT Dynamic_Group__c
-                FROM Service_Type_Matrix__c 
-                WHERE Category_Level1_English__c = :tmpCaseObj.Case_Category_Level1__c 
-                  AND Category_Level2_English__c = :tmpCaseObj.Case_Category_Level2__c 
-                  AND Category_Level3_English__c = :tmpCaseObj.Case_Category_Level3__c
-                LIMIT 1
-            ];
-
-            if (!serviceTypeMatrix.isEmpty()) {
-                tmpCaseObj.Dynamic_Group__c = serviceTypeMatrix[0].Dynamic_Group__c;
+            list<Service_Type_Matrix__c> Service_Type_Matrix = [Select id, Category_Level1_English__c, Category_Level2_English__c, Category_Level3_English__c, Dynamic_Group__c from Service_Type_Matrix__c where Category_Level1_English__c =: tmpCaseObj.Case_Category_Level1__c  and   Category_Level2_English__c =: tmpCaseObj.Case_Category_Level2__c   and Category_Level3_English__c =:tmpCaseObj.Case_Category_Level3__c   ];
+            if(Service_Type_Matrix.size() > 0){
+                tmpCaseObj.Dynamic_Group__c = Service_Type_Matrix.get(0).Dynamic_Group__c;
             }
             
            
@@ -120,14 +106,6 @@ public class BIH_EditCategories
         // return null;
     }
     
-    
-    @AuraEnabled
-    public static String getUserTeam() {
-        User currentUser = [SELECT Id, user_team__c FROM User WHERE Id = :UserInfo.getUserId()];
-        return currentUser.user_team__c;
-    }
-    
-    
     @AuraEnabled
     public static CaseAndPatientInformationWrapper getCaseAndPatientInformation(Id caseId){
         try {
@@ -137,8 +115,11 @@ public class BIH_EditCategories
                 getFields('Case','EditCaseForContactCenter')+
                 ' ,Parent.CaseNumber,CreatedBy.Name,LastModifiedBy.Name,Account.Name,Patient__r.Name,Account.Hospital_Number_HN__c,Patient__r.Hospital_Number_HN__c'+
                 ' FROM Case Where id = :caseId ';
+            system.debug('query==> ' + query);
             caseObj = Database.query( query );
             
+            
+            system.debug('caseObj==> ' + caseObj);
             List<CasePlatformEventMapping__c> listCase = [select Id,Platform_Event_Channel__c,Case_Id__c from CasePlatformEventMapping__c WHERE Case_Id__c =: caseId];
             
             
@@ -190,7 +171,7 @@ public class BIH_EditCategories
                 cpiWrapper.checkOutTime = string.valueof(caseObj[0].Check_Out_Time__c) ;
                 
             }else{
-                User user = [SELECT ID,Name,Profile.Name,User_Team__c FROM User WHERE ID=:UserInfo.getUserId() LIMIT 1];
+                User user = [SELECT ID,Name,Profile.Name FROM User WHERE ID=:UserInfo.getUserId() LIMIT 1];
                 cpiWrapper.UserCurrentInfo = user;
             }
             
@@ -200,15 +181,12 @@ public class BIH_EditCategories
             throw new AuraHandledException(e.getMessage());
         }
     }
-    
-    
     @AuraEnabled
     public static string getBtnConfig(){
         BIH_Constants__mdt cons = new DataSelector().getBtnConfig();
         return cons.Value_1__c;
     }
     public static Map<String,String> getRecordTypeCaseAPIByName{get;set;}
-
     
     @AuraEnabled
     public static pickListValueWrapper getPickListValueWrapper(string caseId){
@@ -239,55 +217,14 @@ public class BIH_EditCategories
             recordTypeId = ccw.DefalutRecordId;
         }
         //system.debug('recordTypeId : '+recordTypeId);
-       
-        String userTeam = '';
-		String responseibleTeam = '';
-        User user1 = [SELECT ID, Name, Profile.Name, User_Team__c FROM User WHERE ID = :UserInfo.getUserId() LIMIT 1];
+        Map<Id,Service_Type_Matrix__c> stm = new Map<id,Service_Type_Matrix__c>([SELECT Category_Level1_Thai__c, Category_Level2_Thai__c, 
+                                                                                 Category_Level3_Thai__c, Category_Level1_English__c, Category_Level2_English__c, 
+                                                                                 Category_Level3_English__c, SLA__c,Service_Detail_ENG__c,Script_TH__c,
+                                                                                 Service_Detail_TH__c, Id ,Script_ENG__c, Dynamic_Group__c, Quick_Case__c
+                                                                                 FROM Service_Type_Matrix__c 
+                                                                                 WHERE Channel__c != 'Contact Center'
+                                                                                 ORDER BY  Category_Level1_English__c, Category_Level2_English__c, Category_Level3_English__c]);
         
-        
-        // Map of user teams to responsible teams
-        Map<String, String> teamMap = new Map<String, String>{
-            'Airport Transfer Team' => 'Airport Transfer Team',
-                'Individual Team' => 'Referral',
-                'Referral Team' => 'Referral',
-                'Medical Enquiry Team' => 'Medical Enquiry',
-                'Registration Team' => 'Registration',
-                'Insurance Team' => 'Insurance Team',
-                'BH Phuket' => 'BIH Phuket'
-                };   
-                    // Set the responsible team based on the user team
-                    if (teamMap.containsKey(user1.User_Team__c)) {
-                        responseibleTeam = teamMap.get(user1.User_Team__c);
-                    }
-        
-        Map<Id, Service_Type_Matrix__c> stm;
-       // Execute the appropriate query based on whether responseibleTeam is set
-       system.debug('responseibleTeam***'+responseibleTeam);
-        if (responseibleTeam != null && responseibleTeam != '' ) {
-            system.debug('responseibleTeam 1 ***'+responseibleTeam);
-            stm = new Map<Id, Service_Type_Matrix__c>([
-                SELECT Category_Level1_Thai__c, Category_Level2_Thai__c, Category_Level3_Thai__c, 
-                Category_Level1_English__c, Category_Level2_English__c, Category_Level3_English__c, 
-                SLA__c, Service_Detail_ENG__c, Script_TH__c, Service_Detail_TH__c, Id, Script_ENG__c, 
-                Dynamic_Group__c, Quick_Case__c, Responsible_Team__c
-                FROM Service_Type_Matrix__c 
-                WHERE Channel__c != 'Contact Center' AND Responsible_Team__c = :responseibleTeam
-                ORDER BY Category_Level1_English__c, Category_Level2_English__c, Category_Level3_English__c
-            ]);
-        } else {
-            system.debug('responseibleTeam 2 ***'+responseibleTeam);
-            stm = new Map<Id, Service_Type_Matrix__c>([
-                SELECT Category_Level1_Thai__c, Category_Level2_Thai__c, Category_Level3_Thai__c, 
-                Category_Level1_English__c, Category_Level2_English__c, Category_Level3_English__c, 
-                SLA__c, Service_Detail_ENG__c, Script_TH__c, Service_Detail_TH__c, Id, Script_ENG__c, 
-                Dynamic_Group__c, Quick_Case__c, Responsible_Team__c
-                FROM Service_Type_Matrix__c 
-                WHERE Channel__c != 'Contact Center'
-                ORDER BY Category_Level1_English__c, Category_Level2_English__c, Category_Level3_English__c
-            ]);
-        }
-        
-               
         /*Map<Id,Doctor__c> doctorMap = new Map<Id,Doctor__c>([SELECT Id, Name, MD_Code__c, Doctor_First_Name__c, Doctor_Last_Name__c, 
                                                              Specialty__c, Specialty2__c,
                                                              Doctor_Name_TH__c, Doctor_Note__c FROM Doctor__c]);*/
@@ -305,8 +242,6 @@ public class BIH_EditCategories
         Map<String,String> mapScriptEN = new Map<String,String>();
         Set<String> setCat1 = new Set<String>();
         Map<String,String> mapQuickCase = new Map<String,String>();
-        Map<String,String> mapQuickCase1 = new Map<String,String>();
-        Map<String,String> mapQuickCase2 = new Map<String,String>();
         //system.debug(stm);
         for(Service_Type_Matrix__c m :stm.values()){
             
@@ -363,24 +298,10 @@ public class BIH_EditCategories
             
             // for quickcase 
             if(m.Quick_Case__c != null){
-                if(m.Category_Level1_English__c.contains('Appointment')) {
-                    mapQuickCase.put(m.Quick_Case__c, m.Category_Level3_English__c + ':' + m.Category_Level2_English__c + ':' + m.Category_Level1_English__c);
-                    system.debug('mapQuickCase :'+ mapQuickCase);
-                } else if(m.Category_Level1_English__c.contains('General')) {
-                    mapQuickCase1.put(m.Quick_Case__c, m.Category_Level3_English__c + ':' + m.Category_Level2_English__c + ':' + m.Category_Level1_English__c);
-                    system.debug('mapQuickCase1 :'+ mapQuickCase1);
-                    
-                }
-                else if(m.Category_Level1_English__c.contains('Tele')) {
-                    mapQuickCase2.put(m.Quick_Case__c, m.Category_Level3_English__c + ':' + m.Category_Level2_English__c + ':' + m.Category_Level1_English__c);
-                    system.debug('mapQuickCase2 :'+ mapQuickCase2);
-                    
-                }
+                mapQuickCase.put(m.Quick_Case__c,m.Category_Level3_English__c+':'+m.Category_Level2_English__c+':'+m.Category_Level1_English__c);
             }
-            
-         
         }
-         
+        
         
         ccw.keyCateLvL1 = keyCatelevel1;
         ccw.mapCaseLvl1 = cate_lvl1_MapTH;
@@ -397,29 +318,11 @@ public class BIH_EditCategories
         //ccw.buildingMap = buildingMap;
         //ccw.keyBuilding = buildingMap.keySet();
         ccw.mapQuickCase = mapQuickCase;
-        
-        
         List<String> tmpKeyQuickCaseForSort = new List<String>(mapQuickCase.keySet());
         tmpKeyQuickCaseForSort.sort();
         ccw.keyQuickCase =  new Set<String>(tmpKeyQuickCaseForSort);
-      	system.debug('ccw.mapQuickCase :'+ ccw.mapQuickCase);
-        
+      
         ccw.recordTypeMap = GetAvailableRecordTypeCase();
-        
-        ccw.mapQuickCase1 = mapQuickCase1;
-        
-        List<String> tmpKeyQuickCaseForSort1 = new List<String>(mapQuickCase1.keySet());
-        tmpKeyQuickCaseForSort1.sort();
-        ccw.keyQuickCase1 =  new Set<String>(tmpKeyQuickCaseForSort1);
-        system.debug('ccw.mapQuickCase1 :'+ ccw.mapQuickCase1);
-        
-        
-        ccw.mapQuickCase2 = mapQuickCase2;
-        
-        List<String> tmpKeyQuickCaseForSort2 = new List<String>(mapQuickCase2.keySet());
-        tmpKeyQuickCaseForSort2.sort();
-        ccw.keyQuickCase2 =  new Set<String>(tmpKeyQuickCaseForSort2);
-        system.debug('ccw.mapQuickCase2 :'+ ccw.mapQuickCase2);
         
         string recordTypeName;
         string recordTypeDevName;
@@ -459,17 +362,15 @@ public class BIH_EditCategories
         return ccw;
     }
     
-    public static Map<String,String> GetAvailableRecordTypeCase()
-    {
+    public static Map<String,String> GetAvailableRecordTypeCase(){
         Map<String,String> recordTypeMap = new Map<String,String>();
         Map<String,String> recordTypeMapAPIName = new Map<String,String>();
-        List<RecordType> mRecordTypeList = [SELECT Id,  Name, DeveloperName, Description FROM RecordType WHERE SobjectType = 'Case'];
         Schema.DescribeSObjectResult R = Case.SObjectType.getDescribe();
         List<Schema.RecordTypeInfo> RT = R.getRecordTypeInfos();
-        for(RecordType rec : mRecordTypeList) 
-        {
+        for(RecordType rec : [SELECT Id,  Name, DeveloperName, Description FROM RecordType WHERE SobjectType = 'Case']) {
             recordTypeMap.put(rec.Id, rec.Name);
             recordTypeMapAPIName.put(rec.Name, rec.DeveloperName);
+            
         }
         
         getRecordTypeCaseAPIByName = recordTypeMapAPIName;
@@ -529,9 +430,6 @@ public class BIH_EditCategories
         }
         return fields;
     }
-    
-
-
     
  
     

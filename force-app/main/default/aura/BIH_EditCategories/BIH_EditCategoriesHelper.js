@@ -15,7 +15,6 @@
         toastEvent.fire();
          helper.stopSpinner(component);
     },
-    
     getWrapper: function (component, event, helper) {
        helper.startSpinner(component);
         var recordCaseId = component.get('v.recordId');
@@ -61,17 +60,6 @@
                     component.set('v.KeyQuickCase', res.keyQuickCase);
                     component.set('v.MapDoctorAll', res.mapDoctorAll);
                     component.set('v.close_case_reasonPickList', res.closeReason);
-                    
-                    
-                    // Map1
-                    component.set('v.MapQuickCase1', res.mapQuickCase1);
-                    component.set('v.KeyQuickCase1', res.keyQuickCase1);
-                    
-                    // Map2
-                    component.set('v.MapQuickCase2', res.mapQuickCase2);
-                    component.set('v.KeyQuickCase2', res.keyQuickCase2);
-                    
-                    
                     
                     var cObj = component.get('v.caseObj');
                     if (cObj.RecordTypeId == undefined || cObj.RecordTypeId == null || cObj.RecordTypeId == '') {

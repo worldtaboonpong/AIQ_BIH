@@ -23,7 +23,7 @@ public class AccountTriggerHandler {
 
     
 	public static void handleAfterInsert(List<Account> newList) {
-        System.debug('$$$$$$$$$$$$$$$$$ handleAfterInsert');
+        
         for(Account acc: newList){
 
              //check record type != patient
@@ -51,7 +51,7 @@ public class AccountTriggerHandler {
     }
     
     public static void handleBeforeUpdate(Map<Id, Account> oldMap, Map<Id, Account> newMap) {
-		System.debug('$$$$$$$$$$$$$$$$$ handleBeforeUpdate');
+
         Map<String,Contact> mapContactwithEmail = new Map<String,Contact>();
         List<Contact> updateContact = new List<Contact>();
 
@@ -111,7 +111,6 @@ public class AccountTriggerHandler {
     }
 
     public static void createContactByEmail(Map<String,Account> mapEmailAcc) {
-        System.debug('$$$$$$$$$$$$$$$$$ createContactByEmail');
         //Create contact auto
         List<Contact> createContact = new List<Contact>();
 

@@ -1,0 +1,20 @@
+<aura:component controller="RcRefGenerator" implements="force:hasRecordId,flexipage:availableForRecordHome,force:appHostable">
+    <!-- Attribute to hold the RCREF__c value -->
+    <aura:attribute name="rcRef" type="String" />
+    
+    <!-- Loading Spinner -->
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    
+    <!-- Button to trigger Rc_ref__c generation -->
+    <lightning:button label="Generate RCREF__c" onclick="{!c.handleClick}" class="slds-m-around_medium" />
+
+    <!-- Show the Rc_ref__c value after generation -->
+    <aura:if isTrue="{!not(empty(v.rcRef))}">
+        <lightning:formattedText value="{!v.rcRef}" />
+    </aura:if>
+    
+    <!-- Display spinner when loading -->
+    <aura:if isTrue="{!v.isLoading}">
+        <lightning:spinner alternativeText="Loading..." />
+    </aura:if>
+</aura:component>

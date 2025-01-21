@@ -1,4 +1,4 @@
-({	
+({
     init: function (component, event, helper) {
         
         helper.getWrapper(component, event, helper);
@@ -7,7 +7,7 @@
         //caseObj.RecordTypeId = getRecordTypeId;
         component.set('v.caseObj', caseObj);
        // console.log('caseObj' + caseObj.RecordTypeId);
-           
+            
         //helper.stopSpinner(component);
         var catLvL1 = component.get('v.caseObj.Case_Category_Level1__c');
         var catLvL2 = component.get('v.caseObj.Case_Category_Level2__c');
@@ -18,26 +18,6 @@
         }else{
             component.set('v.validSaveBtn',true);
         }
-        
-        
-        
-        var action = component.get("c.getUserTeam");
-        action.setCallback(this, function(response) {
-            var state = response.getState();
-            if (state === "SUCCESS") {
-                var userTeam = response.getReturnValue();
-                component.set("v.userTeam", userTeam);
-                if (userTeam === 'Individual Team' || userTeam === 'Referral Team') {
-                    console.log('Individual Team+++++' + caseObj.RecordTypeId);
-                    $A.util.removeClass(component.find("individualTeamSection"), "slds-hide");
-                    $A.util.addClass(component.find("individualTeamSection"), "slds-show");
-                } else {
-                    $A.util.removeClass(component.find("individualTeamSection"), "slds-show");
-                    $A.util.addClass(component.find("individualTeamSection"), "slds-hide");
-                }
-            }
-        });
-        $A.enqueueAction(action);
         
     },
     onChangeCatelvl1: function (component, event, helper) {
@@ -226,131 +206,6 @@
             
             // component.find('case_category_lvl_1').setCustomValidity('');
             // console.log(component.find('case_category_lvl_1').get("v.validity"));
-        }, 50);
-        
-        
-    },
-    onChangeQuickCase1: function (component, event, helper) {
-        component.set('v.isResetCate', false);
-        component.set('v.isResetCate', true);
-        
-        
-        console.log('--- on change quick case ---');
-        var mapsla = component.get('v.MapSLA');
-        var map_quick_case = component.get('v.MapQuickCase1');
-        var val = event.getSource().get("v.value");
-        console.log('map_quick_case : ', JSON.parse(JSON.stringify(map_quick_case)));
-        console.log('val : ', val);
-        
-        var cate1 = map_quick_case[val].split(":")[2];
-        var cate2 = map_quick_case[val].split(":")[1];
-        var cate3 = map_quick_case[val].split(":")[0];
-        var THTemplate = component.get('v.THTemplate');
-        // console.log('map_quick_case[val].split(":") : ', map_quick_case[val].split(":"));
-        var mapDynmicGrp = component.get('v.MapDynamicGroup');
-        var mapCateLvl2 = component.get('v.MapCaseCateLVL_2');
-        var mapCateLvl3 = component.get('v.MapCaseCateLVL_3');
-        var mapServiceDetailTH = component.get('v.MapServiceDetailTH');
-        var mapServiceDetailEN = component.get('v.MapServiceDetailEN');
-        var mapScriptTH = component.get('v.MapScriptTH');
-        var mapScriptEN = component.get('v.MapScriptEN');
-        component.set('v.CaseCateLVL_2', mapCateLvl2[cate1]);
-        component.set('v.CaseCateLVL_3', mapCateLvl3[cate2 + ':' + cate1]);
-        // console.log('mapCateLvl2[] : ' , JSON.parse(JSON.stringify(mapCateLvl2[cate1])));
-        // console.log('mapCateLvl3[] : ', JSON.parse(JSON.stringify(mapCateLvl3[cate2 + ':' + cate1])));
-        var scriptInfo;
-        var serviceDetailInfo;
-        // console.log('mapScriptTH : ', JSON.parse(JSON.stringify(mapScriptTH)));
-        // console.log('mapScriptEN : ', JSON.parse(JSON.stringify(mapScriptEN)));
-        // console.log('mapServiceDetailTH : ', JSON.parse(JSON.stringify(mapServiceDetailTH)));
-        // console.log('mapServiceDetailEN : ', JSON.parse(JSON.stringify(mapServiceDetailEN)));
-        
-        if (THTemplate == true) {
-            scriptInfo = mapScriptTH[map_quick_case[val]];
-            serviceDetailInfo = mapServiceDetailTH[map_quick_case[val]];
-        } else {
-            scriptInfo = mapScriptEN[map_quick_case[val]];
-            serviceDetailInfo = mapServiceDetailEN[map_quick_case[val]];
-        }
-        console.log('scriptInfo : ', scriptInfo);
-        console.log('serviceDetailInfo : ', serviceDetailInfo);
-        setTimeout(() => {
-            var caseObj = component.get('v.caseObj');
-            
-            caseObj.Case_Category_Level1__c = cate1;
-            caseObj.Case_Category_Level2__c = cate2;
-            caseObj.Case_Category_Level3__c = cate3;
-            caseObj.Quick_Case__c = val;
-            caseObj.Script__c = scriptInfo;
-            caseObj.Service_Detail__c = serviceDetailInfo;
-            
-            component.set('v.caseObj', caseObj);
-            component.set('v.numberDynamicGroup', mapDynmicGrp[map_quick_case[val]]);
-            component.set('v.caseObj.SLA__c', mapsla[map_quick_case[val]]);
-            
-            // console.log(component.find('case_category_lvl_1').get("v.validity"));
-            
-            // var valid1 = component.find('case_category_lvl_1').get("v.validity");
-            
-            // component.find('case_category_lvl_1').setCustomValidity('');
-            // console.log(component.find('case_category_lvl_1').get("v.validity"));
-        }, 50);
-        
-        
-    },
-    onChangeQuickCase2: function (component, event, helper) {
-        component.set('v.isResetCate', false);
-        component.set('v.isResetCate', true);
-        
-        
-        console.log('--- on change quick case ---');
-        var mapsla = component.get('v.MapSLA');
-        var map_quick_case = component.get('v.MapQuickCase2');
-        var val = event.getSource().get("v.value");
-        console.log('map_quick_case : ', JSON.parse(JSON.stringify(map_quick_case)));
-        console.log('val : ', val);
-        
-        var cate1 = map_quick_case[val].split(":")[2];
-        var cate2 = map_quick_case[val].split(":")[1];
-        var cate3 = map_quick_case[val].split(":")[0];
-        var THTemplate = component.get('v.THTemplate');
-        var mapDynmicGrp = component.get('v.MapDynamicGroup');
-        var mapCateLvl2 = component.get('v.MapCaseCateLVL_2');
-        var mapCateLvl3 = component.get('v.MapCaseCateLVL_3');
-        var mapServiceDetailTH = component.get('v.MapServiceDetailTH');
-        var mapServiceDetailEN = component.get('v.MapServiceDetailEN');
-        var mapScriptTH = component.get('v.MapScriptTH');
-        var mapScriptEN = component.get('v.MapScriptEN');
-        component.set('v.CaseCateLVL_2', mapCateLvl2[cate1]);
-        component.set('v.CaseCateLVL_3', mapCateLvl3[cate2 + ':' + cate1]);
-        // console.log('mapCateLvl2[] : ' , JSON.parse(JSON.stringify(mapCateLvl2[cate1])));
-        // console.log('mapCateLvl3[] : ', JSON.parse(JSON.stringify(mapCateLvl3[cate2 + ':' + cate1])));
-        var scriptInfo;
-        var serviceDetailInfo;
-        
-        if (THTemplate == true) {
-            scriptInfo = mapScriptTH[map_quick_case[val]];
-            serviceDetailInfo = mapServiceDetailTH[map_quick_case[val]];
-        } else {
-            scriptInfo = mapScriptEN[map_quick_case[val]];
-            serviceDetailInfo = mapServiceDetailEN[map_quick_case[val]];
-        }
-        console.log('scriptInfo : ', scriptInfo);
-        console.log('serviceDetailInfo : ', serviceDetailInfo);
-        setTimeout(() => {
-            var caseObj = component.get('v.caseObj');
-            
-            caseObj.Case_Category_Level1__c = cate1;
-            caseObj.Case_Category_Level2__c = cate2;
-            caseObj.Case_Category_Level3__c = cate3;
-            caseObj.Quick_Case__c = val;
-            caseObj.Script__c = scriptInfo;
-            caseObj.Service_Detail__c = serviceDetailInfo;
-            
-            component.set('v.caseObj', caseObj);
-            component.set('v.numberDynamicGroup', mapDynmicGrp[map_quick_case[val]]);
-            component.set('v.caseObj.SLA__c', mapsla[map_quick_case[val]]);
-            
         }, 50);
         
         

@@ -1,11 +1,3 @@
-/*------------------------------------------------------------
-Author: 
-Company : AIQ
-Description : 
-Test Class : BIH_ContactCenterInformationCtrlTest
-History : 
-11102022      ParthT     Clean-Up.
-------------------------------------------------------------*/
 public class BIH_ContactCenterInformationCtrl {
     @AuraEnabled
     public static Case getContactCenterInfo(String contactcaseId) {

@@ -39,9 +39,7 @@
                 }else if ( recordTypeName.includes("Registration Case")){
                     cmpName = "c:BIH_EditCaseForPreRegistration"; 
                 }else if (recordTypeName.includes("Medical Enquiry")){
-                    cmpName = "c:BIH_EditCaseForMedicalEnquiry";
-                }else if (recordTypeName.includes("Insurance Case")){
-                    cmpName = "c:BIH_EditCaseForInsurance";     
+                    cmpName = "c:BIH_EditCaseForMedicalEnquiry"; 
                 }
                  else {
                     cmpName = "c:BIH_EditChildCaseForm";

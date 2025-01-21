@@ -50,7 +50,7 @@
 				    fieldsTH = fieldsTH.split(",");
 				    console.log('fieldsTH',fieldsTH);
 				    for (var i = 0;i<fieldsTH.length;i++) {
-					    var params = component.get("v.apptObj."+fieldsTH[i]);
+					    var params = component.get("v.caseObj."+fieldsTH[i]);
                     
 					    if (params == undefined || params == null || params == ''){
 						    smsTH = smsTH.replace("{"+i+"}",'['+fieldsTH[i]+']');
@@ -77,7 +77,7 @@
 				fieldsEN = fieldsEN.split(",");
 				console.log('fieldsEN',fieldsEN);
 				for (var i = 0;i<fieldsEN.length;i++) {
-					var params = component.get("v.apptObj."+fieldsEN[i]);
+					var params = component.get("v.caseObj."+fieldsEN[i]);
 					if (params == undefined || params == null || params == ''){
 						smsEN = smsEN.replace("{"+i+"}",'['+fieldsEN[i]+']');
 					}else{
@@ -111,7 +111,7 @@
         //console.log('===> start ');
         
         //var params = event.getParam('arguments');
-        var recordId = component.get('v.apptObj.Id');
+        var recordId = component.get('v.caseObj.Id');
         var contactNumber = component.get('v.contactNumber');
         //console.log('===> start =',recordId);
         //if (params) {
@@ -119,20 +119,20 @@
         //}
         
         var action = component.get("c.sendSMSMessage");
-        var apptObj = component.get("v.apptObj");
+        var caseObj = component.get("v.caseObj");
         
         var message ='Please insert contact number and message';
         var smsmessage = component.get('v.message');
             if (component.get("v.message") == ''){
                 helper.displayToast(component, 'Error', message);
-			}else if (component.get("v.apptObj.account__r.phone") == ''){
+			}else if (component.get("v.caseObj.Contact_Number__c") == ''){
                 helper.displayToast(component, 'Error', message);
 			}
 			else{
                 helper.startSpinner(component);
                 
                 action.setParams(
-                    {"apptObj": apptObj,"message": smsmessage,"contactNumber":contactNumber}
+                    {"caseObj": caseObj,"message": smsmessage,"contactNumber":contactNumber}
                 );
                 action.setCallback(this, function(response) {
                     var c = response.getReturnValue();

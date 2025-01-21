@@ -9,7 +9,7 @@ public with sharing class BIH_EditChildCaseFormCtrl {
         public Map<String, String> mapCaseLvl1 {get; set;}
         @AuraEnabled
         public Map<String, Set<BIH_PicklistOption>> mapCaseLvl2 {get; set;}
-        @AuraEnabled
+    	@AuraEnabled
         public Set<String> keyCateLvL2 {get; set;}
         @AuraEnabled
         public Map<String, Set<BIH_PicklistOption>> mapCaseLvl3 {get; set;}
@@ -35,7 +35,7 @@ public with sharing class BIH_EditChildCaseFormCtrl {
         public Case CaseObject {get; set;}
         @AuraEnabled
         public Account PatientObject {get; set;}
-        @AuraEnabled
+    	@AuraEnabled
         public Account SenderObject {get; set;}
         @AuraEnabled
         public User UserCurrentInfo {get; set;}
@@ -43,10 +43,6 @@ public with sharing class BIH_EditChildCaseFormCtrl {
         public Group GroupCurrentInfo {get; set;}
         @AuraEnabled
         public User StaffCurrentInfo {get; set;}
-        @AuraEnabled
-        public User InProgressCurrentInfo {get; set;}
-        @AuraEnabled
-        public User CompletedCurrentInfo {get; set;}
         @AuraEnabled
         public Doctor__c DoctorObject {get; set;}
         @AuraEnabled
@@ -373,7 +369,7 @@ public with sharing class BIH_EditChildCaseFormCtrl {
             // //system.debug('close case :'+closeReasonSet);
             ccw.closeReason = picklistValues;
         }
-                //system.debug('date is'+datetime.now());
+		        //system.debug('date is'+datetime.now());
         return ccw;
     }
    public static Map<String, List<BIH_PicklistOption>> getDependencyFieldValues(String FieldAPIName1st, String FieldAPIName2nd)
@@ -423,14 +419,11 @@ public with sharing class BIH_EditChildCaseFormCtrl {
             //system.debug(tmpCaseObj);
             String ownerId,recordTypeId ;
             if(tmpCaseObj.Escalate_To__c != null && tmpCaseObj.Escalate_To__c != ''){
-                system.debug('tmpCaseObj.Escalate_To__c'+tmpCaseObj.Escalate_To__c);
+
                 if (mapContactCenterEscalationRule.containsKey(tmpCaseObj.Escalate_To__c)){
                     String recordTypeDevName = mapContactCenterEscalationRule.get(tmpCaseObj.Escalate_To__c).Record_Type_Developer_Name__c;
                     String recordTypeName = mapContactCenterEscalationRule.get(tmpCaseObj.Escalate_To__c).Record_Type_Name__c;
-                    system.debug('recordTypeDevName----'+recordTypeDevName);
-                    system.debug('recordTypeName----'+recordTypeName);
                     ownerId = [SELECT id ,Name FROM Group WHERE Name =:recordTypeDevName].Id;
-                    system.debug('Owner----'+ownerId);
                     if (recordTypeName != null && recordTypeName != ''){
                         recordTypeId = Schema.SObjectType.Case.getRecordTypeInfosByName().get(recordTypeName).getRecordTypeId();
                         system.debug('Update Case owner ********** test a2 : '+recordTypeId);
@@ -441,7 +434,6 @@ public with sharing class BIH_EditChildCaseFormCtrl {
                 }else {
                     ownerId = tmpCaseObj.OwnerId;
                     recordTypeId = tmpCaseObj.RecordTypeId;
-                    system.debug('Update Case owner ********** test a4 : '+ownerId);
                 }
                 tmpCaseObj.OwnerId = ownerId;
                 tmpCaseObj.RecordTypeId = recordTypeId;
@@ -452,7 +444,7 @@ public with sharing class BIH_EditChildCaseFormCtrl {
             // upsert campaignObj;
             // List<Account> tmpAccList = new List<Account>{patientObj,senderObj};
             // upsert tmpAccList;
-            system.debug(' Update Case owner complete');
+			system.debug(' Update Case owner complete');
             return tmpCaseObj;
         } catch (Exception e) {
             //system.debug(e.getMessage());
@@ -499,10 +491,10 @@ public with sharing class BIH_EditChildCaseFormCtrl {
                     if(caseObj[0].Staff_Name__c != null){
                         System.debug('if 2.1');
                         User userstaff = [SELECT ID,Name,Profile.Name FROM User WHERE ID=:caseObj[0].Staff_Name__c LIMIT 1];
-                        cpiWrapper.StaffCurrentInfo = userstaff;
+                		cpiWrapper.StaffCurrentInfo = userstaff;
                     }else{
                        User user1 = [SELECT ID,Name,Profile.Name FROM User WHERE ID=:UserInfo.getUserId() LIMIT 1];
-                       cpiWrapper.StaffCurrentInfo = user1; 
+                	   cpiWrapper.StaffCurrentInfo = user1; 
                     }
                     
                 }else{
@@ -511,76 +503,17 @@ public with sharing class BIH_EditChildCaseFormCtrl {
                     if(caseObj[0].Staff_Name__c != null){
                         System.debug('if 3.1');
                         User userstaff = [SELECT ID,Name,Profile.Name FROM User WHERE ID=:caseObj[0].Staff_Name__c LIMIT 1];
-                        cpiWrapper.StaffCurrentInfo = userstaff;
-                    }
-                    else{
+                		cpiWrapper.StaffCurrentInfo = userstaff;
+                    }else{
                        User user2 = [SELECT ID,Name,Profile.Name FROM User WHERE ID=:UserInfo.getUserId() LIMIT 1];
-                       cpiWrapper.StaffCurrentInfo = user2; 
+                	   cpiWrapper.StaffCurrentInfo = user2; 
                     }
-                  
+                    // if(cpiWrapper.UserCurrentInfo.Profile.Name == 'BIH Airport Transport'){
+                    //      caseObj[0].RecordTypeId = BIH_Constants.AIRPORT_TRANSFER_CASE_RECORDTYPE;
+                    // }
                 }
-                
-                
-                if(((String)caseObj[0].OwnerId).startsWith('00G') ){
-                    System.debug('InProgressBy__c ++++++++++else 3');
-                    Group user = [SELECT ID,Name FROM Group WHERE ID=:caseObj[0].OwnerId LIMIT 1];
-                    cpiWrapper.GroupCurrentInfo = user;
-                    if(caseObj[0].InProgressBy__c != null){
-                        System.debug('InProgressBy__c ++++++++++else 3.1'+caseObj[0].InProgressBy__c);
-                        System.debug('if 2.1');
-                        User userstaff1 = [SELECT ID,Name,Profile.Name FROM User WHERE ID=:caseObj[0].InProgressBy__c LIMIT 1];
-                        cpiWrapper.InProgressCurrentInfo = userstaff1;
-                        System.debug('InProgressBy__c ++++++++++userstaff1 3.1'+userstaff1);
-                    }else{
-                        System.debug('InProgressBy__c ++++++++++else 3.2'+caseObj[0].InProgressBy__c);
-                       User user1 = [SELECT ID,Name,Profile.Name FROM User WHERE ID=:UserInfo.getUserId() LIMIT 1];
-                       cpiWrapper.InProgressCurrentInfo = user1; 
-                        System.debug('InProgressBy__c ++++++++++else 3.3'+user1);
-                    }
-                    
-                }else{
-                    User user = [SELECT ID,Name,Profile.Name FROM User WHERE ID=:caseObj[0].OwnerId LIMIT 1];
-                    cpiWrapper.UserCurrentInfo = user;
-                    if(caseObj[0].InProgressBy__c != null){
-                        System.debug('if 3.1');
-                        User userstaff1 = [SELECT ID,Name,Profile.Name FROM User WHERE ID=:caseObj[0].InProgressBy__c LIMIT 1];
-                        cpiWrapper.InProgressCurrentInfo = userstaff1;
-                    }
-                    else{
-                       User user3 = [SELECT ID,Name,Profile.Name FROM User WHERE ID=:UserInfo.getUserId() LIMIT 1];
-                       cpiWrapper.InProgressCurrentInfo = user3; 
-                    }
-                }
-                
-                
-                if(((String)caseObj[0].OwnerId).startsWith('00G') ){
-                    Group user = [SELECT ID,Name FROM Group WHERE ID=:caseObj[0].OwnerId LIMIT 1];
-                    cpiWrapper.GroupCurrentInfo = user;
-                    if(caseObj[0].CompletedBy__c != null){
-                        User usercompleted = [SELECT ID,Name,Profile.Name FROM User WHERE ID=:caseObj[0].CompletedBy__c LIMIT 1];
-                        cpiWrapper.CompletedCurrentInfo = usercompleted;
-                    }else{
-                       User usercompleted1 = [SELECT ID,Name,Profile.Name FROM User WHERE ID=:UserInfo.getUserId() LIMIT 1];
-                       cpiWrapper.CompletedCurrentInfo = usercompleted1; 
-                    }
-                    
-                }else{
-                    User user = [SELECT ID,Name,Profile.Name FROM User WHERE ID=:caseObj[0].OwnerId LIMIT 1];
-                    cpiWrapper.UserCurrentInfo = user;
-                    if(caseObj[0].CompletedBy__c != null){
-                        User userstaff12 = [SELECT ID,Name,Profile.Name FROM User WHERE ID=:caseObj[0].CompletedBy__c LIMIT 1];
-                        cpiWrapper.CompletedCurrentInfo = userstaff12;
-                    }
-                    else{
-                       User user4 = [SELECT ID,Name,Profile.Name FROM User WHERE ID=:UserInfo.getUserId() LIMIT 1];
-                       cpiWrapper.CompletedCurrentInfo = user4; 
-                    }
-                }
-                
-               
-                
                 System.debug('if 4');
-                //System.debug('if 4.1 = '+caseObj[0].OwnerId);
+				//System.debug('if 4.1 = '+caseObj[0].OwnerId);
                 //User userStaff = [SELECT ID,Name FROM User WHERE ID=:caseObj[0].OwnerId LIMIT 1];
                 //System.debug('if 4.2 = '+userStaff);
                 
@@ -637,8 +570,6 @@ public with sharing class BIH_EditChildCaseFormCtrl {
                 System.debug('else 2');
                 cpiWrapper.StaffCurrentInfo = user;
                 System.debug('else 3');
-                cpiWrapper.InProgressCurrentInfo = user;
-                cpiWrapper.CompletedCurrentInfo = user;
                 // if(user.Profile.Name.contains(System.Label.Airport_Profile)){
                 //     Case tmpcase = new Case();
                 //     tmpcase.RecordTypeId = BIH_Constants.AIRPORT_TRANSFER_CASE_RECORDTYPE;
@@ -892,7 +823,35 @@ public with sharing class BIH_EditChildCaseFormCtrl {
         }  
         return result;
     }
-
+    public class WrapperLikelyPro{
+        @AuraEnabled
+        public String value {get;set;}
+        @AuraEnabled
+        public String item {get;set;}
+    }
+    @AuraEnabled
+    public static List<WrapperLikelyPro> getLikelyProDetail() {
+        
+        System.debug('getLikelyPrognosislist********************');
+        List<WrapperLikelyPro> result = new List<WrapperLikelyPro>();
+        Schema.DescribeFieldResult fieldResult = Case.Likely_prognosis_treatment_outcome__c.getDescribe();
+        system.debug('fieldResult = '+fieldResult);
+        List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
+        system.debug('ple = '+ple);
+        for( Schema.PicklistEntry pickListVal : ple){
+            system.debug('--------for----------- ');
+            WrapperLikelyPro r =new  WrapperLikelyPro();
+            r.value = pickListVal.getValue();
+            r.item =pickListVal.getLabel();
+            system.debug('value Likely_prognosis_treatment_outcome__c  : =========='+r.value);
+            system.debug('value Likely_prognosis_treatment_outcome__c r.item  : =========='+r.item);
+            //r.selected = pickListVal.getValue()==gen ? true : false;
+            //system.debug(r.selected + ' - ' + gen + '  - ' + pickListVal.getValue());
+            result.add(r);
+            
+        }  
+        return result;
+    }
      public class WrapperWhenConsult{
         @AuraEnabled
         public String value {get;set;}
@@ -922,6 +881,8 @@ public with sharing class BIH_EditChildCaseFormCtrl {
         }  
         return result;
     }
+    
+     
        public class WrapperGenderNewPatient{
         @AuraEnabled
         public String value {get;set;}
@@ -932,7 +893,7 @@ public with sharing class BIH_EditChildCaseFormCtrl {
     public static List<WrapperGenderNewPatient> getGenderNewPatientDetail() {
         
         List<WrapperGenderNewPatient> result = new List<WrapperGenderNewPatient>();
-        Schema.DescribeFieldResult fieldResult = Case.Gender_New_Patient__c.getDescribe();
+        Schema.DescribeFieldResult fieldResult = Case.Gender_Patient__c.getDescribe();
         system.debug('fieldResult = '+fieldResult);
         List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
         system.debug('ple = '+ple);
@@ -946,6 +907,7 @@ public with sharing class BIH_EditChildCaseFormCtrl {
         }  
         return result;
     }
+   
     public class WrapperTitleNewPatient{
         @AuraEnabled
         public String value {get;set;}
@@ -956,7 +918,7 @@ public with sharing class BIH_EditChildCaseFormCtrl {
     public static List<WrapperTitleNewPatient> getTitleNewPatientDetail() {
         
         List<WrapperTitleNewPatient> result = new List<WrapperTitleNewPatient>();
-        Schema.DescribeFieldResult fieldResult = Case.Title_New_Patient__c.getDescribe();
+        Schema.DescribeFieldResult fieldResult = Case.Title_Patient__c.getDescribe();
         system.debug('fieldResult = '+fieldResult);
         List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
         system.debug('ple = '+ple);
@@ -970,6 +932,7 @@ public with sharing class BIH_EditChildCaseFormCtrl {
         }  
         return result;
     }
+/*
    public class WrapperTitleExtPatient{
         @AuraEnabled
         public String value {get;set;}
@@ -1018,13 +981,14 @@ public with sharing class BIH_EditChildCaseFormCtrl {
         }  
         return result;
     }
+
     @AuraEnabled
     public static Case getAccountDetailList(string caseId) {
         System.debug('****************** test 1 case id : '+caseId);
         System.debug('******************');
         System.debug('getAccountDetailList********************');
         try {
-            Case tmpCaseObj = [SELECT id,CaseNumber,Account_First_Name__c,First_Name_Patient__c,First_Name_Existing_Patient__c,Account_Last_Name__c,Last_Name_Patient__c,Last_Name_Existing_Patient__c,Account_Country__c,Country_of_Ressidence_Patient__c,Country_of_Residence_Exisiting_Patient__c,Account_Gender__c,Gender_New_Patient__c,Gender_Existing_Patient__c,Account_DOB__c,Date_Of_Birth_Patient__c,Date_Of_Birth_Existing_Patient__c,Account_Nationality__c,Nationality_New_Patient__c,Nationality_Existing_Patient__c,Account_Email__c,Email_New_Patient__c,Email_Existing_Patient__c,Account_Primary_Phone__c,Primary_Phone_New_Patient__c,Primary_Phone_Existing_Patient__c FROM Case Where id = :caseId];
+            Case tmpCaseObj = [SELECT id,CaseNumber,Account_First_Name__c,First_Name_New_Patient__c,First_Name_Existing_Patient__c,Account_Last_Name__c,Last_Name_New_Patient__c,Last_Name_Existing_Patient__c,Account_Country__c,Country_of_Ressidence_New_Patient__c,Country_of_Residence_Exisiting_Patient__c,Account_Gender__c,Gender_New_Patient__c,Gender_Existing_Patient__c,Account_DOB__c,Date_Of_Birth_New_Patient__c,Date_Of_Birth_Existing_Patient__c,Account_Nationality__c,Nationality_New_Patient__c,Nationality_Existing_Patient__c,Account_Email__c,Email_New_Patient__c,Email_Existing_Patient__c,Account_Primary_Phone__c,Primary_Phone_New_Patient__c,Primary_Phone_Existing_Patient__c FROM Case Where id = :caseId];
             System.debug('******************'+tmpCaseObj.Account_First_Name__c);
             System.debug('******************'+tmpCaseObj.Account_Gender__c);
             return tmpCaseObj;
@@ -1054,6 +1018,7 @@ public with sharing class BIH_EditChildCaseFormCtrl {
         }  
         return result;
     }
+    */
    public class PreferLangWrapper{
         @AuraEnabled
         public String value {get;set;}
@@ -1075,209 +1040,20 @@ public with sharing class BIH_EditChildCaseFormCtrl {
         }  
         return result;
     }
-   public class InsureName1Wrapper{
-        @AuraEnabled
-        public String value {get;set;}
-        @AuraEnabled
-        public String item {get;set;}
-    }
     @AuraEnabled
-    public static List<InsureName1Wrapper> getInsureName1Detail() {
+    public static Case getAccountDetailList(string caseId) {
+        System.debug('****************** test 1 case id : '+caseId);
+        System.debug('******************');
+        System.debug('getAccountDetailList********************');
+        try {
+            Case tmpCaseObj = [SELECT id,CaseNumber,Account_First_Name__c,First_Name_Patient__c,First_Name_Existing_Patient__c,Account_Last_Name__c,Last_Name_Patient__c,Last_Name_Existing_Patient__c,Account_Country__c,Country_of_Ressidence_Patient__c,Country_of_Residence_Exisiting_Patient__c,Account_Gender__c,Gender_Patient__c,Gender_Existing_Patient__c,Account_DOB__c,Date_Of_Birth_Patient__c,Date_Of_Birth_Existing_Patient__c,Account_Nationality__c,Nationality_New_Patient__c,Nationality_Existing_Patient__c,Account_Email__c,Email_New_Patient__c,Email_Existing_Patient__c,Account_Primary_Phone__c,Primary_Phone_New_Patient__c,Primary_Phone_Existing_Patient__c FROM Case Where id = :caseId];
+            System.debug('******************'+tmpCaseObj.Account_First_Name__c);
+            System.debug('******************'+tmpCaseObj.Account_Gender__c);
+            return tmpCaseObj;
+        } catch (Exception e) {
+            return null;
+        }
        
-        List<InsureName1Wrapper> result = new List<InsureName1Wrapper>();
-        Schema.DescribeFieldResult fieldResult = Case.Insurance_Name1__c.getDescribe();
-        List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
-        for( Schema.PicklistEntry pickListVal : ple){
-            InsureName1Wrapper r =new  InsureName1Wrapper();
-            r.value = pickListVal.getValue();
-            r.item =pickListVal.getLabel();
-            result.add(r);
-            
-        }  
-        return result;
     }
-     public class InsureName2Wrapper{
-        @AuraEnabled
-        public String value {get;set;}
-        @AuraEnabled
-        public String item {get;set;}
-    }
-    @AuraEnabled
-    public static List<InsureName2Wrapper> getInsureName2Detail() {
-       
-        List<InsureName2Wrapper> result = new List<InsureName2Wrapper>();
-        Schema.DescribeFieldResult fieldResult = Case.Insurance_Name2__c.getDescribe();
-        List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
-        for( Schema.PicklistEntry pickListVal : ple){
-            InsureName2Wrapper r =new  InsureName2Wrapper();
-            r.value = pickListVal.getValue();
-            r.item =pickListVal.getLabel();
-            result.add(r);
-            
-        }  
-        return result;
-    }
-   public class InsureName3Wrapper{
-        @AuraEnabled
-        public String value {get;set;}
-        @AuraEnabled
-        public String item {get;set;}
-    }
-    @AuraEnabled
-    public static List<InsureName3Wrapper> getInsureName3Detail() {
-       
-        List<InsureName3Wrapper> result = new List<InsureName3Wrapper>();
-        Schema.DescribeFieldResult fieldResult = Case.Insurance_Name3__c.getDescribe();
-        List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
-        for( Schema.PicklistEntry pickListVal : ple){
-            InsureName3Wrapper r =new  InsureName3Wrapper();
-            r.value = pickListVal.getValue();
-            r.item =pickListVal.getLabel();
-            result.add(r);
-            
-        }  
-        return result;
-    }
-   public class ClinicName1Wrapper{
-        @AuraEnabled
-        public String value {get;set;}
-        @AuraEnabled
-        public String item {get;set;}
-    }
-    @AuraEnabled
-    public static List<ClinicName1Wrapper> getClinicName1Detail() {
-       
-        List<ClinicName1Wrapper> result = new List<ClinicName1Wrapper>();
-        Schema.DescribeFieldResult fieldResult = Case.Clinic_Name_1__c.getDescribe();
-        List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
-        for( Schema.PicklistEntry pickListVal : ple){
-            ClinicName1Wrapper r =new  ClinicName1Wrapper();
-            r.value = pickListVal.getValue();
-            r.item =pickListVal.getLabel();
-            result.add(r);
-            
-        }  
-        return result;
-    }
-    
-   public class ClinicName2Wrapper{
-        @AuraEnabled
-        public String value {get;set;}
-        @AuraEnabled
-        public String item {get;set;}
-    }
-    @AuraEnabled
-    public static List<ClinicName2Wrapper> getClinicName2Detail() {
-       
-        List<ClinicName2Wrapper> result = new List<ClinicName2Wrapper>();
-        Schema.DescribeFieldResult fieldResult = Case.Clinic_Name_2__c.getDescribe();
-        List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
-        for( Schema.PicklistEntry pickListVal : ple){
-            ClinicName2Wrapper r =new  ClinicName2Wrapper();
-            r.value = pickListVal.getValue();
-            r.item =pickListVal.getLabel();
-            result.add(r);
-            
-        }  
-        return result;
-    }
-    
-
-    
- 
-      public class StationWrapper{
-        @AuraEnabled
-        public String value {get;set;}
-        @AuraEnabled
-        public String item {get;set;}
-    }
-    @AuraEnabled
-    public static List<StationWrapper> getStationDetail() {
-       
-        List<StationWrapper> result = new List<StationWrapper>();
-        Schema.DescribeFieldResult fieldResult = Case.Station__c.getDescribe();
-        List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
-        for( Schema.PicklistEntry pickListVal : ple){
-            StationWrapper r =new  StationWrapper();
-            r.value = pickListVal.getValue();
-            r.item =pickListVal.getLabel();
-            result.add(r);
-            
-        }  
-        return result;
-    }
-    
-  public class CustomerTypeWrapper{
-        @AuraEnabled
-        public String value {get;set;}
-        @AuraEnabled
-        public String item {get;set;}
-    }
-    @AuraEnabled
-    public static List<CustomerTypeWrapper> getCustomerTypeDetail() {
-       
-        List<CustomerTypeWrapper> result = new List<CustomerTypeWrapper>();
-        Schema.DescribeFieldResult fieldResult = Case.Customer_Type__c.getDescribe();
-        List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
-        for( Schema.PicklistEntry pickListVal : ple){
-            CustomerTypeWrapper r =new  CustomerTypeWrapper();
-            r.value = pickListVal.getValue();
-            r.item =pickListVal.getLabel();
-            result.add(r);
-            
-        }  
-        return result;
-    } 
-   public class TaskItemWrapper{
-        @AuraEnabled
-        public String value {get;set;}
-        @AuraEnabled
-        public String item {get;set;}
-    }
-    @AuraEnabled
-    public static List<TaskItemWrapper> getTaskItemDetail() {
-       
-        List<TaskItemWrapper> result = new List<TaskItemWrapper>();
-        Schema.DescribeFieldResult fieldResult = Case.Task_Item__c.getDescribe();
-        List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
-        for( Schema.PicklistEntry pickListVal : ple){
-            TaskItemWrapper r =new  TaskItemWrapper();
-            r.value = pickListVal.getValue();
-            r.item =pickListVal.getLabel();
-            result.add(r);
-            
-        }  
-        return result;
-    }
-  public class TaskCategoryWrapper{
-        @AuraEnabled
-        public String value {get;set;}
-        @AuraEnabled
-        public String item {get;set;}
-    }
- 
-  public class TaskStatusWrapper{
-        @AuraEnabled
-        public String value {get;set;}
-        @AuraEnabled
-        public String item {get;set;}
-    }
-    @AuraEnabled
-    public static List<TaskStatusWrapper> getTaskStatusDetail() {
-       
-        List<TaskStatusWrapper> result = new List<TaskStatusWrapper>();
-        Schema.DescribeFieldResult fieldResult = Case.Task_Status__c.getDescribe();
-        List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
-        for( Schema.PicklistEntry pickListVal : ple){
-            TaskStatusWrapper r =new  TaskStatusWrapper();
-            r.value = pickListVal.getValue();
-            r.item =pickListVal.getLabel();
-            result.add(r);
-            
-        }  
-        return result;
-    }     
-    
-    
     
 }

@@ -584,6 +584,11 @@
                         </lightning:select>
                         <label class="slds-form-element__label">Patient data update in TrakCare</label>
                              <ui:inputCheckbox aura:id="" label="" value="{!v.caseObj.Patient_data_updated_in_TrakCare__c}"/>
+                        <div>
+                            <label class="slds-form-element__label">Send Registration Email to Patient</label>
+                            <lightning:input aura:id="escalate_date" type="datetime" name="sendemail_date" variant="label-hidden" label="Send Registration Email to Patient"
+                                value="{!v.caseObj.Sent_Registration_Email_DateTime__c}" />
+                        </div>
                         
                         <!--|value1:{!v.caseObj.Channel__c}|<br />
                         |value2:{!option.value}|<br />
@@ -653,7 +658,7 @@
                 <div class="slds-col slds-size_1-of-2">
                     <lightning:select name="Inprogressreason"  label="In progress Reason"
                         aura:id="In_progress_reason" value="{!v.caseObj.In_progress_reason__c}">
-                        <option  value="" selected="Waiting for patient reply mail">--none--</option>
+                        <option  value="" selected="">--None--</option>
                         <aura:iteration items="{!v.InprogressReasonList}" var="item">
                             <option  value="{!item.item}" selected="">{!item.selected}
                                 {!item.item}
@@ -700,8 +705,7 @@
                
                 
             </div>
-            
-             <h3 class="slds-section__title slds-theme_shade">
+            <h3 class="slds-section__title slds-theme_shade">
                 <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Insurance</span>
             </h3>
             <div aria-hidden="false" class="slds-section__content">
@@ -721,6 +725,87 @@
                 </div> 
                 </div>    
             </div>
+            <h3 class="slds-section__title slds-theme_shade">	
+                <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Patient Preregistration Information
+				</span>
+            </h3>
+                	<div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-col slds-size_10-of-12">
+                                	<lightning:select aura:id="TitleNewPatient" name="TitleNewPatient" required="false" label="Title"
+                                            value="{!v.caseObj.Title_Patient__c}">
+                                            <option  value="" selected="">--None--</option>
+                                            <aura:iteration items="{!v.TitleNewPatientList}" var="item">
+                                                <option  value="{!item.item}" selected="">{!item.selected}
+                                                    {!item.item}
+                                                </option>
+                                            </aura:iteration>
+                        			</lightning:select>
+                                    <lightning:input name="NewPatientFirstName" label="First Name"
+                                        value="{!v.NewPatientFirstName}" />
+                                    <lightning:input name="NewPatientMiddleName" label="Middle Name"
+                                        value="{!v.caseObj.Middle_Name_Patient__c}" />
+                                	<lightning:input name="NewPatientLastName" label="Last Name"
+                                        value="{!v.NewPatientLastName}" />
+                     
+                                	<lightning:select aura:id="GenderNewPatient" name="GenderNewPatient" required="false" label="Gender"
+                                            value="{!v.NewPatientGender}">
+                                            <aura:iteration items="{!v.GenderNewPatientList}" var="item">
+                                                <option value="{!item.value}" selected="{!item.value == v.NewPatientGender}">
+                                                    {!item.item}   
+                                                </option>
+                                            </aura:iteration>
+                        			</lightning:select>
+                                
+                                <div>
+                                    <label for="dobnewpatient" class="slds-form-element__label">Date of Birth</label>
+                                    <lightning:input type="date" name="Date_Of_Birth_Patient__c" variant="label-hidden" label="Date of Birth"
+                                        value="{!v.NewPatientDOB}" />
+                        		</div>
+                                	<lightning:input name="NewPatientNationality" label="Nationality"
+                                        value="{!v.NewPatientNationality}" />
+                                	<lightning:input name="NewPatientCountry" label="Country of Residence"
+                                        value="{!v.NewPatientCountry}" />
+                                	<lightning:input name="NewPatientEmail" label="Email"
+                                        value="{!v.NewPatientEmail}" />
+                                	<lightning:input name="NewPatientPrimaryPhone" label="Primary Phone"
+                                        value="{!v.NewPatientPrimaryPhone}" />
+                                	<lightning:input name="NewPatientPreferLang" label="Preferred Language"
+                                        value="{!v.caseObj.Preferred_Language_Patient__c}" />
+                                	<lightning:input name="NewPatientIDCard" label="Thai ID Card Number"
+                                        value="{!v.caseObj.Thai_ID_Card_Number_Patient__c}" />
+                                	<lightning:input name="NewPatientPassportNumber" label="Passport Number"
+                                        value="{!v.caseObj.Passport_Number_Patient__c}" />
+                                    <lightning:input name="NewPatientMobileNumber" label="Mobile Number In Thailand"
+                                        value="{!v.caseObj.Mobile_Number_In_Thailand__c}" />
+                                    
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                    <p><b>Thai Mailing Address</b></p>
+                            	
+                        			<lightning:textarea name="address1" label="Address"
+                                        value="{!v.caseObj.Address_Thailand__c}" />
+									<lightning:input name="NewPatientsubdistrict" label="Town City"
+                                        value="{!v.caseObj.Sub_district_Thailand__c}" />
+                                <lightning:input name="NewPatientsubdistrict" label="District"
+                                        value="{!v.caseObj.District_Thailand__c}" />
+                        			<lightning:input name="NewPatientProvince" label="Province"
+                                        value="{!v.caseObj.State_Province_Thailand__c}" />
+                        			<lightning:input name="NewPatientPostcode" label="Postcode"
+                                        value="{!v.caseObj.Postcode_Thailand__c}" />
+                                    	<p><b>Foreign Mailing Address</b></p>
+                                	<lightning:textarea name="NewPatientAddressPOBox" label="Address / P.O. Box"
+                                        value="{!v.caseObj.Address_foreign__c}" />
+                                	<lightning:input name="NewPatientTownCity" label="Town / City"
+                                        value="{!v.caseObj.Town_City_foreign__c}" />
+                                	<lightning:input name="NewPatientState" label="State / Province"
+                                        value="{!v.caseObj.State_Province_foreign__c}" />
+                                	<lightning:input name="NewPatientPostcode" label="Postcode"
+                                        value="{!v.caseObj.Postcode_foreign__c}" />
+                        	</div>   
+                	</div>
+            <!--
             <aura:if isTrue="{!v.caseObj.Patient_Type__c == 'New patient'}">
             <h3 class="slds-section__title slds-theme_shade">	
                 <span class="slds-truncate slds-p-horizontal_small" title="Section Title">New Patient Preregistration Information
@@ -731,7 +816,7 @@
                             <div class="slds-col slds-size_10-of-12">
                                 	<lightning:select aura:id="TitleNewPatient" name="TitleNewPatient" required="false" label="Title"
                                             value="{!v.caseObj.Title_New_Patient__c}">
-                                            <option  value="" selected="">--None--</option>
+                                            <option  value="" selected="">None</option>
                                             <aura:iteration items="{!v.TitleNewPatientList}" var="item">
                                                 <option  value="{!item.item}" selected="">{!item.selected}
                                                     {!item.item}
@@ -769,8 +854,10 @@
                                         value="{!v.NewPatientPrimaryPhone}" />
                                 	<lightning:input name="NewPatientPreferLang" label="Preferred Language"
                                         value="{!v.caseObj.Preferred_Language_New_Patient__c}" />
-                                	
-                                	
+                                	<lightning:input name="NewPatientIDCard" label="Thai ID Card Number"
+                                        value="{!v.caseObj.Thai_ID_Card_Number_New_Patient__c}" />
+                                	<lightning:input name="NewPatientPassportNumber" label="Passport Number"
+                                        value="{!v.caseObj.Passport_Number_New_Patient__c}" />
                                 </div>
                             </div>
                             <div class="slds-col slds-size_1-of-2">
@@ -796,7 +883,8 @@
                         	</div>   
                 	</div>
             </aura:if>
-            
+		-->
+          <!--
             <aura:if isTrue="{!v.caseObj.Patient_Type__c == 'Existing patient'}">
             <h3 class="slds-section__title slds-theme_shade">	
                 <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Existing Patient Data Verification
@@ -807,7 +895,7 @@
                             <div class="slds-col slds-size_10-of-12">
                                 	<lightning:select aura:id="TitleExtPatient" name="TitleExtPatient" required="false" label="Title"
                                             value="{!v.caseObj.Title_Existing_Patient__c}">
-                                            <option  value="" selected="">--None--</option>
+                                            <option  value="" selected="">None</option>
                                             <aura:iteration items="{!v.TitleExtPatientList}" var="item">
                                                 <option  value="{!item.item}" selected="">{!item.selected}
                                                     {!item.item}
@@ -848,7 +936,8 @@
                                         value="{!v.caseObj.Preferred_Language_Existing_Patient__c}" />
                                 	<lightning:input name="ExtPatientPreferLang" label="Preferred Language"
                                         value="{!v.caseObj.Thai_ID_Card_Number_Exisiting_Patient__c}" />
-                                
+                                	<lightning:input name="ExtPatientIDCard" label="Thai ID Card Number"
+                                        value="{!v.caseObj.Thai_ID_Card_Number_New_Patient__c}" />
                                 	<lightning:input name="ExtPatientPassportNumber" label="Passport Number"
                                         value="{!v.caseObj.Passport_Number_Existing_Patient__c}" />
                                 </div>
@@ -876,7 +965,7 @@
                         	</div>   
                 	</div>
                 </aura:if>
-            
+            -->
             <!--
             <h3 class="slds-section__title slds-theme_shade">	
                 <span class="slds-truncate slds-p-horizontal_small" title="Section Title">At Home Payment Information</span>	

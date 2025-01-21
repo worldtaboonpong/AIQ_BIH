@@ -79,7 +79,7 @@ public class RequestStampFirstResponseMEteamTest {
             
             
             BatchStampFirstResponseMEteam obj = new BatchStampFirstResponseMEteam();
-        	//Database.executeBatch(obj);
+        	Database.executeBatch(obj);
             
             Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator2());
           }

@@ -19,7 +19,7 @@ public class BIH_AutoSendSurveySMS {
     
     public class SMSMessageRequest{
 		@AuraEnabled
-		public String Phone {get;set;}
+		public String mobilePhone {get;set;}
 		@AuraEnabled
 		public String message {get;set;}
 		@AuraEnabled
@@ -30,8 +30,6 @@ public class BIH_AutoSendSurveySMS {
 
     @future(callout=true)
     public static void calloutSendSms(string surveyInvitationid) {
-        //string messagesEng = 'Kindly complete your registration online with Bumrungrad International Hospital:'+'\n'+' https://bumrungrad.my.salesforce-sites.com/liveAgentSetupFlow/preregistration?id='+caseid +'\n'+'\n'+'Thank you and we look forward to serving you.'+'\n'+'Registration Department.'+'\n'+'\n'+'Please kindly discard this request, if you have already submitted the link.'+'\n'+'\n'+'Before your arrival, please read the attached registration documents for your consideration and convenience in providing services and medical care. Please click https://sforce.co/3bxQvGR';
-        //string messagesThai = 'กรุณากรอกแบบฟอร์มลงทะเบียนออนไลน์ของท่านกับโรงพยาบาลบำรุงราษฎร์ ผ่านช่องทางคลิก:'+'\n'+' https://bumrungrad.my.salesforce-sites.com/liveAgentSetupFlow/preregistration?id='+caseid +'&lang=th'+'\n'+'\n'+'ขอขอบคุณที่ไว้วางใจโรงพยาบาลบำรุงราษฎร์'+'\n'+'แผนกลงทะเบียน'+'\n'+'\n'+'ขออภัยหากท่านได้กรอกข้อมูลประวัติดังกล่าวกับทางโรงพยาบาลแล้ว'+'\n'+'\n'+'โปรดอ่านเอกสารประกอบการลงทะเบียนที่แนบมานี้ก่อนเข้ารับบริการ เพื่อประกอบการตัดสินใจของท่านและเพื่อความสะดวกรวดเร็วในการให้บริการและบริบาลแก่ท่าน กรุณาคลิก https://sforce.co/3no5tlg';
         string messages = '';
         string contactNumber = '';
         string patientnationality = '';
@@ -50,7 +48,7 @@ public class BIH_AutoSendSurveySMS {
         
         if(surveyInvitationObj.size() > 0){
             
-            contactNumber = surveyInvitationObj[0].Phone__c != ''? surveyInvitationObj[0].Phone__c : surveyInvitationObj[0].Phone__c;
+ 				contactNumber = surveyInvitationObj[0].Phone__c != ''? surveyInvitationObj[0].Phone__c : surveyInvitationObj[0].Phone__c;            
                 messages = messagesEng1;
             
            
@@ -62,7 +60,7 @@ public class BIH_AutoSendSurveySMS {
         HttpRequest req = new HttpRequest();
         SMS_Log__c logs = new SMS_Log__c();
 		logs.Contact__c = ContactObj[0].Id;
-		//body.mobilePhone = contactNumber;
+		body.mobilePhone = contactNumber;
 		logs.Contact_Number__c = contactNumber;
 		body.senderId = '0';
 		body.tag = 'U';

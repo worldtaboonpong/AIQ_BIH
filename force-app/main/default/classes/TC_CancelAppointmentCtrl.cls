@@ -7,17 +7,13 @@ public class TC_CancelAppointmentCtrl {
     }
 
     public static String appointmentCancelledCallout(String sfId, String tcId, Appointment__c appDetail) {
-        appDetail.Cancelled_By__c = Userinfo.getName();
-        appDetail.Cancelled_Date__c = Datetime.now().format('yyyy-MM-dd');
-        appDetail.Cancelled_Time__c = Datetime.now().format('HH:mm:ss');
-        
         String message = '';
         Map<String, Object> mapData = new Map<String, Object>();
         mapData.put('appointmentId', tcId);
         mapData.put('reasonForCancelCode', appDetail.Reason_for_Cancellation__c);
         mapData.put('reasonForCancelFreeText', appDetail.Free_Text_Reason_for_Cancellation__c);
         mapData.put('discontinueOrder', (appDetail.Discontinue_Orders__c == true ? '1' : '0'));
-        mapData.put('userName', appDetail.Cancelled_By__c);
+        mapData.put('userName', '');
         mapData.put('ipAddress', '');
         
         String dataJson = JSON.Serialize(mapData);

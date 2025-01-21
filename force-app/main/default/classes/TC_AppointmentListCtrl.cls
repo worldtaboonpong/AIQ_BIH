@@ -59,13 +59,13 @@ public class TC_AppointmentListCtrl {
                             appWrap.appDate = ((Datetime)sfapp.Appointment_Date__c).format('EEEE') +' '+ sfapp.Appointment_Date__c.format();
                             appWrap.appDateStr = sfapp.Appointment_Date__c.format();
                             appWrap.appTime = sfapp.Appointment_Time__c;
-                            appWrap.appStatus = (app.appointment.appStatus != sfapp.Appointment_Status__c ? app.appointment.appStatus : sfapp.Appointment_Status__c);
+                            appWrap.appStatus = sfapp.Appointment_Status__c;
                             appWrap.appNote = sfapp.Notes__c;
                             appWrap.patientLetterNotes = sfapp.Patient_Letter_Notes__c;
                             appWrap.appSource = 'SalesForce';
                             appWrap.appNonFixedTime = sfapp.Non_fixed_Time__c;
                             
-                            if (appWrap.appStatus == 'Cancelled') {
+                            if (sfapp.Appointment_Status__c == 'Cancelled') {
                                 cancelApps.add(appWrap);
                             } else if (sfapp.Appointment_Date__c < todayDate) {
                                 pastApps.add(appWrap);
@@ -169,8 +169,7 @@ public class TC_AppointmentListCtrl {
     public static void viewSfAppointment(String recordId) {
         List<Appointment__c> appointments = [
             SELECT Id, HN__c, Appointment_Id__c, Appointment_Status__c, Service__c, Service_Code__c, 
-            Notes__c, Patient_Letter_Notes__c, Interpreter_Required__c, Interpreter__c, Non_fixed_Time__c,
-            Reason_for_Cancellation__c, Free_Text_Reason_for_Cancellation__c, Cancelled_By__c, Cancelled_Date__c, Cancelled_Time__c
+            Notes__c, Patient_Letter_Notes__c, Interpreter_Required__c, Interpreter__c, Non_fixed_Time__c
             FROM Appointment__c WHERE Id = :recordId AND HN__c != null AND Appointment_Id__c != null
         ];
         if (appointments.size() > 0) {
@@ -216,8 +215,5 @@ public class TC_AppointmentListCtrl {
         @AuraEnabled public String patientLetterNotes;
         @AuraEnabled public String appSource;
         @AuraEnabled public String appNonFixedTime;
-        /*@AuraEnabled public String appReasonCancel;
-        @AuraEnabled public String appReasonCancelText;
-        @AuraEnabled public String appReasonCancelUser;*/
     }
 }

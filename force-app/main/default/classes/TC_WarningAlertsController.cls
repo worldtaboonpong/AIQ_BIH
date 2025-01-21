@@ -2,8 +2,7 @@ public class TC_WarningAlertsController {
 	@AuraEnabled
     public static Map<String, Object> getPatientDetails(Id recordId) {
         String message = '';
-        //List<String> iconPaths = new List<String>();
-        List<AlertWrapper> alerts = new List<AlertWrapper>();
+        List<String> iconPaths = new List<String>();
         
         try {
             String hnNumber = '';
@@ -27,12 +26,7 @@ public class TC_WarningAlertsController {
                     TC_PatientAlertParser paParser = TC_PatientAlertParser.parse(httpRes.getBody());
                     
                     for (TC_PatientAlertParser.cls_iconProfile iconPro: paParser.data.iconProfile) {
-                        //iconPaths.add(iconPro.patientDataIcon.iconPath.substringAfterLast('/'));
-                        
-                        AlertWrapper aw = new AlertWrapper();
-                        aw.iconPath = iconPro.patientDataIcon.iconPath.substringAfterLast('/');
-                        aw.iconAlert = iconPro.patientDataIcon.iconDescription;
-                        alerts.add(aw);
+                        iconPaths.add(iconPro.patientDataIcon.iconPath.substringAfterLast('/'));
                     }
                     
                     for (TC_PatientAlertParser.cls_patientAlert pAlert: paParser.data.patientAlert) {
@@ -60,13 +54,7 @@ public class TC_WarningAlertsController {
         
         Map<String, Object> mapObjects = new Map<String, Object>();
         mapObjects.put('Message', message);
-        mapObjects.put('IconPaths', alerts);
+        mapObjects.put('IconPaths', iconPaths);
         return mapObjects;
-    }
-    
-    //Alert Wrapper
-    public class AlertWrapper {
-        @AuraEnabled public String iconPath;
-        @AuraEnabled public String iconAlert;
     }
 }

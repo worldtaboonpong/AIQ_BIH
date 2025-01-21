@@ -1,0 +1,21 @@
+<template>
+    <div class="timeslot-container">
+        <template for:each={timeslots} for:item="slot">
+            <div key={slot} class="timeslot" onmouseover={handleMouseOver} onmouseout={handleMouseOut}>
+                {slot}
+            </div>
+        </template>
+
+        <!-- Pop-up section to display when hovering -->
+        <template if:true={hovered}>
+            <section role="dialog" class="slds-popover slds-popover_tooltip slds-nubbin_bottom">
+                <div class="slds-popover__body custom-popover-body">
+                    <div class="account-info">
+                        <p><strong>Name:</strong> {accountName}</p>
+                        <p><strong>HN:</strong> {accountHN}</p>
+                    </div>
+                </div>
+            </section>
+        </template>
+    </div>
+</template>

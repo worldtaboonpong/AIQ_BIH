@@ -30,10 +30,9 @@
                     //console.log('returnValues4 = ',returnValues.Account__r.Hospital_Number_HN__c);
                     
                     component.set('v.tmp_Hospital_Number_HN',returnValues.appmentList[0].hospitalNumber);
-                    //component.set('v.Salutation',returnValues.appmentList[0].salutation);
+                    component.set('v.Salutation',returnValues.appmentList[0].salutation);
                     component.set('v.Name',returnValues.appmentList[0].name); 
-                    //var varfull = returnValues.appmentList[0].salutation + ' ' +returnValues.appmentList[0].name;
-                    var varfull = returnValues.appmentList[0].name;
+                    var varfull = returnValues.appmentList[0].salutation + ' ' +returnValues.appmentList[0].name;
                     component.set('v.fullname',varfull); 
                     
                  
@@ -108,7 +107,7 @@
 						console.log('focusedParentTabId :', focusedParentTabId);
 						workspaceAPI.openSubtab({
 							parentTabId: focusedParentTabId,
-							url: '/apex/AppointmentCard?Id=' + returnValues.Id + '&isCopy=false',
+							url: '/apex/Card?Id=' + returnValues.Id + '&isCopy=false',
 							focus: true
 						}).then(function (res2) {
 							console.log('subtab id : ',res2);

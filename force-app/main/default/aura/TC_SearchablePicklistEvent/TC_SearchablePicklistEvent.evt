@@ -1,0 +1,4 @@
+<aura:event type="Component">
+    <aura:attribute name="fieldLabel" type="String"/>
+    <aura:attribute name="selectedValue" type="String"/>
+</aura:event>

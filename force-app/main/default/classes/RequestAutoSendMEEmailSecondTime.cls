@@ -8,7 +8,6 @@ public class RequestAutoSendMEEmailSecondTime implements Queueable{
             //Follow_Up_Start_Time__c  <    : datetime.now().addMinutes(-2)
             //where 
             //ME_Follow_Up_Start_Time__c  <    : datetime.now().addMinutes(-5)
-            and CreatedDate >2023-10-10T19:22:36.584+07:00                               
             and Status = 'Closed'
             and ( Close_Case_Reason__c = 'NMI' or Close_Case_Reason__c = 'DR/NMI')
             and ME_Follow_Up_Start_Time__c   != null

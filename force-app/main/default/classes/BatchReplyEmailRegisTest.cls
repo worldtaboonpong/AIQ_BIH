@@ -6,7 +6,7 @@ public class BatchReplyEmailRegisTest {
         system.schedule('StampReplyEmailRegis 1 day 11',  '0 1 * * * ?', pp);
 
         BatchReplyEmailRegis obj = new BatchReplyEmailRegis();
-        //Database.executeBatch(obj);
+        Database.executeBatch(obj);
     }
 
 }

@@ -46,7 +46,7 @@
     <div class="slds-m-bottom_small slds-page-header">
         <div class="slds-grid slds-gutters">
             <div class="{!if(v.IsMinor, 'slds-col slds-size_1-of-12', 'slds-hide')}">
-                <!--c:TC_WarningAlerts recordId="{!v.recordId}" /-->
+                <c:TC_WarningAlerts recordId="{!v.recordId}" />
                 <aura:if isTrue="{!v.IsMinor}">
                     <lightning:button variant="destructive" label="Minor"/>
                 </aura:if>

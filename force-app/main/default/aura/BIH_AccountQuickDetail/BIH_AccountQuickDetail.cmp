@@ -270,7 +270,7 @@
                                         </p>
                                     </div>
                                 </aura:if>
-                                   
+                                <!--c:TC_WarningAlerts selectedCase="{!v.recordId}" /-->   
                             </div>
                         </div>
                     

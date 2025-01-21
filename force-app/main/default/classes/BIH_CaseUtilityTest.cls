@@ -58,9 +58,6 @@ public class BIH_CaseUtilityTest {
         BIH_CaseUtility.getBtnConfig();
         BIH_CaseUtility.getisPreRegis(c.id);
      	BIH_CaseUtility.getUserSessionId();
-        BIH_CaseUtility.getisPC(c.id);
-        BIH_CaseUtility.closeCaseByMyselfAction(c.id);
-        BIH_CaseUtility.closeCaseSuppotAction(c.id);    
 
         
         //BIH_CaseUtility.getPickListValuesCloseCaseReason('Case',c.recordTypeId,'Close_Case_Reason__c');
@@ -82,8 +79,7 @@ public class BIH_CaseUtilityTest {
         Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator2());
         
 		BIH_CaseUtility.getPickListValuesCaseStatus(REGISTRATION_CASE_RECORDTYPE);
-        BIH_CaseUtility.getBtnConfig();
-        system.debug('a'+REGISTRATION_CASE_RECORDTYPE);
+        
         Test.stopTest();
     }
     
@@ -95,7 +91,6 @@ public class BIH_CaseUtilityTest {
         Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator2());
         
 		BIH_CaseUtility.getPickListValuesCloseCaseReason('Case',REGISTRATION_CASE_RECORDTYPE,'Close_Case_Reason__c');
-        
         
         Test.stopTest();
     }
@@ -224,9 +219,9 @@ public class BIH_CaseUtilityTest {
         
         // Map<String,Mapping_Email_To_Team_Set__c> mapEmailToTeam = new Map<String,Mapping_Email_To_Team_Set__c>();
         update casesList;
-        //BIH_CloneEmailFromClosedCase cloneemail = new BIH_CloneEmailFromClosedCase(testSet);
+        BIH_CloneEmailFromClosedCase cloneemail = new BIH_CloneEmailFromClosedCase(testSet);
         // cloneemail.mapEmailToTeam;
-        //Database.executeBatch(cloneemail);
+        Database.executeBatch(cloneemail);
         // RestRequest req = new RestRequest();
         // RestResponse res = new RestResponse();
         // req.requestURI = '/services/apexrest/BIH_WebToCaseService';  //Request URL
@@ -299,21 +294,21 @@ public class BIH_CaseUtilityTest {
     public static void positiveTestLiveChatTranscript(){
         Test.startTest();
         List<Case> casesList = BIH_TestUtils.createCases(1 ,'Urgent Book Appointment DOB: 01/12/1990 HN: 098765432','Appointment','Email', true);
-        //LiveChatTranscript script = new LiveChatTranscript();
-        //LiveChatVisitor visitor = new LiveChatVisitor();
+        LiveChatTranscript script = new LiveChatTranscript();
+        LiveChatVisitor visitor = new LiveChatVisitor();
         // visitor.SessionKey = 'TEST';
-        //insert visitor;
+        insert visitor;
         // Group groups = new Group();
         // groups.Name = 'Individual Team Case';
         // groups.DeveloperName = 'Individual_Team_Case';
         // groups.Type = 'Queue';
         // upsert groups;
-        //script.status = 'Completed';
-        //script.LiveChatVisitorId = visitor.Id;
-        //insert script;
-       // script.status = 'Missed';
-        //script.CaseId = casesList.get(0).Id;
-        //update script;
+        script.status = 'Completed';
+        script.LiveChatVisitorId = visitor.Id;
+        insert script;
+        script.status = 'Missed';
+        script.CaseId = casesList.get(0).Id;
+        update script;
         Test.stopTest();
     }
    

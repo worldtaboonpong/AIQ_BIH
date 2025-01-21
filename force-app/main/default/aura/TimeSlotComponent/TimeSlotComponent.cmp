@@ -1,0 +1,38 @@
+<aura:component controller="TimeSlotController" implements="force:appHostable,flexipage:availableForAllPageTypes" access="global">
+    
+    <!-- Attributes -->
+    <aura:attribute name="timeSlots" type="List" />
+    <aura:attribute name="patientInfo" type="Object" />
+    <aura:attribute name="sessionDetails" type="Object" />
+    <aura:attribute name="selectedTime" type="String" />
+
+    <!-- Session Details -->
+    <div>
+        <p>Session: {!v.sessionDetails.start} - {!v.sessionDetails.end}</p>
+        <p class="description">{!v.sessionDetails.description}</p>
+    </div>
+
+    <!-- Time Slots Grid -->
+    <div class="time-slots-grid">
+        <aura:iteration items="{!v.timeSlots}" var="slot">
+            <div class="{!'time-slot ' + (slot.available ? (slot.selected ? 'selected' : 'available') : 'not-available')}" 
+     onclick="{!c.handleSlotClick}"
+     data-time="{!slot.time}">
+    {!slot.time}
+</div>
+
+        </aura:iteration>
+    </div>
+
+    <!-- Patient Information -->
+    <div class="patient-info">
+        <p>Patient: {!v.patientInfo.name}</p>
+        <p>HN: {!v.patientInfo.hn}</p>
+    </div>
+
+    <!-- Review Button -->
+    <div class="review-button">
+        <lightning:button label="Review" onclick="{!c.handleReviewClick}" />
+    </div>
+    
+</aura:component>

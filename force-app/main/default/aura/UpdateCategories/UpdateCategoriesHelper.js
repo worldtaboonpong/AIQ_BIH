@@ -19,8 +19,8 @@
        helper.startSpinner(component);
         var recordCaseId = component.get('v.recordId');
         var getRecordTypeId = component.get("v.recordTypeId");
-        //console.log('recordId : ', recordCaseId);
-        //console.log('getRecordTypeId: ', getRecordTypeId);
+        console.log('recordId : ', recordCaseId);
+        console.log('getRecordTypeId: ', getRecordTypeId);
         var actionPromise = new Promise(function (resolve, reject) {
             
             var action = component.get('c.getPickListValueWrapper');
@@ -105,7 +105,7 @@
         });
         actionPromise.then(
             function (res) {
-                //console.log("actionPromise");
+                console.log("actionPromise");
                 // if (recordCaseId != undefined && recordCaseId != null) {
                 var action = component.get("c.getCaseAndPatientInformation");
                 action.setParams({
@@ -115,11 +115,11 @@
                     var state = response.getState();
                     if (state === "SUCCESS") {
                         var returnValues = response.getReturnValue();
-                        /*console.log(':::::::::::::: Method c.getCaseAndPatientInformation ::::::::::::::');
+                        console.log(':::::::::::::: Method c.getCaseAndPatientInformation ::::::::::::::');
                         console.log('pickListValueWrapper : ', res);
-                        console.log('CaseAndPatientInformationWrapper : ', returnValues);*/
+                        console.log('CaseAndPatientInformationWrapper : ', returnValues);
                         if (recordCaseId != undefined && recordCaseId != null) {
-                            //console.log(' recordCaseId null');
+                            console.log(' recordCaseId null');
                             setTimeout(() => {
                                 
                                 var cmp = component
@@ -133,7 +133,7 @@
                                 empApi.onError($A.getCallback(error => {
                                 // Error can be any type of error 
                                 // (subscribe, unsubscribe...)
-                                //console.error('EMP API error: ', JSON.stringify(error));
+                                console.error('EMP API error: ', JSON.stringify(error));
                             }));
                             
                             
@@ -145,7 +145,7 @@
                             // Subscribe to an event
                             empApi.subscribe(channel, replayId, $A.getCallback(eventReceived => {
                                 // Process event (this is called each time we receive an event)
-                                //console.log('Received event ', JSON.stringify(eventReceived));
+                                console.log('Received event ', JSON.stringify(eventReceived));
                                 
                                 // console.log(eventReceived.data.payload.Case_Id__c);
                                 
@@ -213,7 +213,7 @@
                         if (res.recordTypeMap[returnValues.CaseObject.RecordTypeId] == 'Airport Transfer Case') {
                         component.set('v.isAirportTransferRecordType', true);
                         component.set('v.isRequiredSenderEmail', false);
-                        //console.log(' returnValues.CaseObject.Airport_Rep_Name__c' + returnValues.CaseObject.Airport_Rep_Name__c);
+                        console.log(' returnValues.CaseObject.Airport_Rep_Name__c' + returnValues.CaseObject.Airport_Rep_Name__c);
                         if (returnValues.CaseObject.Airport_Rep_Name__c != null) {
                         var airportRepName = returnValues.CaseObject.Airport_Rep_Name__c.split(";");
                         component.set('v.defaultRepOptions', airportRepName);
@@ -277,7 +277,7 @@
                           
                           if(component.get('v.caseObj.App_Time__c') != undefined && component.get('v.caseObj.App_Time__c') != '' || component.get('v.caseObj.App_Time__c') == 0){
                         
-                        //console.log('=================apptem jaaa');
+                        console.log('=================apptem jaaa');
                         
                         var dateObj = new Date(component.get('v.caseObj.App_Time__c')); 
                         // Get hours from the timestamp 
@@ -307,18 +307,18 @@
                 }, 50);
                 
                 setTimeout(() => {
-                    //console.log(' %%%%%%%%');
+                    console.log(' %%%%%%%%');
                     component.set('v.caseObj', returnValues.CaseObject);
-                    //console.log(' %%%%%%%%');
+                    console.log(' %%%%%%%%');
                     //component.set('v.isCampaignLoading',false);
                     helper.stopSpinner(component);
                 }, 50);
                     
                     
                 } else {
-                    //console.log('else RecordTypeId : ', getRecordTypeId);
+                    console.log('else RecordTypeId : ', getRecordTypeId);
                     
-                    //console.log(' recordCaseId null');
+                    console.log(' recordCaseId null');
                     component.set('v.caseObj.Channel__c', "Contact Center");
                     component.set('v.caseObj.Status', "New");
                     component.set('v.caseObj.Priority', "High");
@@ -327,11 +327,11 @@
                     component.set('v.caseObj.RecordTypeId', component.get('v.recordTypeId'));
                     //     console.log('OwnerObj : ', component.get('v.OwnerObj'));
                     var thisOwner = component.get('v.OwnerObj');
-                    //console.log('thisOwner : ', thisOwner);
+                    console.log('thisOwner : ', thisOwner);
                     if (thisOwner != null) {
                     if (thisOwner.Id.startsWith("003")){
                     component.set('v.patientNameValue', null);
-                    //console.log('TESTTTTT: ',component.get('v.senderNameValue'));
+                    console.log('TESTTTTT: ',component.get('v.senderNameValue'));
                     if (component.get('v.senderNameValue').Id == null || component.get('v.senderNameValue').Id == ''){
                     component.set('v.senderNameValue', null);
                 }

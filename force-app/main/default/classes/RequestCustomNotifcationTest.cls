@@ -7,7 +7,7 @@ public with sharing class RequestCustomNotifcationTest {
         system.schedule('Notify Case Over 1 day 11',  '0 1 * * * ?', pp);
 
         BatchCaseNotify obj = new BatchCaseNotify();
-        //Database.executeBatch(obj);
+        Database.executeBatch(obj);
 
         /*
         List<String> userid = new List<String>();

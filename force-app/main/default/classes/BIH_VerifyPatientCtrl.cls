@@ -60,7 +60,7 @@ public without sharing class BIH_VerifyPatientCtrl {
         try{
             if(pInfo!=null){
             
-            List<Account> accObj = [SELECT Id,Note__c, Name,LastName,Email2__c,Hospital_Number_HN__c,PersonEmail, PersonBirthdate,Gender__c,RecordTypeId ,RO_Expiry_Date__c,Country__c,RecordType.DeveloperName FROM Account WHERE Hospital_Number_HN__c=:pInfo.hn ORDER BY LastModifiedDate DESC];
+            List<Account> accObj = [SELECT Id,Note__c, Name,LastName,Personal_Email_2__c,Hospital_Number_HN__c,PersonEmail, PersonBirthdate,Gender__c,RecordTypeId ,RO_Expiry_Date__c,Country__c,RecordType.DeveloperName FROM Account WHERE Hospital_Number_HN__c=:pInfo.hn ORDER BY LastModifiedDate DESC];
             System.debug('accObj : '+accObj.size());
             System.debug('accObj : '+accObj);
             if(accObj.size() > 0){

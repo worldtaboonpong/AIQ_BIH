@@ -26,7 +26,7 @@
                 component.set("v.locations", finalRes.Locations);
 				component.set("v.specialties", finalRes.Specialties);
                 component.set("v.subSpecialties", finalRes.SubSpecialties);
-                component.set("v.resources", finalRes.Resources);                
+                component.set("v.resources", finalRes.Resources);
                 component.set("v.selDate", finalRes.SelDate);
                 component.set("v.startTimes", finalRes.StartTimes);
                 component.set("v.endTimes", finalRes.EndTimes);
@@ -36,7 +36,7 @@
         });
         $A.enqueueAction(action);
     },
-    
+
     jsFindDoctorAndSchedules: function(component, event, helper) {
         var action = component.get("c.findDoctorAndSchedules");
         action.setParams({
@@ -59,7 +59,7 @@
         });
         $A.enqueueAction(action);
     },
-    
+
     jsFindDoctorTimeSlot: function(component, event, helper) {
         var action = component.get("c.getDoctorTimeSlots");
         action.setParams({
@@ -72,9 +72,10 @@
             var state = result.getState();
             if (component.isValid() && state === "SUCCESS") {
                 var finalRes = result.getReturnValue();
+				console.log('finalRes: ' + JSON.stringify(finalRes))
                 component.set("v.selScheduleDoctor", finalRes.SelScheduleDoctor);
                 component.set("v.doctorSessions", finalRes.DoctorSessions);
-                
+
                 //component.set("v.sessionTimeInterval", finalRes.SessionTimeInterval);
                 //component.set("v.sessionDescription", finalRes.SessionDescription);
                 //component.set("v.sessionServices", finalRes.SessionServices);
@@ -83,7 +84,7 @@
         });
         $A.enqueueAction(action);
     },
-    
+
     jsReview: function(component, event, helper) {
         var action = component.get("c.reviewAppointment");
         action.setParams({
@@ -102,10 +103,10 @@
         });
         $A.enqueueAction(action);
     },
-    
+
     jsBook: function(component, event, helper) {
         var bookingVar = component.get("v.appointmentRec");
-        
+
         if (bookingVar.Case__c == null) {
             helper.displayToast("Appointment Booking", "Please select Related Case.", "error");
         } else if (bookingVar.Interpreter_Required__c == true && bookingVar.Interpreter__c == null) {
@@ -133,9 +134,9 @@
                         component.set("v.appointmentRec.Interpreter__c", '');
                         component.set("v.appointmentRec.Notes__c", '');
                         component.set("v.appointmentRec.Patient_Letter_Notes__c", '');
-                        
+
                         helper.displayToast("Appointment Booking", "Appointment successfully booked.", "success");
-                        
+
                         var navEvt = $A.get("e.force:navigateToSObject");
                         navEvt.setParams({
                             "recordId": finalRes,
@@ -148,22 +149,22 @@
             $A.enqueueAction(action);
         }
     },
-    
+
     jsAddTime: function (component, event, helper, time, min){
         let times = time.split(":");
         //clear here more than 24 hours
         min=min%(24*60);
         times[0]=(parseInt(times[0]))+parseInt(min/60) ;
         times[1]=parseInt(times[1])+min%60;
-        
+
         //here control if hour and minutes reach max
         if(times[1]>=60) { times[1]=0 ;times[0]++} ;
         times[0]>=24 ?  times[0]-=24  :null;
-        
+
         //here control if less than 10 then put 0 frond them
         times[0]<10 ? times[0]= "0" + times[0] : null ;
         times[1]<10 ? times[1]= "0" + times[1] : null ;
-        
+
         component.set("v.appointmentRec.End_Time__c", times.join(":"));
     },
 

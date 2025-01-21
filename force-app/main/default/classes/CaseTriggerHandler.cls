@@ -20,8 +20,10 @@ static final Decimal MINIMUM_SLA = 240;
     }set;}
 
     public static Id CASE_PRIMARY_RECORD_ID {get{
+        system.debug('+++++++++++-----0');
         if(CASE_PRIMARY_RECORD_ID==null){
             CASE_PRIMARY_RECORD_ID = [select Id from RecordType where (DeveloperName='Primary_Case') and (SobjectType='Case')].Id;
+            system.debug('+++++++++++-----0.1'+CASE_PRIMARY_RECORD_ID);
         }
         return CASE_PRIMARY_RECORD_ID;
     }set;}
@@ -43,6 +45,7 @@ static final Decimal MINIMUM_SLA = 240;
     public static Map<Id,User> mapUser {get{
         if(mapUser==null){
             mapUser = new Map<Id,User>([select ID, Name,User_Team__c from user where IsActive = true]);
+            system.debug('+++++++++++-----0.2'+mapUser);
         }
         return mapUser;
     }set;}
@@ -50,6 +53,7 @@ static final Decimal MINIMUM_SLA = 240;
     public static Map<Id,Group> mapQueue {get{
         if(mapQueue==null){
             mapQueue = new Map<Id,Group>([Select ID, DeveloperName, Name  from Group where Type = 'Queue']);
+            system.debug('+++++++++++-----0.3'+mapQueue);
         }
         return mapQueue;
     }set;}
@@ -57,15 +61,18 @@ static final Decimal MINIMUM_SLA = 240;
     public static List<Mapping_Channel_with_User_Team__mdt> mappingChannelList {get{
         if(mappingChannelList==null){
             mappingChannelList = new List<Mapping_Channel_with_User_Team__mdt>([SELECT Id, Owner_Type__c, Channel__c, Queue_Name__c, User_Team__c,Record_Type_Name__c FROM Mapping_Channel_with_User_Team__mdt]);
+        	system.debug('+++++++++++-----1'+mappingChannelList);
         }
         return mappingChannelList;
     }set;}
 
     public static Map<String,RecordType> recordTypeMap  {get{
+        system.debug('+++++++++++-----1.1recordTypeMap'+recordTypeMap);
         if(recordTypeMap==null){
             recordTypeMap = new Map<String,RecordType>();
             for (RecordType mapRecord :[SELECT Id, DeveloperName, Name FROM RecordType]){
                 recordTypeMap.put(mapRecord.DeveloperName, mapRecord);
+                system.debug('+++++++++++-----2'+recordTypeMap.put(mapRecord.DeveloperName, mapRecord));
             }
 
             
@@ -74,79 +81,54 @@ static final Decimal MINIMUM_SLA = 240;
     }set;}
 
     public static void handleBeforeInsert(List<Case> caseList) {
-        System.debug(' ****** handleBeforeInsert');
-        System.debug(' ****** 1 Case.owner id -> '+caseList[0].ownerid);
-        System.debug(' ****** 1 Case.owner name -> '+caseList[0].owner.name);
-        System.debug(' ****** 1 Case.Record Type name -> '+caseList[0].recordtypeId);
-        System.debug(' ****** 1 Case. Category1 -> '+caseList[0].case_category_level1__c);
-        
+		system.debug('+++++++++++-----1.2handleBeforeInsert');
         Map<Id, Case> newMap = new Map<Id, Case>();
     
         searchCategoryByKeyword(caseList);
-        System.debug(' ****** 2 Case.owner id -> '+caseList[0].ownerid);
-        System.debug(' ****** 2 Case.owner name -> '+caseList[0].owner.name);
-        System.debug(' ****** 2 Case.Record Type name -> '+caseList[0].recordtypeId);
-        System.debug(' ****** 2 Case. Category1 -> '+caseList[0].case_category_level1__c);
         searchSenderByEmail(caseList);
-        System.debug(' ****** 3 Case.owner id -> '+caseList[0].ownerid);
-        System.debug(' ****** 3 Case.owner name -> '+caseList[0].owner.name);
-        System.debug(' ****** 3 Case.Record Type name -> '+caseList[0].recordtypeId);
-        System.debug(' ****** 3 Case. Category1 -> '+caseList[0].case_category_level1__c);
         stampSLAFromServiceTypeMatrix(caseList);
-        System.debug(' ****** 4 Case.owner id -> '+caseList[0].ownerid);
-        System.debug(' ****** 4 Case.owner name -> '+caseList[0].owner.name);
-        System.debug(' ****** 4 Case.Record Type name -> '+caseList[0].recordtypeId);
-        System.debug(' ****** 4 Case. Category1 -> '+caseList[0].case_category_level1__c);
         
         //default case 
         for(Case c : caseList){
             newMap.put(c.id,c);
             if(c.case_detail__c == null && c.origin.contains('Email')){
                 c.case_detail__c = System.Label.Case_Detail_Default;
+                system.debug('+++++++++++-----3');
             }else if(c.case_detail__c == null){
                 c.case_detail__c = 'N/A';
+                system.debug('+++++++++++-----4');
             }
     
             if(c.subject != null && c.subject.contains(system.label.Walk_In_Subject_Default) && c.walk_in__c){
                 Date d = System.today();
                 string createdateStr = DateTime.newInstance(d.year(),d.month(),d.day()).format('dd-MMM-yyyy');
                 c.subject += ' '+c.Case_Category_Level1__c+' ('+createdateStr+')';
+                system.debug('+++++++++++-----5');
             }
     
         }
-    	System.debug(' ****** 5 Case.owner id -> '+caseList[0].ownerid);
-        System.debug(' ****** 5 Case.owner name -> '+caseList[0].owner.name);
-        System.debug(' ****** 5 Case.Record Type name -> '+caseList[0].recordtypeId);
-        System.debug(' ****** 5 Case. Category1 -> '+caseList[0].case_category_level1__c);
+    
         updateCaseContactInformation(caseList);
         updateChannelInfo(null,newMap);
-    	System.debug(' ****** 6 Case.owner id -> '+caseList[0].ownerid);
-        System.debug(' ****** 6 Case.owner name -> '+caseList[0].owner.name);
-        System.debug(' ****** 6 Case.Record Type name -> '+caseList[0].recordtypeId);
-        System.debug(' ****** 6 Case. Category1 -> '+caseList[0].case_category_level1__c);
+    
         //default case cc channel
         for(Case c : caseList){
-
+    
             //Default Contact Center Channnel = Outbound
             if(c.origin != null && c.origin.contains('Email') && c.channel__c == 'Contact Center'){
                 c.Contact_Center_Channel__c = System.Label.Contact_Center_Channel_Outbound;
-            }
-
-            //Check voice mail subject => 'Message from Unknown sender'
-            if( c.Contact_Center_Channel__c == null && 
-                c.origin.contains('Phone VoiceMail') && c.channel__c == 'Contact Center' ){
-               //Set cc channel => 'Voice Mail'
-                c.Contact_Center_Channel__c = System.Label.Contact_Center_Channel_Voice_Mail;
-                c.Origin = 'Phone'   ; 
+                system.debug('+++++++++++-----6');
             }
     
-            
-    	System.debug(' ****** 7 Case.owner id -> '+c.ownerid);
-        System.debug(' ****** 7 Case.owner name -> '+c.owner.name);
-        System.debug(' ****** 7 Case.Record Type name -> '+c.recordtypeId);
-        System.debug(' ****** 7 Case. Category1 -> '+c.case_category_level1__c);
+            //Check voice mail subject => 'Message from Unknown sender'
+            if(c.subject != null && c.subject.containsIgnoreCase(System.Label.Voice_Mail_English) && 
+                c.origin.contains('Phone') && c.channel__c == 'Contact Center'){
+                //Set cc channel => 'Voice Mail'
+                c.Contact_Center_Channel__c = System.Label.Contact_Center_Channel_Voice_Mail;
+                    system.debug('+++++++++++-----7');
+            }
+    
         }
-        
         
         //IIG Fixed SOQL 101
         //Editor: Siwapongsakorn D.
@@ -165,7 +147,8 @@ static final Decimal MINIMUM_SLA = 240;
         Set<String> mCaseSourceIdSet = new Set<String>();
         for (Case mCaseItem : caseList) 
         {
-            mCaseSourceIdSet.add(mCaseItem.SourceId);   
+            mCaseSourceIdSet.add(mCaseItem.SourceId); 
+            system.debug('+++++++++++-----8');
         }
         
         if(mCaseSourceIdSet.size() > 0)
@@ -179,11 +162,8 @@ static final Decimal MINIMUM_SLA = 240;
                 if(mSubject != '' && mSubject != null) 
                 {
                     mCaseItem.Subject = mSubject;
-                } 
-                System.debug(' ****** 8 Case.owner id -> '+mCaseItem.ownerid);
-        		System.debug(' ****** 8 Case.owner name -> '+mCaseItem.owner.name);
-                System.debug(' ****** 8 Case.Record Type name -> '+mCaseItem.recordtypeId);
-                System.debug(' ****** 8 Case. Category1 -> '+mCaseItem.case_category_level1__c);
+                    system.debug('+++++++++++-----9');
+                }  
             }
         }
        /** End Fix SOQL 101 **/
@@ -191,8 +171,7 @@ static final Decimal MINIMUM_SLA = 240;
     }
     
     public static void handleBeforeUpdate(Map<Id, Case> oldMap, Map<Id, Case> newMap) {
-        
-        System.debug(' ++++++++ handleBeforeUpdate ');
+        system.debug('+++++++++++-----handleBeforeUpdate-10');
         String debugMsg = '';
         debugMsg = '';
         debugMsg+='Auto close related case when parent is closed.';
@@ -207,6 +186,7 @@ static final Decimal MINIMUM_SLA = 240;
 
         Map<String,Group>  mapQueueName = new Map<String,Group>();
         if(mapQueue.size() > 0){
+            system.debug('+++++++++++-----11');
             for(Group g : mapQueue.values()){
                 mapQueueName.put(g.DeveloperName, g);                    
             }
@@ -220,28 +200,24 @@ static final Decimal MINIMUM_SLA = 240;
         List<Case> caseCancelAppointmentList = new List<Case>();
 
         for(Case c : newMap.values()){
+        system.debug('+++++++++++-----12');
         caseIdSet.add(c.Id);
-            
-       // Added by Salesforce Support
-        if(c.Status =='Closed' && (c.Close_Case_Reason__c == '' ||c.Close_Case_Reason__c == null)  && c.recordTypeId == '0122u000000PEiDAAW')
-        {
-        
-            c.Close_Case_Reason__c = 'Completed by myself';
-        }
-        // End of Support Code
-        
-        if(c.Cancellation_Appointment__c && c.Status =='Closed' && c.channel__c == 'Contact Center'){
-            caseCancelAppointmentList.add(c);
-        }
+
+        	if(c.Cancellation_Appointment__c && c.Status =='Closed' && c.channel__c == 'Contact Center'){
+            	caseCancelAppointmentList.add(c);
+            	system.debug('+++++++++++-----13');
+        	}
+
             //auto stamp user and clear pending
             if(c.Status == 'Closed' && c.Status != oldMap.get(c.id).Status) {
                 c.OwnerId = UserInfo.getUserId();
+                system.debug('+++++++++++-----14');
                 if(c.Pending_team__c != null || c.Pending_Reason__c != null || c.Pending_Person__c != null ||
                     c.Doctor__c != null || c.Specialty_Doctor__c != null || c.Specialty_Doctor2__c != null){
                     c.Pending_team__c       = null;
-                    //comment by my 10-12-2024 for testing report leave pending reason when close the case    
-                    //c.Pending_Reason__c     = null;
+                    c.Pending_Reason__c     = null;
                     c.Pending_Person__c     = null;
+                        system.debug('+++++++++++-----15');
                     // c.Doctor__c             = null;
                     // c.Specialty_Doctor__c   = null;
                     // c.Specialty_Doctor2__c  = null;
@@ -252,40 +228,32 @@ static final Decimal MINIMUM_SLA = 240;
                 oldMap.get(c.Id).Case_Category_Level2__c != c.Case_Category_Level2__c || 
                 oldMap.get(c.Id).Case_Category_Level3__c != c.Case_Category_Level3__c){
                 caseChangeSLA.add(c);
+                    system.debug('+++++++++++-----16');
             }
-            System.debug(' ++++++++ 1 newMap handleBeforeUpdate ownerid  '+c.owner.id);
-            System.debug(' ++++++++ 1 newMap handleBeforeUpdate ownername  '+c.owner.name);
-            System.debug(' ++++++++ 1 newMap handleBeforeUpdate Category  '+c.Case_Category_Level1__c);
         }
         
         if(caseChangeSLA.size() > 0){
             stampSLAFromServiceTypeMatrix(caseChangeSLA);
-            
+            system.debug('+++++++++++-----17');
         }
         
 
         for (ID caseID : newMap.keySet()) {
             Case newCase = newMap.get(caseID);
             Case oldCase = oldMap.get(caseID);
-            
-            System.debug(' ++++++++ 2 newMap handleBeforeUpdate ownerid  '+newCase.owner.id);
-            System.debug(' ++++++++ 2 newMap handleBeforeUpdate ownername  '+newCase.owner.name);
-			System.debug(' ++++++++ 2 newMap handleBeforeUpdate recordtypename  '+newCase.recordtypeId);
-            System.debug(' ++++++++ 2 newMap handleBeforeUpdate Category  '+newCase.Case_Category_Level1__c);
-            System.debug(' ++++++++ 2 oldMap handleBeforeUpdate ownerid  '+oldCase.owner.id);
-            System.debug(' ++++++++ 2 oldMap handleBeforeUpdate ownername  '+oldCase.owner.name);
-            System.debug(' ++++++++ 2 oldMap handleBeforeUpdate recordtypename  '+newCase.recordtypeId);   
-            System.debug(' ++++++++ 2 oldMap handleBeforeUpdate Category  '+newCase.Case_Category_Level1__c);
+            system.debug('+++++++++++-----18');
 
             //Default status case to 'New' when change owner to Airport transfer Queue
             if ((newCase.OwnerId != oldCase.OwnerId) && (newCase.status != 'New') 
                 && (newCase.OwnerId == mapQueueName.get('Airport_Transfer_Team').id)){
                     newCase.status = 'New';
+                    system.debug('+++++++++++-----19');
             }
 
             //stamp channel when owner is changed 
             if (newCase.OwnerId != oldCase.OwnerId){
                 updateChannelInfo(oldMap,newMap);
+                system.debug('+++++++++++-----20');
             }
         }
 
@@ -294,10 +262,12 @@ static final Decimal MINIMUM_SLA = 240;
         //****Close Case Logic****//
 
         if(caseCancelAppointmentList.size() > 0){
+            system.debug('+++++++++++-----21');
             //check follow up steps before close case cancellation appointment 
             Set<Id> caseCancelID = new Set<Id>();
             for(Case cancelAppCase : caseCancelAppointmentList){
                 caseCancelID.add(cancelAppCase.id);
+                system.debug('+++++++++++-----22');
             }
 
             List<Follow_Up_Step__c> followUpSteplst = [SELECT Id, Step_Status__c, Phone_SMS_Email__c, 
@@ -306,9 +276,11 @@ static final Decimal MINIMUM_SLA = 240;
                                                 where Case__c in: caseCancelID
                                                 order by createddate desc];
             if(followUpSteplst.size() > 0){
+                system.debug('+++++++++++-----23');
                 boolean isSuccess = false;
                 Map<ID,Boolean> caseFollowup = new Map<ID,Boolean> ();
                 for(Follow_Up_Step__c fus : followUpSteplst){
+                    system.debug('+++++++++++-----24');
                     //check current follow up step is completed.
                     if(fus.Step__c == 'Call 3' && (fus.Step_Status__c == 'Success' || fus.Step_Status__c == 'Unsuccess')){
                         isSuccess = true;
@@ -328,9 +300,6 @@ static final Decimal MINIMUM_SLA = 240;
                         if(caseFollowup.get(cancelAppCase.id)!=null && !caseFollowup.get(cancelAppCase.id)){
                             cancelAppCase.addError(System.Label.Closed_Case_Follow_Up_Steps);
                         }
-                        System.debug(' ++++++++ 3 newMap handleBeforeUpdate ownerid  '+cancelAppCase.owner.id);
-            			System.debug(' ++++++++ 3 newMap handleBeforeUpdate ownername  '+cancelAppCase.owner.name);
-                        System.debug(' ++++++++ 3 newMap handleBeforeUpdate Category  '+cancelAppCase.Case_Category_Level1__c);
                     }
                 }
             }
@@ -339,10 +308,6 @@ static final Decimal MINIMUM_SLA = 240;
                 if(cc.Cancellation_Appointment__c && cc.Status =='Closed' && followUpSteplst.isempty() ){
                     cc.addError(System.Label.Closed_Case_Follow_Up_Steps);
                 }
-                System.debug(' ++++++++ 4 newMap handleBeforeUpdate ownerid  '+cc.owner.id);
-            	System.debug(' ++++++++ 4 newMap handleBeforeUpdate ownername  '+cc.owner.name);
-                System.debug(' ++++++++ 4 newMap handleBeforeUpdate recordtypename  '+cc.recordtype.name);
-                System.debug(' ++++++++ 4 newMap handleBeforeUpdate Category  '+cc.Case_Category_Level1__c);
             }
 
         }else{
@@ -351,7 +316,6 @@ static final Decimal MINIMUM_SLA = 240;
             for(Case childCase : [Select id,parentid from case where parentid in:caseIdSet and status != 'Closed']){
                 caseMappingChild.put(childCase.parentid,childCase);
                 system.debug('caseMappingChild'+caseMappingChild);
-                
             }
             
             if(caseMappingChild.size() > 0){
@@ -367,12 +331,7 @@ static final Decimal MINIMUM_SLA = 240;
     }
 
     public static void handleAfterInsert(List<Case> caseList) {
-        System.debug(' AAAAA handleAfterInsert');
-        System.debug(' AAAAA 1 ownerid '+caseList[0].owner.id);
-        System.debug(' AAAAA 1 ownername '+caseList[0].owner.name);
-        System.debug(' AAAAA 1 recordtypename '+caseList[0].recordtypeId);
-        System.debug(' AAAAA 1 Case_Category_Level1__c '+caseList[0].Case_Category_Level1__c);
-        
+        system.debug('+++++++++++-----25handleAfterInsert');
         List<Id> copyEmailCaseIdSet = new List<Id>();
         List<Id> verifyHNCaseIdSet = new List<Id>();
 
@@ -385,31 +344,18 @@ static final Decimal MINIMUM_SLA = 240;
             if(c.Hospital_Number_HN__c != null && c.origin.contains('Email') ){
                 verifyHNCaseIdSet.add(c.Id);
             }
-            System.debug(' AAAAA 2 ownerid '+c.owner.id);
-        	System.debug(' AAAAA 2 ownername '+c.owner.name);
-            System.debug(' AAAAA 2 recordtype '+c.recordtypeId);
-            System.debug(' AAAAA 2 Case_Category_Level1__c '+c.Case_Category_Level1__c);
         }
-		// Comment by May 4-1-2024
+
         if(!Test.isRunningTest()){
-
+            system.debug('+++++++++++-----26');
             if(verifyHNCaseIdSet.size() > 0){
-
                 BIH_GenerateAccountFromHN createAcc = new BIH_GenerateAccountFromHN(verifyHNCaseIdSet);
-
                 if(System.IsBatch() == false && System.isFuture() == false){
-
                     //Id BatchProcessId = Database.ExecuteBatch(createAcc,1);
-
-                    Id BatchProcessId = System.enqueueJob(createAcc); /**Change to Queueable*/
-
+                    Id BatchProcessId = System.enqueueJob(createAcc);
                 }
-
             }
-
         }
-       // Comment by May 4-1-2024 */
-
         //Auto forward email to external team.
         /*BIH_CloneEmail2Case cloneEmail2Case = new BIH_CloneEmail2Case(cid);
         Id BatchProcessId2 = Database.ExecuteBatch(cloneEmail2Case,1);*/
@@ -417,6 +363,7 @@ static final Decimal MINIMUM_SLA = 240;
         //Copy email body to richtext
         System.debug('copyEmailCaseIdSet: '+copyEmailCaseIdSet);
         if(copyEmailCaseIdSet.size() > 0){
+            system.debug('+++++++++++-----27');
             if(System.IsBatch() == false && System.isFuture() == false){
                 copyEmailBodyHTML(copyEmailCaseIdSet);
             }
@@ -426,12 +373,14 @@ static final Decimal MINIMUM_SLA = 240;
             //Stamp owner
             List<Work_Duration__c> workList = New List<Work_Duration__c>();
             for (Case newCaseInsert : caseList) {
+            	system.debug('+++++++++++-----28');
                 Work_Duration__c workUser = New Work_Duration__c();
                 workUser.Case__c = newCaseInsert.ID;
                 workUser.Case_Status__c = newCaseInsert.Status;
                 
                 //Check owner
                 String OwnerID = newCaseInsert.OwnerId;
+                system.debug('+++++++++++-----29');
                 if (OwnerID.startsWith('005')) {
                     workUser.User_Link__c = newCaseInsert.OwnerId;
                     workUser.Name = mapUser.get(newCaseInsert.ownerID).Name;
@@ -442,14 +391,9 @@ static final Decimal MINIMUM_SLA = 240;
                 workUser.Start_Date_Time__c = system.now();
                 workList.add(workUser);
                 
-                System.debug(' AAAAA 3 ownerid '+newCaseInsert.owner.id);
-        		System.debug(' AAAAA 3 ownername '+newCaseInsert.owner.name);
-                System.debug(' AAAAA 3 recordtype '+newCaseInsert.recordtypeId);
-                System.debug(' AAAAA 3 Case_Category_Level1__c '+newCaseInsert.Case_Category_Level1__c);
-               
-                
             }
             if (workList.size() > 0) {
+                system.debug('+++++++++++-----30');
                 Database.SaveResult[] lsr = Database.insert(workList, false);
                 // Iterate through each returned result
                 for (Database.SaveResult sr : lsr) {
@@ -476,17 +420,25 @@ static final Decimal MINIMUM_SLA = 240;
             caseIdSet.add(c.Id);
         }
         
+        //system.debug('+++++++++++-----handleAfterInsert --- test0');
         //new 
         createAccountAndAssociateCase(caseList);
+        
+        //system.debug('+++++++++++-----handleAfterInsert --- test1');
+        //SMS Auto Sent to Patient
+        //SmsAutoSentPatient(caseList);
+        
     }
 
     public static void updateChannelInfo(Map<Id, Case> oldMap, Map<Id, Case> newMap) {
+        system.debug('+++++++++++-----31updateChannelInfo');
 
         Map<String,String> mapChannelwithQueue = new Map<String,String>();
         Map<String,String> mapChannelwithUserTeam = new Map<String,String>();
         Map<String,String> mapChannelwithRecordtype = new Map<String,String>();
 
         if(mappingChannelList.size() > 0){
+            system.debug('+++++++++++-----32');
             for(Mapping_Channel_with_User_Team__mdt mdtChannel : mappingChannelList){
 
                 if(mdtChannel.Queue_Name__c != null){
@@ -503,10 +455,7 @@ static final Decimal MINIMUM_SLA = 240;
         }
         for (ID caseID : newMap.keySet()) {
             Case newCase = newMap.get(caseID);
-			System.debug(' ****** 5.1 Case.owner id -> '+newCase.ownerid);
-        	System.debug(' ****** 5.1 Case.owner name -> '+newCase.owner.name);
-            System.debug(' ****** 5.1 Case.recordtype name -> '+newCase.recordtypeId);
-            System.debug(' ****** 5.1 Case.recordtype case_category_level1__c -> '+newCase.case_category_level1__c);
+
             //Check owner
             String OwnerID = newCase.OwnerId;
             String OwnerType;
@@ -541,24 +490,21 @@ static final Decimal MINIMUM_SLA = 240;
                     OwnerName = 'Other';
                     if(mapChannelwithQueue.get(OwnerName+OwnerType)!=null){
                         newCase.Channel__c = mapChannelwithQueue.get(OwnerName+OwnerType);
-
-                        
                     }
                 }
             
             }
             System.debug('newCase.Channel__c'+newCase.Channel__c);
-			System.debug(' ****** 5.2 Case.owner id -> '+newCase.ownerid);
-        	System.debug(' ****** 5.2 Case.owner name -> '+newCase.owner.name);
-            System.debug(' ****** 5.2 Case.recordtype name -> '+newCase.recordtypeId);
-            System.debug(' ****** 5.2 Case.recordtype case_category_level1__c -> '+newCase.case_category_level1__c);  
+
         }
 
         
     }
     
     public static void handleAfterUpdate(Map<Id, Case> oldMap, Map<Id, Case> newMap) {        
+        // order 3
         //Auto close related case when parent is closed.
+        system.debug('+++++++++++-----33handleAfterUpdate');
         String debugMsg = '';
         debugMsg+='Auto close related case when parent is closed.';
         debugMsg = '';
@@ -574,6 +520,7 @@ static final Decimal MINIMUM_SLA = 240;
         Map<Id,Case> mapCloseCase = new Map<Id,Case>();
         List<Case> relatedCase = new List<Case>();
         for (ID caseID : newMap.keySet()) {
+            system.debug('+++++++++++-----34');
             Case newCase = newMap.get(caseID);
             //Case oldCase = oldMap.get(caseID);
             if(newCase.IsClosed && !newCase.Cancellation_Appointment__c){
@@ -582,16 +529,16 @@ static final Decimal MINIMUM_SLA = 240;
         }
         
         if(mapCloseCase.size() > 0){
+            system.debug('+++++++++++-----35');
             relatedCase = [Select id,status,parentid,channel__c,Close_Case_Reason__c,IsClosed 
             from case 
             where parentid in:mapCloseCase.keySet()];
         }
-        
-        
 
         List<Case> relatedCaseNew = new List<Case>();
         
         if(relatedCase.size() > 0){
+            system.debug('+++++++++++-----36');
             for(Case c : relatedCase){
                 if(!c.IsClosed && mapCloseCase.get(c.parentid)!=null
                 && mapCloseCase.get(c.parentid).channel__c == c.channel__c ){
@@ -600,14 +547,13 @@ static final Decimal MINIMUM_SLA = 240;
 
                     relatedCaseNew.add(c);
                 }
-    
-
             }
             
             Database.SaveResult[] lsr = Database.update(relatedCaseNew, false);
             // Iterate through each returned result
             for (Database.SaveResult sr : lsr) {
                 if (sr.isSuccess()) {
+                    system.debug('+++++++++++-----37');
                     // Operation was successful, so get the ID of the record that was processed
                     System.debug('Successfully updated related Case with ID: ' + sr.getId());
                 } else {
@@ -627,12 +573,15 @@ static final Decimal MINIMUM_SLA = 240;
 
         //Mapping previous owner for caculate SLA per user
         if (workList.size() > 0) {
+            system.debug('+++++++++++-----38');
             for (Work_Duration__c workOwner : workList) {
                 //Check if previous owner is user
                 if (workOwner.User_Link__c != null) {
+                    system.debug('+++++++++++-----39');
                     map_workOwner.put(string.valueof(workOwner.User_Link__c) + string.valueof(workOwner.Case__c), workOwner);
                 } else {
                     //Previous owner is queue
+                    system.debug('+++++++++++-----40');
                     map_workOwner.put(workOwner.Queue_Link__c + string.valueof(workOwner.Case__c), workOwner);
                 }
             }
@@ -648,6 +597,7 @@ static final Decimal MINIMUM_SLA = 240;
                 
                 if((newCase.status == 'In Progress' || newCase.status == 'Pending') || ((newCase.OwnerId != oldCase.OwnerId)&& newCase.status != 'Closed')){
                     //Stamp Current Owner
+                    system.debug('+++++++++++-----41');
                     Work_Duration__c newWorkOwner = New Work_Duration__c();
                     newWorkOwner.Case__c = newCase.ID;
                     newWorkOwner.Case_Status__c = newCase.Status;
@@ -664,9 +614,11 @@ static final Decimal MINIMUM_SLA = 240;
                     //Check owner
                     String OwnerID = newCase.OwnerId;
                     if (OwnerID.startsWith('005')) {
+                        system.debug('+++++++++++-----42');
                         newWorkOwner.User_Link__c = newCase.OwnerId;
                         newWorkOwner.Name = mapUser.get(newCase.ownerID).Name;
                     } else {
+                        system.debug('+++++++++++-----43');
                         newWorkOwner.Queue_Link__c  = newCase.OwnerId;
                         newWorkOwner.Name = mapQueue.get(newCase.ownerID).Name;
                     }
@@ -676,6 +628,7 @@ static final Decimal MINIMUM_SLA = 240;
                     //Query previous owner to update end date
                     Work_Duration__c  old_WorkOwner = map_workOwner.get(string.valueOf(oldCase.OwnerId) + string.valueOf(oldCase.ID));
                     if (old_WorkOwner != null) {
+                        system.debug('+++++++++++-----44');
                         //old_WorkOwner.Pending_team__c = newCase.Pending_team__c;
                         old_WorkOwner.End_Date_Time__c = system.Now();
                         //old_WorkOwner.Case_Status__c = newCase.Status;
@@ -686,6 +639,7 @@ static final Decimal MINIMUM_SLA = 240;
                 if (newCase.isClosed){
                     Work_Duration__c  old_WorkOwner = map_workOwner.get(string.valueOf(oldCase.OwnerId) + string.valueOf(oldCase.ID));
                     if (old_WorkOwner != null) {
+                        system.debug('+++++++++++-----45');
                         //old_WorkOwner.Pending_team__c = newCase.Pending_team__c;
                         old_WorkOwner.End_Date_Time__c = system.Now();
                         //old_WorkOwner.Case_Status__c = newCase.Status;
@@ -700,9 +654,11 @@ static final Decimal MINIMUM_SLA = 240;
                     
                     String OwnerID = newCase.OwnerId;
                     if (OwnerID.startsWith('005')) {
+                        system.debug('+++++++++++-----46');
                         newWorkOwner.User_Link__c = newCase.OwnerId;
                         newWorkOwner.Name = mapUser.get(newCase.ownerID).Name;
                     } else {
+                        system.debug('+++++++++++-----46');
                         newWorkOwner.Queue_Link__c  = newCase.OwnerId;
                         newWorkOwner.Name = mapQueue.get(newCase.ownerID).Name;
                     }
@@ -727,6 +683,7 @@ static final Decimal MINIMUM_SLA = 240;
         //To update messaging session language
         Set<Id> caseIdSet = new Set<Id>();
         for (Id caseId : newMap.keySet()) {
+            system.debug('+++++++++++-----47');
             caseIdSet.add(caseId);
         }
 
@@ -735,9 +692,11 @@ static final Decimal MINIMUM_SLA = 240;
     }
     
     public static void stampSLAFromServiceTypeMatrix(List<Case> caseList) {
+        system.debug('+++++++++++-----48stampSLAFromServiceTypeMatrix');
         
     Map<String,Group>  mapQueueName = new Map<String,Group>();
         if(mapQueue.size() > 0){
+            system.debug('+++++++++++-----49');
             for(Group g : mapQueue.values()){
                 mapQueueName.put(g.DeveloperName, g);                    
             }
@@ -752,6 +711,7 @@ static final Decimal MINIMUM_SLA = 240;
             string CategoryConCat = cat1+cat2+cat3;
             
             if(c.Case_Category_Level1__c!=null){
+                system.debug('+++++++++++-----50');
                 system.debug('CategoryConCat : '+CategoryConCat);
                 if(CategoryConCat != null && BIH_CaseUtility.mapSVTM.get(CategoryConCat)!=null && BIH_CaseUtility.mapSVTM.get(CategoryConCat).Responsible_Team__c != System.Label.At_Home){
                     
@@ -762,14 +722,17 @@ static final Decimal MINIMUM_SLA = 240;
                     
                     
                      if (BIH_CaseUtility.mapSVTM.get(CategoryConCat).Responsible_Team__c == System.Label.Referral_Team){
+                         system.debug('+++++++++++-----51');
                         
                         c.recordtypeid = CASE_PRIMARY_RECORD_ID;
 
                     }else if (BIH_CaseUtility.mapSVTM.get(CategoryConCat).Responsible_Team__c == System.Label.Airport_Team){
+                        system.debug('+++++++++++-----52');
                         
                         c.recordtypeid = CASE_AIRPORT_RECORD_ID;
 
                     }else if (BIH_CaseUtility.mapSVTM.get(CategoryConCat).Responsible_Team__c == System.Label.Pharmacy_Team){
+                        system.debug('+++++++++++-----53');
                         
                         c.recordtypeid = CASE_PHARMACY_RECORD_ID;
 
@@ -781,7 +744,7 @@ static final Decimal MINIMUM_SLA = 240;
                 }
                 else{
                     if(c.contact_center_channel__c !=null){
-                        
+                        system.debug('+++++++++++-----54');
                         c.SLA__c = null;
                         c.SLA_TeleMed__c   = null;
                     }
@@ -789,20 +752,20 @@ static final Decimal MINIMUM_SLA = 240;
                         c.recordtypeid = CASE_TeleMed_RECORD_ID;
                         c.SLA_TeleMed__c = BIH_CaseUtility.mapSVTM.get(CategoryConCat).SLA__c;
                         c.SLA__c = c.SLA_Temp_for_Swap__c;
-                       
+                        system.debug('+++++++++++-----55');
                     }
                     
                     else{
                         c.SLA__c = MINIMUM_SLA;
-                        c.SLA_TeleMed__c   = MINIMUM_SLA;    
-                        
+                        c.SLA_TeleMed__c   = MINIMUM_SLA;
+                        system.debug('+++++++++++-----56');
                     }             
                 }
             }else{
                 c.Case_Category_Level1__c = 'Undefined';
                 c.Case_Category_Level2__c = 'N/A';
                 c.Case_Category_Level3__c = 'N/A';
-                
+                system.debug('+++++++++++-----57');
             }
         System.debug('Test data : '+c.Channel__c + ' and '+c.RecordTypeId);
         }
@@ -810,6 +773,7 @@ static final Decimal MINIMUM_SLA = 240;
     }
     
     public static void searchSenderByEmail(List<Case> caseList){
+        System.debug('+++++++++++-----58searchSenderByEmail');
         Map<String,Case> mapEmailandCase = new  Map<String,Case>();
         Map<String,Account> emailAccId = new  Map<String,Account>();
         Map<String,Contact> emailContactId = new  Map<String,Contact>();
@@ -817,21 +781,22 @@ static final Decimal MINIMUM_SLA = 240;
         for(Case c : caseList){
             if(c.SuppliedEmail !=null){
                 mapEmailandCase.put(c.SuppliedEmail, c);
-                
             }
         }
 
         if(mapEmailandCase.size() > 0){
+			system.debug('+++++++++++-----58');
             //check contact on case is null,find existing contact that email = suppliedEmail
             List<Contact> listContactEmail = [select id,email,accountid,account.Phone
                                                 from contact where email in: mapEmailandCase.keySet()];
-            
             if(listContactEmail.size() >0){
+                system.debug('+++++++++++-----59');
                 for(Contact c : listContactEmail){
                     emailContactId.put(c.email,c);
                 }
 
                 if(emailContactId.size() > 0){
+                    system.debug('+++++++++++-----60');
                     for(Case c : caseList){
                         if(emailContactId.get(c.SuppliedEmail)!=null){
                             c.AccountId = emailContactId.get(c.SuppliedEmail).AccountId ;
@@ -844,12 +809,15 @@ static final Decimal MINIMUM_SLA = 240;
                 //if contact not found find email on account 
                 List<Account> listAccountEmail = [select id,PersonEmail,email__c,Phone ,Hospital_Number_HN__c 
                                                 from account where PersonEmail in: mapEmailandCase.keySet() or email__c in: mapEmailandCase.keySet()];
+                system.debug('+++++++++++-----60.1'+mapEmailandCase.keySet());
                 if(listAccountEmail.size() > 0){
                     for(Account acc : listAccountEmail){
+                        system.debug('+++++++++++-----60.1.1');
                         if(acc.PersonEmail!=null){
                             emailAccId.put(acc.PersonEmail,acc);
                         }
                         if(acc.email__c!=null){
+                        system.debug('+++++++++++-----60.1.2');
                             emailAccId.put(acc.email__c,acc);
                         }
                     }
@@ -871,6 +839,7 @@ static final Decimal MINIMUM_SLA = 240;
     
     
     public static void searchCategoryByKeyword(List<Case> caseList){
+		system.debug('searchCategoryByKeyword+++++++++++-----60');
         Map<String,String> mapKeywordCat1 = new Map<String,String>();
         Map<String,Case_Keyword__c> mapKeywordCat2 = new Map<String,Case_Keyword__c>();
         for(Case_Keyword__c kw : [Select KW_Category__c,Keyword_List__c,KW_Sub_Category_Level1__c from Case_Keyword__c order by Order_Number__c]){
@@ -889,6 +858,7 @@ static final Decimal MINIMUM_SLA = 240;
             string dob;
 
             if(c.origin !=null && c.origin.contains('Email') && c.subject != null ){
+                system.debug('+++++++++++-----61');
                 string subjectEmail = c.subject;
                 try{
                     //get Category1
@@ -968,15 +938,15 @@ static final Decimal MINIMUM_SLA = 240;
                     //get DOB
                     string dobregex = '((DOB)|(DOB )|(DOB: )|(DOB :)|(DOB : )|(DOB:))(\\d\\d\\/\\d\\d\\/\\d\\d\\d\\d)';
                     Date dateOfBirth = convertStringtoDate(subjectEmail,dobregex);
-                    if(dateOfBirth!=null && dateOfBirth <= Date.valueOf('4000-12-31')){
+                    if(dateOfBirth!=null){
                         c.Date_of_Birth__c =(c.Date_of_Birth__c==null)?dateOfBirth:c.Date_of_Birth__c;
                     }
 
-                   string dateregex = '(?i)((Date)|(Date )|(Date: )|(Date :)|(Date : )|(Date:))(\\d{1,2} *(?:Jan(?:uary)?|Feb(?:ruary)?|...|Dec(?:ember)?) *\\d{4})';
+                    /*string dateregex = '(?i)((Date)|(Date )|(Date: )|(Date :)|(Date : )|(Date:))(\\d{1,2} *(?:Jan(?:uary)?|Feb(?:ruary)?|...|Dec(?:ember)?) *\\d{4})';
                     Date appDate = convertStringtoDateByMonthFormat(subjectEmail,dateregex);
                     if(appDate!=null){
                         c.Appointment_Date__c =(c.Appointment_Date__c==null)?appDate:c.Appointment_Date__c;
-                    }
+                    }*/
 
                 }catch(exception ex){
                     system.debug('Error case subject keyword : '+ex);
@@ -1004,6 +974,7 @@ static final Decimal MINIMUM_SLA = 240;
 
     public static void updateCaseContactInformation(List<Case> caseList){
         // order 2
+		system.debug('updateCaseContactInformation+++++++++++-----62');
         Map<Id,Account> accountMap = new Map<Id,Account>();
         Set<Id> accountIdSet = new Set<Id>();
 
@@ -1080,6 +1051,7 @@ static final Decimal MINIMUM_SLA = 240;
 
     @future
     public static void copyEmailBodyHTML(List<Id> cid) {
+        system.debug('copyEmailBodyHTML+++++++++++-----63');
         Map<Id,EmailMessage> mapEmail = new Map<Id,EmailMessage>(
                 [SELECT id, TextBody, HtmlBody, Headers, Subject, FromName, 
                 FromAddress, ToAddress, CcAddress, BccAddress,RelatedToId FROM EmailMessage 
@@ -1118,6 +1090,7 @@ static final Decimal MINIMUM_SLA = 240;
 
     //method used for convert string to date
     public static date convertStringtoDate (string txt,string regexFormat) {
+        system.debug('convertStringtoDate+++++++++++-----64');
         Date formatDate;
         String dateText;
         string dateregex = '\\d\\d\\/\\d\\d\\/\\d\\d\\d\\d';
@@ -1126,6 +1099,7 @@ static final Decimal MINIMUM_SLA = 240;
         system.debug('resultText'+resultText);
 
         if(resultText && matcherText.group(0)!=null){
+            system.debug('+++++++++++-----63');
             string matchText = matcherText.group(0);
             system.debug('matchText'+matchText);
             Matcher matcherDate =Pattern.compile(dateregex).matcher(matchText);
@@ -1136,10 +1110,12 @@ static final Decimal MINIMUM_SLA = 240;
         }
 
         if(dateText!=null && dateText != ''){
+            system.debug('+++++++++++-----64');
             string dateTextConcat = '';
             List<String> dSplit = dateText.split('/');
             
             if(dSplit.size() == 3){
+                system.debug('+++++++++++-----65');
                 Integer dateYear;
                 String dateYearText;
 
@@ -1170,6 +1146,7 @@ static final Decimal MINIMUM_SLA = 240;
 
     //method used for convert string to date
     public static date convertStringtoDateByMonthFormat (string txt,string regexFormat) {
+        system.debug('convertStringtoDateByMonthFormat+++++++++++-----65');
         Date formatDate;
         String dateText;
         string dateregex = '\\d{1,2} *(?:Jan(?:uary)?|Feb(?:ruary)?|...|Dec(?:ember)?) *\\d{4}';
@@ -1255,6 +1232,7 @@ static final Decimal MINIMUM_SLA = 240;
     /** Start Fix SOQL 101 **/
     public static Map<String,String> editSocialCaseSubject(Set<String> sourceIdList) 
     {
+        system.debug('editSocialCaseSubject+++++++++++-----66');
         //System.debug('----- editSocialCaseSubject');
         //System.debug('sourceId = '+sourceId);
         //String subject;
@@ -1284,204 +1262,170 @@ static final Decimal MINIMUM_SLA = 240;
     /** End Fix SOQL 101 **/
     
     public static void createAccountAndAssociateCase(List<Case> newCaseList){
+        system.debug('createAccountAndAssociateCase+++++++++++-----67');
         List<Account> accList = new List<Account>();
         Id recordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Person_Account').getRecordTypeId();
-        Id ROrecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('RO_Account').getRecordTypeId();
         
         Map<String, Account> phoneIdMap = new Map<String, Account>();
         Map<String, Account> emailIdMap = new Map<String, Account>();
-        Map<String, Contact> rophoneIdMap = new Map<String, Contact>();
-        Map<String, Account> rophoneIdMap1 = new Map<String, Account>();
-        Map<String, Contact> roemailIdMap = new Map<String, Contact>();
-        Map<String, Account> roemailIdMap1 = new Map<String, Account>();
-        Map<String, Contact> contactIdMap = new Map<String, Contact>();
         List<Account> accountsToCreate = new List<Account>();
         Map<String, Account> phoneAccountMap = new Map<String, Account>();
         Set<String> phoneSet = new Set<String>();
         Set<String> emailSet = new Set<String>();
-        Set<String> rophoneSet = new Set<String>();
-        Set<String> roemailSet = new Set<String>();
-        Set<Id> contactIds = new Set<Id>();
-        boolean flagCheckAcct = false;
+       boolean flagcreateAcct = false;
         String tmp_phone = '';
         String tmp_email = '';
-        String tmp_leadsource = '';
         for(Case objCase : newCaseList){
             tmp_phone = objCase.Web_Phone__c;
             tmp_email = objCase.Web_Patient_Email__c;
-            tmp_leadsource = objCase.Lead_Source__c;
             if(objCase.Case_From_MB__c){
-                if(objCase.Web_Phone__c != '' && objCase.Web_Phone__c != null && objCase.Lead_Source__c != 'Insurance Agency' )
+                if(objCase.Web_Phone__c != '' && objCase.Web_Phone__c != null)
                 {
+               		System.debug('Web Phone Not Null');
                     phoneSet.add(objCase.Web_Phone__c);
-                }else if(objCase.Web_Patient_Email__c != '' && objCase.Web_Patient_Email__c != null && objCase.Lead_Source__c != 'Insurance Agency'){
+                    System.debug('Web Phone Not Null'+phoneSet);
+                }else if(objCase.Web_Patient_Email__c != '' && objCase.Web_Patient_Email__c != null){
+                    System.debug('Email Not Null');
                     emailSet.add(objCase.Web_Patient_Email__c);
-                }else if(objCase.Web_Phone__c != '' && objCase.Web_Phone__c != null && objCase.Lead_Source__c != '' && objCase.Lead_Source__c != null){
-                    rophoneSet.add(objCase.Web_Phone__c);
-                }else if(objCase.Web_Patient_Email__c != '' && objCase.Web_Patient_Email__c != null && objCase.Lead_Source__c != '' && objCase.Lead_Source__c != null){
-                    roemailSet.add(objCase.Web_Patient_Email__c);
+                    System.debug('Email Not Null'+emailSet);
                 }
                 
             }
-            
-            System.debug(' AAAAA 4 ownerid '+objCase.owner.id);
-        	System.debug(' AAAAA 4 ownername '+objCase.owner.name);
-            System.debug(' AAAAA 4 case_category_level3__c '+objCase.case_category_level3__c);
         }
+  
         
         if(phoneSet.size() > 0){
-            for(Account objAcc : [SELECT Id, Phone, PersonContactId FROM Account WHERE Phone IN: phoneSet  Order By CreatedDate DESC limit 1]){
+            System.debug('phoneSet Not Null'+phoneSet);
+            for(Account objAcc : [SELECT Id, Phone, PersonContactId FROM Account WHERE Phone IN: phoneSet AND RecordTypeId=:recordTypeId Order By CreatedDate DESC]){
                 phoneIdMap.put(objAcc.Phone, objAcc);
-                flagCheckAcct = true;
-                System.debug(' AAAAA 4.1 objAcc Phone '+objAcc);
+                System.debug('phoneSet Not Null'+phoneIdMap);
+                flagcreateAcct = true;
             }
         }else if (emailSet.size() > 0){
-            for(Account objAcc : [SELECT Id,PersonEmail, Phone, PersonContactId FROM Account WHERE PersonEmail IN: emailSet  Order By CreatedDate DESC limit 1]){
+            System.debug('emailSet Not Null'+emailSet);
+            //SELECT Id,Name, PersonEmail, Phone, PersonContactId FROM Account WHERE PersonEmail ='nebula.montes@gmail.com' AND RecordTypeId= '0122v000001ZspuAAC'
+            //for(Account objAcc : [SELECT Id,Name, PersonEmail, Phone, PersonContactId FROM Account WHERE PersonEmail ='jaiauksorn.k@gmail.com' AND RecordTypeId= '0122v000001ZspuAAC']){
+            for(Account objAcc : [SELECT Id,PersonEmail, Phone, PersonContactId FROM Account WHERE PersonEmail IN: emailSet AND RecordTypeId=:recordTypeId Order By CreatedDate DESC]){
+                System.debug('objAcc Detail0');
+                System.debug('objAcc Detail'+objAcc);
                 emailIdMap.put(objAcc.PersonEmail, objAcc);
-				flagCheckAcct = true;    
-                System.debug(' AAAAA 4.1 objAcc Email '+objAcc);
+                System.debug('emailSet Not Null'+emailIdMap);
+				flagcreateAcct = true;                
             }
-        }else if (rophoneSet.size() > 0){
-            Set<Id> accountIds = new Set<Id>();
+        }
+
+        if(flagcreateAcct == false){
             
-            for(Contact objContact : [SELECT Id,AccountId, Phone From Contact WHERE Phone IN: rophoneSet Order By CreatedDate DESC limit 1]){
-                if (objContact.AccountId != null) {
-                    accountIds.add(objContact.AccountId);
-                    rophoneIdMap.put(objContact.Phone, objContact); 
+            if((tmp_email != '' && tmp_email != null)||(tmp_phone != '' && tmp_phone != null)){
+                for(Case objCase : newCaseList){
+                    Account personAcc = new Account(); 
+                    personAcc.RecordTypeID = recordTypeId;
+                    personAcc.FirstName = objCase.MB_First_Name__c;
+                    personAcc.LastName = objCase.MB_Last_Name__c;
+                    personAcc.PersonEmail = objCase.Web_Patient_Email__c;
+                    personAcc.Phone = objCase.Web_Phone__c;
+                    insert personAcc;
+                   	if(objCase.Case_From_MB__c){
+                        if(objCase.Web_Phone__c != '' && objCase.Web_Phone__c != null){
+                            system.debug('objCase.Web_Phone__c !=null');
+                            Case cs = new Case(AccountId = personAcc.Id, Id=objCase.Id,Web_Phone__c = personAcc.Phone,ContactId=phoneIdMap.get(objCase.Web_Phone__c).PersonContactId);
+                            update cs;
+                        }
+                        else if(objCase.Web_Patient_Email__c != '' && objCase.Web_Patient_Email__c != null){
+                            system.debug('objCase.Web_Patient_Email__c != null');
+                            Case cs = new Case(AccountId = personAcc.Id, Id=objCase.Id, Web_Patient_Email__c = personAcc.PersonEmail,ContactId=emailIdMap.get(objCase.Web_Patient_Email__c).PersonContactId);
+                            update cs;
+                        }
+                    }
                 }
             }
-            for (Account objAcc : [
-                SELECT Id, Phone, PersonContactId
-                FROM Account
-                WHERE Id IN :accountIds
-            ]) 
-            {
-                rophoneIdMap1.put(objAcc.Id, objAcc);
-                if (!accountIds.isEmpty()) {
-                    flagCheckAcct = true;
-                }
-            }
-        }
-        else if (roemailSet.size() > 0){
-            Set<Id> accountIds = new Set<Id>();
-            for(Contact objContact : [SELECT Id,AccountId, Email From Contact WHERE Email IN: roemailSet Order By CreatedDate DESC limit 1]){
-                if (objContact.AccountId != null) {
-                    accountIds.add(objContact.AccountId); 
-                    roemailIdMap.put(objContact.Email, objContact); 
-                }
-            }
-            for (Account objAcc : [
-                SELECT Id, Email__c, PersonContactId
-                FROM Account
-                WHERE Id IN :accountIds
-            ]) 
-            {
-                roemailIdMap1.put(objAcc.Id, objAcc); 
-                if (!accountIds.isEmpty()) {
-                    flagCheckAcct = true;
-                }
-            }
-        }
-        
-        if(flagCheckAcct == true){
+        }else{            
             if((tmp_email != '' && tmp_email != null)||(tmp_phone != '' && tmp_phone != null)){
                 for(Case objCase : newCaseList){
                    	if(objCase.Case_From_MB__c){
-                        
-                        if(objCase.Web_Phone__c != '' && objCase.Web_Phone__c != null && objCase.Lead_Source__c != 'Insurance Agency'){
+                        if(objCase.Web_Phone__c != '' && objCase.Web_Phone__c != null){
                             if(phoneIdMap.size() > 0){
-                                Account tmpObjAcc = phoneIdMap.get(objCase.Web_Phone__c);
-                            	Case cs = new Case(AccountId = tmpObjAcc.Id, Id=objCase.Id,Web_Phone__c = tmpObjAcc.Phone,ContactId=phoneIdMap.get(objCase.Web_Phone__c).PersonContactId,Patient__c = tmpObjAcc.Id);
+                                Account tmpObjAcc = phoneIdMap.values();
+                                system.debug('tmpObjAcc : '+tmpObjAcc);
+                            	system.debug('objCase.Web_Phone__c !=null');
+                            	Case cs = new Case(AccountId = tmpObjAcc.Id, Id=objCase.Id,Web_Phone__c = tmpObjAcc.Phone,ContactId=phoneIdMap.get(objCase.Web_Phone__c).PersonContactId);
                             	update cs;
                             }
                         }
-                        else if(objCase.Web_Patient_Email__c != '' && objCase.Web_Patient_Email__c != null && objCase.Lead_Source__c != 'Insurance Agency'){
+                        else if(objCase.Web_Patient_Email__c != '' && objCase.Web_Patient_Email__c != null){
                             if(emailIdMap.size() > 0){
-                            	Account tmpObjAcc = emailIdMap.get(objCase.Web_Patient_Email__c);
-                            	Case cs = new Case(AccountId = tmpObjAcc.Id, Id=objCase.Id, Web_Patient_Email__c = tmpObjAcc.PersonEmail,ContactId=emailIdMap.get(objCase.Web_Patient_Email__c).PersonContactId,Patient__c = tmpObjAcc.Id);
+                            	Account tmpObjAcc = emailIdMap.values();
+                                system.debug('tmpObjAcc2 : '+tmpObjAcc);
+                            	system.debug('objCase.Web_Patient_Email__c != null');
+                            	Case cs = new Case(AccountId = tmpObjAcc.Id, Id=objCase.Id, Web_Patient_Email__c = tmpObjAcc.PersonEmail,ContactId=emailIdMap.get(objCase.Web_Patient_Email__c).PersonContactId);
                             	update cs;
                             }
-                        }
-                        else if(objCase.Web_Phone__c != '' && objCase.Web_Phone__c != null && objCase.Lead_Source__c == 'Insurance Agency'){
-                            
-                           if(rophoneIdMap1.size() > 0){
-                               	Contact tmpObjContact = roPhoneIdMap.get(objCase.Web_Phone__c);
-                            	Case cs = new Case(AccountId = tmpObjContact.AccountId, Id=objCase.Id,Web_Phone__c = tmpObjContact.Phone,Patient__c = tmpObjContact.AccountId,ContactId = tmpObjContact.Id);
-                            	update cs;
-                            }
-                            
-                        }
-                        else if(objCase.Web_Patient_Email__c != '' && objCase.Web_Patient_Email__c != null && objCase.Lead_Source__c == 'Insurance Agency'){
-                            
-                           if(rophoneIdMap1.size() > 0){
-                               	Contact tmpObjContact = roemailIdMap.get(objCase.Web_Patient_Email__c);
-                            	Case cs = new Case(AccountId = tmpObjContact.AccountId, Id=objCase.Id, Web_Patient_Email__c = tmpObjContact.Email,ContactId=tmpObjContact.Id);
-                            	update cs;
-                            }
-                            
                         }
                     }
-                    System.debug(' AAAAA 5 ownerid '+objCase.owner.id);
-        			System.debug(' AAAAA 5 ownername '+objCase.owner.name);
+                }
+            }
+            
+            
+            /*
+            for(Case objCase : newCaseList){
+                if(objCase.Case_From_MB__c){
+                    if(!phoneIdMap.containsKey(objCase.Web_Phone__c)){
+                        system.debug('!phoneIdMap.containsKey(objCase.Web_Phone__c)'+objCase.Web_Phone__c);
+                        Account objAcc = new Account(RecordTypeId = recordTypeId, LastName = objCase.Full_Name__c, Email__c=objCase.Web_Patient_Email__c, Phone=objCase.Web_Phone__c, PersonEmail = objCase.SuppliedEmail);
+                        phoneAccountMap.put(objCase.Web_Phone__c, objAcc);
+                        
+                    }else if (!emailIdMap.containsKey(objCase.Web_Patient_Email__c)){
+                        system.debug('!emailIdMap.containsKey(objCase.Web_Patient_Email__c)'+objCase.Web_Patient_Email__c);
+                        Account objAcc = new Account(RecordTypeId = recordTypeId, LastName = objCase.Full_Name__c, Email__c=objCase.Web_Patient_Email__c, Phone=objCase.Web_Phone__c, PersonEmail = objCase.SuppliedEmail);
+                        phoneAccountMap.put(objCase.Web_Patient_Email__c, objAcc);
+                    }
                     
                 }
-            }           
-        }else{            
-             if(((tmp_email != '' && tmp_email != null)||(tmp_phone != '' && tmp_phone != null)) && (tmp_leadsource != 'Insurance Agency')){
-                for(Case objCase : newCaseList){
-                    Account personAcc = new Account(RecordTypeId = recordTypeId,LastName = objCase.Full_Name__c, Email__c=objCase.Web_Patient_Email__c, Phone=objCase.Web_Phone__c, PersonEmail = objCase.SuppliedEmail, Hospital_Number_HN__c = objCase.Hospital_Number_HN__c );
-                    insert personAcc;
-                    for(Contact objContact : [SELECT Id FROM Contact WHERE AccountId =: personAcc.Id]){
-                        contactIdMap.put(personAcc.Id, objContact);
-                                     
+            }
+            insert phoneAccountMap.values();
+            
+            for(Account objAcc : [SELECT Id, Phone, PersonContactId FROM Account WHERE Phone IN: phoneSet AND RecordTypeId=:recordTypeId]){
+                phoneIdMap.put(objAcc.Phone, objAcc);
+            }
+            
+            List<Case> nCase = new List<Case>();
+            for(Case objCase : newCaseList){
+                if(objCase.Case_From_MB__c){
+                    if(phoneIdMap.containsKey(objCase.Web_Phone__c)){
+                        Case cs = new Case(AccountId = phoneIdMap.get(objCase.Web_Phone__c).Id, Id=objCase.Id, ContactId=phoneIdMap.get(objCase.Web_Phone__c).PersonContactId);
+                        nCase.add(cs);
                     }
-                   	if(objCase.Case_From_MB__c){
-                        if(objCase.Web_Phone__c != '' && objCase.Web_Phone__c != null && objCase.Lead_Source__c != 'Insurance Agency'){
-                            phoneIdMap.put(objCase.Web_Phone__c, personAcc); 
-                            Case cs = new Case(AccountId = personAcc.Id, Id=objCase.Id,Web_Phone__c = personAcc.Phone,ContactId =contactIdMap.get(personAcc.Id).Id,Patient__c = personAcc.Id);
-                            update cs;
-                        }
-                        else if(objCase.Web_Patient_Email__c != '' && objCase.Web_Patient_Email__c != null && objCase.Lead_Source__c != 'Insurance Agency'){
-                            emailIdMap.put(objCase.Web_Patient_Email__c, personAcc);
-                            Case cs = new Case(AccountId = personAcc.Id, Id=objCase.Id, Web_Patient_Email__c = personAcc.PersonEmail,ContactId =contactIdMap.get(personAcc.Id).Id,Patient__c = personAcc.Id);
-                            update cs;
-                        }
-                        
+                    else{
+                        Case cs = new Case(AccountId = phoneAccountMap.get(objCase.Web_Phone__c).Id, Id=objCase.Id, ContactId=phoneIdMap.get(objCase.Web_Phone__c).PersonContactId);
+                        nCase.add(cs);
                     }
-                    System.debug(' AAAAA 6 ownerid '+objCase.owner.id);
-        			System.debug(' AAAAA 6 ownername '+objCase.owner.name);
-                    System.debug(' AAAAA 6 case_category_level1__c '+objCase.case_category_level1__c);
                 }
             }
-            else if (((tmp_email != '' && tmp_email != null)||(tmp_phone != '' && tmp_phone != null)) && (tmp_leadsource == 'Insurance Agency')){
-                for(Case objCase : newCaseList){
-                    Account ROAcc = new Account(RecordTypeId = ROrecordTypeId,LastName = objCase.Full_Name__c, Email__c=objCase.Web_Patient_Email__c, Phone=objCase.Web_Phone__c, PersonEmail = objCase.SuppliedEmail, Hospital_Number_HN__c = objCase.Hospital_Number_HN__c );
-                    insert ROAcc;
-                    for(Contact objContact : [SELECT Id FROM Contact WHERE AccountId =: ROAcc.Id]){
-                        contactIdMap.put(ROAcc.Id, objContact);
-                                     
-                    }
-                   	if(objCase.Case_From_MB__c){
-                        if(objCase.Web_Phone__c != '' && objCase.Web_Phone__c != null && objCase.Lead_Source__c != 'Insurance Agency'){
-                            phoneIdMap.put(objCase.Web_Phone__c, ROAcc); 
-                            Case cs = new Case(AccountId = ROAcc.Id, Id=objCase.Id,Web_Phone__c = ROAcc.Phone,ContactId =contactIdMap.get(ROAcc.Id).Id,Patient__c = ROAcc.Id);
-                            update cs;
-                        }
-                        else if(objCase.Web_Patient_Email__c != '' && objCase.Web_Patient_Email__c != null && objCase.Lead_Source__c != 'Insurance Agency'){
-                            emailIdMap.put(objCase.Web_Patient_Email__c, ROAcc);
-                            Case cs = new Case(AccountId = ROAcc.Id, Id=objCase.Id, Web_Patient_Email__c = ROAcc.PersonEmail,ContactId =contactIdMap.get(ROAcc.Id).Id,Patient__c = ROAcc.Id);
-                            update cs;
-                        }
-                        
-                    }
-                    System.debug(' RO AAAAA 6 ownerid '+objCase.owner.id);
-        			System.debug(' RO AAAAA 6 ownername '+objCase.owner.name);
-                    System.debug(' RO AAAAA 6 case_category_level1__c '+objCase.case_category_level1__c);
-                }
-                
-                
-            }
-           
+            update nCase;*/
         }
     }
+/**    
+    public static void SmsAutoSentPatient(List<Case> newCaseList){
+        system.debug('SmsAutoSentPatient --------- ');
+        Set<String> phoneSet = new Set<String>();
+        //List<Case> nCase = new List<Case>();
+        for(Case objCase : newCaseList){
+            
+            if((objCase.Owner.Name == 'Registration Team' || objCase.Owner_Role__c.contains('Registration'))
+               &&(objCase.Primary_Phone_Existing_Patient__c != null || objCase.Primary_Phone_New_Patient__c != null )){
+                   //System.debug(' C condition = true');
+                   if(objCase.Primary_Phone_New_Patient__c != null){
+                       //System.debug('new phone : '+objCase.Primary_Phone_New_Patient__c);
+                       objCase.Sent_Regist_SMS__c = true;
+                   }
+                   else{
+                       //System.debug('old phone : '+objCase.Primary_Phone_New_Patient__c);
+                       objCase.Sent_Regist_SMS__c = true;
+                   }
+                   
+            }
+        }
+        //update newCaseList;
+    }
+   **/ 
 }

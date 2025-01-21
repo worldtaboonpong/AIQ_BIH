@@ -427,10 +427,9 @@
                                     component.set('v.caseObj.Channel__c', "Contact Center");
                                     component.set('v.caseObj.RecordTypeId', getRecordTypeId);
                                 }
-                                  else if (returnValues.UserCurrentInfo.Profile.Name.includes("VTL")) {
+                                 else if (returnValues.UserCurrentInfo.Profile.Name.includes("VTL")) {
                                     component.set('v.caseObj.Channel__c', "Vitallife");
                                     component.set('v.caseObj.RecordTypeId', getRecordTypeId);
-                                  
                                 }
                                   else if (returnValues.UserCurrentInfo.Profile.Name.includes("Airport")) {
                                     component.set('v.isAirportTransferRecordType', true);

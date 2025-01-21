@@ -1,0 +1,46 @@
+.THIS .time-slots-grid {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.THIS .time-slot {
+    width: 75px;
+    height: 40px;
+    margin: 5px;
+    text-align: center;
+    line-height: 40px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.THIS .not-available {
+    background-color: #d3d3d3;
+    color: #fff;
+    cursor: not-allowed;
+}
+
+.THIS .available {
+    background-color: #fff;
+    color: #000;
+}
+
+.THIS .selected {
+    background-color: #32cd32;
+    color: #fff;
+}
+
+.THIS .patient-info {
+    margin-top: 20px;
+}
+
+.THIS .review-button {
+    margin-top: 20px;
+}
+
+.THIS .description {
+    color: #0070d2;
+    margin-bottom: 10px;
+}

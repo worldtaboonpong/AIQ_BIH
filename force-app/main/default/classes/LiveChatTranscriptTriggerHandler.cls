@@ -1,5 +1,5 @@
 public class LiveChatTranscriptTriggerHandler {
-    /*
+    
    public static Id INDI_CASE_QUEUE_ID {get{
         if(INDI_CASE_QUEUE_ID==null){
             INDI_CASE_QUEUE_ID = [SELECT Id, Name, DeveloperName,type FROM Group where DeveloperName = 'Individual_Team_Case' and type ='Queue'].Id;
@@ -8,14 +8,14 @@ public class LiveChatTranscriptTriggerHandler {
     }set;}
 
     public static void handleBeforeUpdate(List<LiveChatTranscript> chatList) {
-        /-*Set<Id> chatId = new Set<Id>();
+        /*Set<Id> chatId = new Set<Id>();
 
         Map<Id,LiveChatButton> mapChatButton = new Map<Id,LiveChatButton>([SELECT Id, QueueId, DeveloperName FROM LiveChatButton]);
         for(LiveChatTranscript lc: chatList){ 
              string queueId = mapChatButton.get(lc.LiveChatButtonId).QueueId;
 
             
-        }*-/
+        }*/
        
     }
     
@@ -42,6 +42,6 @@ public class LiveChatTranscriptTriggerHandler {
         update listCase;
     }
         
-*/
+
     
 }

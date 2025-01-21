@@ -80,7 +80,7 @@ public class RequestStampFirstResponseValueTest {
             
             
             BatchStampFirstResponseValue obj = new BatchStampFirstResponseValue();
-        	//Database.executeBatch(obj);
+        	Database.executeBatch(obj);
             
             Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator2());
           }

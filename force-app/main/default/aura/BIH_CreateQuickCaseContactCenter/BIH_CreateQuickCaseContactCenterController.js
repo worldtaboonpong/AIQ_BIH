@@ -12,12 +12,11 @@
                 var state = response.getState();
                 if(state == "SUCCESS"){
                     console.log('User info',output);
-                    console.log('User info User_Team__c',output.User_Team__c);
                     // if(output.User_Team__c.includes("Contact Center")){
                     if(output.User_Team__c == undefined){
                         output.User_Team__c = '';
                     }
-                    if((output.User_Team__c.includes("Contact Center")|| output.User_Team__c.includes("Insurance")  ||output.User_Team__c.includes("Phuket")|| output.Profile.Name == 'System Administrator')){
+                    if((output.User_Team__c.includes("Contact Center") || output.Profile.Name == 'System Administrator')){
                         resolve(output);
                     }else{
                         helper.displayToast(component, "Error", 'This function can be used by only Contact Center');
@@ -43,8 +42,7 @@
         });
         actionPromise.then(
             function (output) {
-                if(output.User_Team__c.includes("Contact Center") || output.User_Team__c.includes("Insurance") || output.User_Team__c.includes("Phuket")|| output.Profile.Name == 'System Administrator' ){
-                    console.log("output.User_Team__c"+output.User_Team__c);
+                if(output.User_Team__c.includes("Contact Center") || output.Profile.Name == 'System Administrator' ){
                     var action = component.get('c.createQuickCase');
                     action.setParams({
                         "recordId": recordId,

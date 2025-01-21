@@ -13,10 +13,7 @@
         var MapSMSTemplate = component.get('v.MapSMSTemplate');
         if (lang == 'EN'){
             component.set('v.message',MapSMSTemplate[values].SMS_EN__c);
-        }else if(lang == 'JP'){
-            component.set('v.message',MapSMSTemplate[values].SMS_JP__c);
-        }
-        else {
+        }else {
             component.set('v.message',MapSMSTemplate[values].SMS_TH__c);
         }
         // alert(values);

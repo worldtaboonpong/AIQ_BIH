@@ -1,24 +1,18 @@
 ({
 	getSMSCase: function(component, event, helper){
-        console.log('appt getSMSCase: ');
 		var action = component.get('c.getSMSCase');
 
 		var recordId = component.get('v.recordId');
 		
-        console.log('recordId=' + recordId);
+        console.log(recordId);
 		action.setParams({ "recordId": recordId});
-       
 		action.setCallback(this, function(data) {
-            
-			var apptObj = data.getReturnValue();
+			var caseObj = data.getReturnValue();
 			// caseObj.SMS_Template = 'Template Test';
-			
-			component.set("v.apptObj", apptObj);
-             console.log('x ');
-			component.set("v.contactNumber",apptObj.Account_Phone__c);
-             console.log('xx ');
+			component.set("v.caseObj", caseObj);
+			component.set("v.contactNumber",caseObj.Contact_Number__c);
 			// component.set("v.caseObj.SMS_Sent__c", true);
-			console.log('ApptObj: ',apptObj);
+			console.log('CaseObj: ',caseObj);
 			helper.parseDateTH(component);
         	helper.parseDateEN(component);
       });
@@ -37,9 +31,21 @@
 			var mapSVTM = component.get('v.MapSVTM');
 			console.log('MapSVTM: ',mapSVTM);
             
-			
-            helper.getSMSTemplate(component, event, helper);
-            helper.getSMSTemplateKey(component, event, helper);
+			var caseObj = component.get('v.caseObj');
+			var cat =caseObj.Case_Category_Level1__c + caseObj.Case_Category_Level2__c+caseObj.Case_Category_Level3__c;
+			cat = 'AppointmentMake Appointment, Allocate DoctorNew patient - Multiple Appointments';
+			console.log('cat',cat);
+			if(mapSVTM.hasOwnProperty(cat)){
+				console.log('Have/Has Cat');
+				component.set('v.templateId',mapSVTM[cat].SMS_Template__c);
+				console.log('v.templateId',mapSVTM[cat].SMS_Template__c);
+				// component.set('v.templateId','a0FN000000E4sQWMAZ');
+				console.log(component.get('v.templateId'));
+				helper.getSMSTemplate(component, event, helper);
+				// setTimeout(() => {
+				helper.getSMSTemplateKey(component, event, helper);
+				// }, 1000);
+			}
       });
       $A.enqueueAction(action);
 	},
@@ -100,7 +106,7 @@
 			// }
 			console.log('Replace Template Success');
 			component.set('v.MapSMSTemplate',MapSMSTemplate);
-			 console.log('-*****-'+MapSMSTemplate);
+			// console.log(SMSTemplate);
 		});
 		$A.enqueueAction(action);
 	},
@@ -119,9 +125,7 @@
 			var SMSTemplate = data.getReturnValue();
 			console.log('SMSTemplate',SMSTemplate);
 			console.log(SMSTemplate);
-            // component.set('v.caseObj.Status', "New");
 			component.set('v.SMSTemplate',SMSTemplate);
-            console.log('SMSTemplate: ',SMSTemplate);
 			var templateId = component.get('v.templateId');
 			var MapSMSTemplate = component.get('v.MapSMSTemplate');
 			console.log('templateId: ',templateId);
@@ -140,9 +144,9 @@
 					fieldsTH = fieldsTH.split(",");
 					console.log('fieldsTH',fieldsTH);
 					for (var j = 0; j<fieldsTH.length;j++){
-						console.log('ApptObj: ',component.get('v.apptObj'));
+						console.log('CaseObj: ',component.get('v.caseObj'));
 						
-						var params = component.get("v.apptObj."+fieldsTH[j]);
+						var params = component.get("v.caseObj."+fieldsTH[j]);
 						console.log('params',params);
 						
 						if (params == undefined || params == null || params == ''){
@@ -162,7 +166,7 @@
 					if (fieldsEN != null && fieldsEN != ''){
 					fieldsEN = fieldsEN.split(",");
 					for (var j = 0; j<fieldsEN.length;j++){
-						var params = component.get("v.apptObj."+fieldsEN[j]);
+						var params = component.get("v.caseObj."+fieldsEN[j]);
 						
 						if (params == undefined || params == null || params == ''){
 							smsEN = smsEN.replace("{"+j+"}",'['+fieldsEN[j]+']');
@@ -202,7 +206,7 @@
         component.set("v.loading",false);
 	},
 	parseDateTH : function (component){
-		var dt = component.get('v.apptObj.App_Date_Format__c');
+		var dt = component.get('v.caseObj.App_Date_Format__c');
 		console.log('dt',dt);
 		if (dt != null && dt != '' && dt != undefined){
 			var splitdt = dt.split('-');
@@ -220,7 +224,7 @@
 		}
 	},
 	parseDateEN : function (component){
-		var dt = component.get('v.apptObj.App_Date_Format__c');
+		var dt = component.get('v.caseObj.App_Date_Format__c');
 		// console.log('dt',dt);
 		if (dt != null && dt != '' && dt != undefined){
 			var splitdt = dt.split('-');

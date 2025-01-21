@@ -1,10 +1,8 @@
 global class ScheduledCaseAutoMailRegis implements Schedulable{
     global void execute(SchedulableContext SC) {
         BatchCaseAutoMailRegis obj = new BatchCaseAutoMailRegis();
-        Database.executeBatch(obj);
-        //Id BatchProcessId = System.enqueueJob(obj);
-        //
-        //
+        //Database.executeBatch(obj);
+        Id BatchProcessId = System.enqueueJob(obj);
         // Seconds Minutes Hours Day_of_month Month Day_of_week Optional_year
 
         // run at anonymuse look up schedue job

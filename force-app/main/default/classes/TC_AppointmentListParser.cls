@@ -57,10 +57,6 @@ public class TC_AppointmentListParser {
 		public cls_preferredLanguage preferredLanguage;
 		public String nonFixedTime;	//
 		public String appStatus;	//Arrived
-        public String updateBy;	//User
-        public String updateDate;	//2022-05-26
-		public String updateTime;	//00:00:00Z
-        public cls_details[] details;
 	}
 	public class cls_service {
 		public String code;	//
@@ -76,18 +72,6 @@ public class TC_AppointmentListParser {
 	public class cls_responseStatus {
 		public String code;	//SUCCESS
 		public String description;	//Completed
-	}
-	
-	public class cls_details {
-		public cls_auditTrail auditTrail;
-	}
-    
-	public class cls_auditTrail {
-		public String sequence;	//1
-		public String field;	//APPT_OEORI_DR
-		public String valueChangeFrom;	//
-		public String valueChangeTo;	//800594242 : Follow up
-		public String action;	//U
 	}
     
 	public static TC_AppointmentListParser parse(String json){

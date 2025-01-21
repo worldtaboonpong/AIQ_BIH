@@ -1,0 +1,19 @@
+<aura:component controller="Code39Controller" access="global">
+    <aura:attribute name="shouldCheckDigit" type="Boolean" default="false" />
+    <aura:attribute name="sourceCodeValue" type="String" default="ABC123" />
+    <aura:handler name="init" value="{!this}" action="{!c.generateBarCodeString}" />
+
+    <!-- Reference the static resource directly for the CSS -->
+    <ltng:require styles="{!$Resource.barcodeCSS}" />
+
+    <div style="display: inline-block; border: 1px solid black; min-width: 1in; padding: 0.25in 1in;">
+        <div>
+            <aura:iteration items="{!barCodeString}" var="bar">
+                <div class="{!if(bar == '1', 'blackbar', 'whitebar')}"></div>
+            </aura:iteration>
+        </div>
+        <div style="text-align: center">
+            {!sourceCodeValue}
+        </div>
+    </div>
+</aura:component>

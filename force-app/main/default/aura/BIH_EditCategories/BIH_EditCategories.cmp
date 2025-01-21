@@ -65,12 +65,6 @@
     <aura:attribute name="MapQuickCase" type="Map" />
     <aura:attribute name="KeyQuickCase" type="String" />
     
-    <aura:attribute name="MapQuickCase1" type="Map" />
-    <aura:attribute name="KeyQuickCase1" type="String" />
-    
-    <aura:attribute name="MapQuickCase2" type="Map" />
-    <aura:attribute name="KeyQuickCase2" type="String" />
-    
     <aura:attribute name="CaseCateLVL_2_disableField" type="boolean" default="true" />
     <aura:attribute name="CaseCateLVL_3_disableField" type="boolean" default="true" />
     <aura:attribute name="close_case_reason_disableField" type="boolean" default="true" />
@@ -109,57 +103,25 @@
     
     <aura:attribute name="validSaveBtn" type="Boolean" default="true"  />
     
-    <aura:attribute name="userTeam" type="String" />
-    <aura:handler name="init" value="{!this}" action="{!c.init}" />
-
-    
     <aura:if isTrue="{!!v.loading }">
         <aura:set attribute="else">
             <lightning:spinner alternativeText="Loading" />
         </aura:set>
     </aura:if>
-    <div aura:id="individualTeamSection" class="slds-grid slds-grid_vertical slds-hide">
-
+    
     <div class="slds-grid slds-grid_vertical">
-         <div class="slds-col">
+        <div class="slds-col">
             <lightning:select aura:id="quick_case" variant="label-hidden" label="Quick Case" value="{!v.caseObj.Quick_Case__c}"
                               onchange="{! c.onChangeQuickCase }">
-                <option value="" selected="">--Appointment--</option>
+                <option value="" selected="">--None--</option>
                 <aura:iteration items="{!v.KeyQuickCase}" var="option">
                     <option value="{!option}" selected="">{!option}</option>
                 </aura:iteration>
             </lightning:select>
         </div>
-    </div>
-    
-    <div class="slds-grid slds-grid_vertical">
-         <div class="slds-col">
-            <lightning:select aura:id="quick_case" variant="label-hidden" label="Quick Case" value="{!v.caseObj.Quick_Case__c}"
-                              onchange="{! c.onChangeQuickCase1 }">
-                <option value="" selected="">--General Information--</option>
-                <aura:iteration items="{!v.KeyQuickCase1}" var="option">
-                    <option value="{!option}" selected="">{!option}</option>
-                </aura:iteration>
-            </lightning:select>
-        </div>
-
-
-    </div>
-        <div class="slds-grid slds-grid_vertical">
-         <div class="slds-col">
-            <lightning:select aura:id="quick_case" variant="label-hidden" label="Quick Case" value="{!v.caseObj.Quick_Case__c}"
-                              onchange="{! c.onChangeQuickCase2 }">
-                <option value="" selected="">--Telemedicine--</option>
-                <aura:iteration items="{!v.KeyQuickCase2}" var="option">
-                    <option value="{!option}" selected="">{!option}</option>
-                </aura:iteration>
-            </lightning:select>
-        </div>
-
 
         <hr/>
-    </div> 
-	</div>
+    </div>
     
     <div class="slds-grid slds-grid_vertical">
         <div class="slds-col ">

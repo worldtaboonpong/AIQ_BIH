@@ -17,7 +17,7 @@ public class BIH_GenerateAccountFromHNTest {
     @isTest
     public static void positiveTest1(){
         Test.setMock(HttpCalloutMock.class, new BIH_PatientInformationServiceMockImpl());
-        
+        Test.startTest();
         List<Id> caseIdList =new List<Id>();
         List<Case> caseList = [Select id,Hospital_Number_HN__c from case];
         
@@ -26,10 +26,10 @@ public class BIH_GenerateAccountFromHNTest {
             caseIdList.add(c.id);
         }
         
-        update caseList;
-        Test.startTest();
+        //update caseList;
+        
         BIH_GenerateAccountFromHN verifyHN = new BIH_GenerateAccountFromHN(caseIdList);
-        System.enqueueJob(verifyHN);
+        database.executeBatch(verifyHN);
         Test.stopTest();
         
     }
@@ -37,7 +37,7 @@ public class BIH_GenerateAccountFromHNTest {
     @isTest
     public static void positiveTest2(){
         Test.setMock(HttpCalloutMock.class, new BIH_PatientInformationServiceMockImpl());
-        
+        Test.startTest();
         List<Id> caseIdList =new List<Id>();
         List<Case> caseList = [Select id,Hospital_Number_HN__c from case];
         
@@ -46,10 +46,10 @@ public class BIH_GenerateAccountFromHNTest {
             caseIdList.add(c.id);
         }
         
-        update caseList;
-        Test.startTest();
+        //update caseList;
+        
         BIH_GenerateAccountFromHN verifyHN = new BIH_GenerateAccountFromHN(caseIdList);
-        System.enqueueJob(verifyHN);
+        database.executeBatch(verifyHN);
         Test.stopTest();
         
     }
@@ -65,12 +65,12 @@ public class BIH_GenerateAccountFromHNTest {
             caseIdList.add(c.id);
         }
         
-        update caseList;
+        //update caseList;
         Test.startTest();
        
         
         BIH_GenerateAccountFromHN verifyHN = new BIH_GenerateAccountFromHN(caseIdList);
-        System.enqueueJob(verifyHN);
+        database.executeBatch(verifyHN);
         Test.stopTest();
         
     }

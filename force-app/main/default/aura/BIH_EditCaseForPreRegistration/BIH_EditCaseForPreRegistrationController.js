@@ -90,8 +90,8 @@
         helper.getInProgressReasonlist(cmp,event,helper);
         helper.getGenderNewPatientlist(cmp,event,helper);
         helper.getTitleNewPatientlist(cmp,event,helper);
-        helper.getTitleExtPatientlist(cmp,event,helper);
-		helper.getGenderExtPatientlist(cmp,event,helper);
+        //helper.getTitleExtPatientlist(cmp,event,helper);
+		//helper.getGenderExtPatientlist(cmp,event,helper);
         helper.getpatientaccountlist(cmp, event, helper);
         
 	
@@ -496,12 +496,12 @@
 			
 			component.set('v.caseObj.Check_In_Time__c', component.get('v.checkInTime'));
 			component.set('v.caseObj.Check_Out_Time__c', component.get('v.checkOutTime'));
-			component.set('v.caseObj.First_Name_New_Patient__c', component.get('v.NewPatientFirstName'));
-			component.set('v.caseObj.Last_Name_New_Patient__c', component.get('v.NewPatientLastName'));
-            component.set('v.caseObj.Gender_New_Patient__c', component.get('v.NewPatientGender'));
-            component.set('v.caseObj.Date_Of_Birth_New_Patient__c', component.get('v.NewPatientDOB'));
+			component.set('v.caseObj.First_Name_Patient__c', component.get('v.NewPatientFirstName'));
+			component.set('v.caseObj.Last_Name_Patient__c', component.get('v.NewPatientLastName'));
+            component.set('v.caseObj.Gender_Patient__c', component.get('v.NewPatientGender'));
+            component.set('v.caseObj.Date_Of_Birth_Patient__c', component.get('v.NewPatientDOB'));
             component.set('v.caseObj.Nationality_New_Patient__c', component.get('v.NewPatientNationality'));
-            component.set('v.caseObj.Country_of_Ressidence_New_Patient__c', component.get('v.NewPatientCountry'));
+            component.set('v.caseObj.Country_of_Ressidence_Patient__c', component.get('v.NewPatientCountry'));
             component.set('v.caseObj.Email_New_Patient__c', component.get('v.NewPatientEmail'));
             component.set('v.caseObj.Primary_Phone_New_Patient__c', component.get('v.NewPatientPrimaryPhone'));
             component.set('v.caseObj.First_Name_Existing_Patient__c', component.get('v.ExtPatientFirstName'));

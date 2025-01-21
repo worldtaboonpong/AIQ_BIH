@@ -1,25 +1,39 @@
 <aura:component controller="BIH_ChildCaseDynamicCtrl" Implements="flexipage:availableForRecordHome,force:hasRecordId">
     <!-- Aura Attribute for store single Contact[standard Object] Instance
          And Store Index of Particular Instance -->
+    	 <aura:attribute name="recordId" type="Id" />
          <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
          <aura:attribute name="CaseInstance" type="Object" />
          <aura:attribute name="picklstTmp" type="String[]"/>
+    	<aura:attribute name="refid" type="String"  default=""/>
     <aura:attribute name="rowIndex" type="String" />
+    <aura:attribute name="samePatient" type="boolean" default="false" />
   
     <aura:attribute name="channel" type="String[]" />
+    
+    <aura:attribute name="isShow" type="boolean"  default="false"/>
 
     <!-- Register 2 Lightning Event for handle add or Delete rows on Parent Component  -->
     <aura:registerEvent name="DeleteRowEvt" type="c:DeleteRowEvt" />
     <aura:registerEvent name="AddRowEvt" type="c:AddNewRowEvt" />
     <aura:registerEvent name="verifyRowEvt" type="c:VerifyRowEvt" />
+    
+    
 
     <!-- Table Row -->
     <tr class="slds-text-title_caps">
         <td>
             {!v.rowIndex + 1}
         </td>
+        
+        
+        <aura:if isTrue="{!v.isShow}">
+            <td>
+                <ui:inputCheckbox value="{!v.samePatient}" label="SAME PATIENT" change="{!c.handleSamePatientChange}"/>
+            </td> 
+        </aura:if>
         <td>
-            <ui:inputText class="slds-input" value="{!v.CaseInstance.Hospital_Number_HN__c}" />
+            <ui:inputText class="slds-input" value="{!v.CaseInstance.HNTmp}" />
         </td>
         <td>
             <ui:inputText class="slds-input" value="{!v.CaseInstance.FirstNameTmp}" />
@@ -41,12 +55,12 @@
             <!-- conditionally Display Add or Delete Icons
                  if rowIndex is 0 then show Add New Row Icon else show delete Icon
              -->
-             <!--
+            <!--
             <a onclick="{!c.verifyRow}" style="margin-right: 1rem;">
                 <lightning:icon iconName="utility:search" class="slds-icon slds-icon_small" size="small" alternativeText="verify" />
                 <span class="slds-assistive-text">verify</span>
             </a>
-			-->
+-->
             <aura:if isTrue="{!v.rowIndex == 0}">
                 <a onclick="{!c.AddNewRow}">
                     <lightning:icon iconName="utility:add" class="slds-icon slds-icon_small" size="small"

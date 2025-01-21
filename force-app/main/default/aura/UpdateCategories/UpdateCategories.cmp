@@ -153,7 +153,7 @@
         </div>
     </div>
     <lightning:input readonly="true" name="sla" label="SLA (min.)" value="{!v.caseObj.SLA__c}" />
-    <!--<br/>-->
+    <br/>
     <div class="mybtn">
         <lightning:button variant="brand" label="Save" title="Save" onclick="{!c.onSave}"  disabled="{!v.validSaveBtn}"/>
 		    <lightning:button variant="destructive" label="Cancel" title="Cancel" onclick="{!c.doCancel}"/>        

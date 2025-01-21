@@ -3,11 +3,8 @@ public without sharing class Preregistrationcls {
     public Document thaiId{get;set;}
     public Case editCase{get;set;}
     public String newCaseStr { get; set;} 
-    public String CaseID{get;set;}
-    public Boolean Iseditableform{get;set;}
-    public String caseNumber{get;set;}
-    public String patientName{get;set;}
-    public String pgLanguage{get;set;}
+    Public String CaseID{get;set;}
+    Public Boolean Iseditableform{get;set;}
     
     public Preregistrationcls (ApexPages.StandardController controller){
         passport = new Document();
@@ -15,51 +12,38 @@ public without sharing class Preregistrationcls {
         editCase = new Case();
         CaseID =  controller.getId();
         Iseditableform = false;
-        
-        String langParam = ApexPages.CurrentPage().getParameters().get('lang');
-        pgLanguage = langParam != null ? langParam : 'en';
-        
         init();
     }
     
     public void init() {
         if(CaseID != null && CaseID != ''){
             editCase = [
-                Select Id,CaseNumber,Town_City_Thailand__c,PreRegistration__c,Title_Patient__c, Staying_In_Hotel__c,
+                Select Id,CaseNumber,Town_City_Thailand__c,PreRegistration__c,Title_Patient__c,
                 First_Name_Patient__c,Middle_Name_Patient__c,Last_Name_Patient__c,Date_Of_Birth_Patient__c,
                 Gender_Patient__c,Nationality_New_Patient__c,Country_of_Ressidence_Patient__c,Preferred_Language_Patient__c,
                 Thai_ID_Card_Number_Patient__c,Passport_Number_Patient__c,Primary_Phone_New_Patient__c,Email_New_Patient__c,
                 Address_foreign__c,Town_City_foreign__c,State_Province_foreign__c,Postcode_foreign__c,Address_Thailand__c,
                 State_Province_Thailand__c,Mobile_Number_In_Thailand__c, Town_City_Existing_Patient__c,District_Thailand__c, 
-                State_Province_Existing_Patient__c,Postcode_Thailand__c,Health_Insurance_Co__c,MemberID__c,PolicyNumber__c,
-                Sub_district_Thailand__c
+                State_Province_Existing_Patient__c,Postcode_Thailand__c,Health_Insurance_Co__c,MemberID__c,PolicyNumber__c 
                 from Case where Id=:CaseID
             ];  
             
-            caseNumber = editCase.CaseNumber;
-            patientName = editCase.First_Name_Patient__c + ' ' +editCase.Last_Name_Patient__c;
             if(!editCase.PreRegistration__c){
                 Iseditableform =  true;
             }else{
                 Iseditableform =  false;
             }
-            editCase.Staying_In_Hotel__c = (editCase.Staying_In_Hotel__c == null ? '' : editCase.Staying_In_Hotel__c);
             
-                        newCaseStr =  String.escapeSingleQuotes(JSON.Serialize(editCase,true));
-                    }
-                }
+            newCaseStr =  String.escapeSingleQuotes(JSON.Serialize(editCase,true));
+        }
+    }
     
     @RemoteAction
-    public static String updateCase(String caseStr, String roomNo, String subDisForeign) {
+    public static String updateCase(String caseStr) {
         String returnUrl = Label.PreReg_Thank_URL;
         
         Case ca = (Case) JSON.deserialize(caseStr, Case.class);
-        if (ca.Country_of_Ressidence_Patient__c != 'Thailand' && ca.Staying_In_Hotel__c == 'Yes' && roomNo != '') {
-            ca.Address_foreign__c = (ca.Address_foreign__c != null && ca.Address_foreign__c != '' ? ca.Address_foreign__c+', ' : '') + roomNo;
-        } else if (ca.Country_of_Ressidence_Patient__c != 'Thailand' && ca.Staying_In_Hotel__c == 'No' && subDisForeign != '') {
-            ca.Address_foreign__c = (ca.Address_foreign__c != null && ca.Address_foreign__c != '' ? ca.Address_foreign__c+', ' : '') + subDisForeign;
-        }
-        ca.PreRegistration__c = true;
+        ca.PreRegistration__c =true;
         update ca;
         
         List<Case> caseObjs = [SELECT Id, eConsent_Status__c, eConsent_Link__c FROM Case WHERE Id = :ca.Id];
@@ -89,7 +73,7 @@ public without sharing class Preregistrationcls {
         cdl.ShareType = 'V';
         insert cdl;
     }
-        
+    
     public String getGender() { 
         Map<String,String> options = new Map<String,String>();
         options.put('Female','Female');
@@ -100,14 +84,12 @@ public without sharing class Preregistrationcls {
     
     public String getTitles2() { 
         Map<String,String> options = new Map<String,String>();
-        //options.put('Ambassador','Ambassador');     
-        //options.put('Dr.','Dr.');
-        options.put('Miss (Girl)','Miss (Girl)');
+        options.put('Ambassador','Ambassador');     
+        options.put('Dr','Dr');
         options.put('Masters','Masters');
-        options.put('Ms.','Ms.');
         options.put('Miss','Miss');
-        options.put('Mrs.','Mrs.');
-        options.put('Mr.','Mr.');
+        options.put('Mrs','Mrs');
+        options.put('Mr','Mr');
         options.put('','--- Please select ---');
         return String.escapeSingleQuotes(JSON.serialize(options)); 
     }
@@ -132,58 +114,9 @@ public without sharing class Preregistrationcls {
         options.put('','--- Please select ---');
         return String.escapeSingleQuotes(JSON.serialize(options)); 
     }
-    public String getPatientAllergy() { 
-        Map<String,String> options = new Map<String,String>();
-        options.put('No','No');
-        options.put('Yes','Yes');
-        options.put('','--- Please select ---');
-        return String.escapeSingleQuotes(JSON.serialize(options));
-    }
-    public String getRelationship() { 
-        Map<String,String> options = new Map<String,String>();
-        options.put('Younger sister','Younger sister');
-        options.put('Younger brother','Younger brother');
-        options.put('Wife','Wife');
-        options.put('Uncle','Uncle');
-        options.put('Step-mother','Step-mother');
-        options.put('Step-Father','Step-Father');
-        options.put('Spouse','Spouse');
-        options.put('Son-in-Law','Son-in-Law');
-        options.put('Son','Son');
-        options.put('Sister-in-Law','Sister-in-Law');
-        options.put('Sister','Sister');
-        options.put('Secretary','Secretary');
-        options.put('Other','Other');
-        options.put('Other Relative','Other Relative');
-        options.put('Other Relative','Other Relative');
-        options.put('Niece','Niece');
-        options.put('Nephew','Nephew');
-        options.put('Mother-in-law','Mother-in-law');
-        options.put('Mother','Mother');
-        options.put('Husband','Husband');
-        options.put('Grandson','Grandson');
-        options.put('Grandmother','Grandmother');
-        options.put('Grandfather','Grandfather');
-        options.put('Granddaughter','Granddaughter');
-        options.put('Friend/ Neighbour','Friend/ Neighbour');
-        options.put('Father-in-law','Father-in-law');
-        options.put('Father','Father');
-        options.put('Employer','Employer');
-        options.put('Employee','Employee');
-        options.put('Elder sister','Elder sister');
-        options.put('Elder brother','Elder brother');
-        options.put('Daughter-in law','Daughter-in law');
-        options.put('Daughter','Daughter');
-        options.put('Cousin','Cousin');
-        options.put('Contact','Contact');
-        options.put('Brother-in-law','Brother-in-law');
-        options.put('Brother','Brother');
-        options.put('Aunt','Aunt');
-        options.put('','--- Please select ---');
-        return String.escapeSingleQuotes(JSON.serialize(options)); 
-    }
     public String getCountries() {
-        /*options.put('Zimbabwe','Zimbabwe');
+        Map<String,String> options = new Map<String,String>();
+        options.put('Zimbabwe','Zimbabwe');
         options.put('Zambia','Zambia');
         options.put('Wales','Wales');
         options.put('Vietnam','Vietnam');
@@ -294,25 +227,14 @@ public without sharing class Preregistrationcls {
         options.put('Argentina','Argentina');
         options.put('Algeria','Algeria');
         options.put('Albania','Albania');
-        options.put('Afghanistan','Afghanistan');*/
-		List<PicklistWrapper> pwList = new List<PicklistWrapper>();
-        for( Schema.PicklistEntry pv : Case.Country_of_Residence__c.getDescribe().getPicklistValues()){
-            PicklistWrapper pw = new PicklistWrapper();
-            pw.label = pv.getLabel();
-            pw.value = pv.getValue();
-            pwList.add(pw);
-		}
-        
-        Map<String,String> options = new Map<String,String>();
-        for(Integer count = pwList.size() - 1; count >= 0; count--){
-            options.put(pwList.get(count).value, pwList.get(count).label);
-        }
+        options.put('Afghanistan','Afghanistan');
         options.put('','--- Please select ---');
         return String.escapeSingleQuotes(JSON.serialize(options)); 
     }
     
     public String getNationality() {  
-        /*options.put('Zimbabwean','Zimbabwean');
+        Map<String,String> options = new Map<String,String>();
+        options.put('Zimbabwean','Zimbabwean');
         options.put('Zambian','Zambian');
         options.put('Yemeni','Yemeni');
         options.put('Vietnamese','Vietnamese');
@@ -441,25 +363,8 @@ public without sharing class Preregistrationcls {
         options.put('Angolian','Angolian');
         options.put('Andorian','Andorian');
         options.put('American','American');
-        options.put('Afghani','Afghani');*/
-        List<PicklistWrapper> pwList = new List<PicklistWrapper>();
-        for( Schema.PicklistEntry pv : Account.Nationality__c.getDescribe().getPicklistValues()){
-            PicklistWrapper pw = new PicklistWrapper();
-            pw.label = pv.getLabel();
-            pw.value = pv.getValue();
-            pwList.add(pw);
-		}
-        
-        Map<String,String> options = new Map<String,String>();
-        for(Integer count = pwList.size() - 1; count >= 0; count--){
-            options.put(pwList.get(count).value, pwList.get(count).label);
-        }
+        options.put('Afghani','Afghani');
         options.put('','--- Please select ---');
         return String.escapeSingleQuotes(JSON.serialize(options)); 
     } 
-    
-    public class PicklistWrapper {
-        public String label {get; set;}
-        public String value {get; set;}
-    }
 }

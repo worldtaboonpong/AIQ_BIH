@@ -31,7 +31,7 @@
     <aura:attribute name="activeSections" type="List" default="[]" />
     <aura:attribute name="sessionServices" type="List" default="[]"/>
     <aura:attribute name="isIntRequired" type="boolean" default="false"/>
-    <aura:attribute name="isReset" type="boolean" default="true"/>
+    <aura:attribute name="isReset" type="boolean" default="false"/>
     
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     <aura:handler name="change" value="{!v.selSpecialty}" action="{!c.doSpecialtyChange}"/>
@@ -91,6 +91,8 @@
                             </aura:iteration>
                         </lightning:select-->
                         <aura:if isTrue="{!v.isReset}">
+                            <!--c:TC_SearchablePicklist fieldId="selSpecialtyId" label="Specialty" 
+                                                     picklistOptions="{!v.specialties}" /-->
                             <c:TC_SearchAndSelectPicklist fieldId="selSpecialtyId" label="Specialty"
                                                           options="{!v.specialties}"/>
                         </aura:if>
@@ -173,7 +175,7 @@
                                                         <aura:iteration items="{!docSessItem.timeSlots}" var="slot">
                                                             <lightning:layoutItem size="1" padding="around-small">
                                                                 <aura:if isTrue="{!slot.status == 'Avaliable'}">
-                                                                    <span title="{!slot.patientDetails}" onclick="{!c.doSelectSlot}" id="{!item.docSlotKey+'#'+slot.slotId+'#'+slot.startTime}" class="custom-cursor slds-badge slds-badge_lightest">
+                                                                    <span onclick="{!c.doSelectSlot}" id="{!item.docSlotKey+'#'+slot.slotId+'#'+slot.startTime}" class="custom-cursor slds-badge slds-badge_lightest">
                                                                         {!slot.startTime}
                                                                     </span>
                                                                 </aura:if>

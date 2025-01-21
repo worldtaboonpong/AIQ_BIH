@@ -1,0 +1,39 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global">
+    <!-- Attributes -->
+    <aura:attribute name="fieldId" type="string" default="" required="true"/>
+    <aura:attribute name="label" type="string" default="" required="true"/>
+    <aura:attribute name="searchTerm" type="String" />
+    <aura:attribute name="picklistOptions" type="List" />
+    <aura:attribute name="filteredOptions" type="List" />
+    <aura:attribute name="selectedValue" type="String" />
+    <aura:attribute name="showDropdown" type="Boolean" default="false" />
+    
+    <aura:registerEvent name="cmpEvent" type="c:TC_SearchablePicklistEvent"/>
+    
+    <!-- Input field for searching and selecting -->
+    <div class="search-select-container">
+        <lightning:input label="{!v.label}" 
+                         value="{!v.searchTerm}" 
+                         placeholder="Type to search..." 
+                         onkeyup="{!c.handleSearch}" 
+                         onblur="{!c.handleBlur}" />
+        
+        <!-- Dropdown for displaying filtered options -->
+        <aura:if isTrue="{!v.showDropdown}">
+            <div id="listbox-id-1" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid">
+                <ul class="slds-listbox slds-listbox_vertical recordListBox" role="presentation">
+                    <!--div class="dropdown"-->
+                    <aura:iteration items="{!v.filteredOptions}" var="option">
+                        <li class="slds-listbox__item eachItem" onclick="{!c.handleSelect}" data-value="{!option.value}">
+                            <span class="slds-media slds-listbox__option_entity verticalAlign slds-truncate">{!option.label}</span>
+                        </li>
+                    </aura:iteration>
+                    <!--/div-->
+                </ul>
+            </div>
+        </aura:if>
+    </div>
+
+    <!-- Display selected value -->
+    <!--lightning:input label="Selected Value" value="{!v.selectedValue}" readonly="true" /-->
+</aura:component>

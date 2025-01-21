@@ -5,14 +5,14 @@
     
     <aura:attribute name="loading" type="boolean" default="false" />
     <aura:attribute name="MapSVTM" type="Map" />
-    <aura:attribute name="apptObj" type="Appointment__c" />
+    <aura:attribute name="caseObj" type="Case" default="{ 'sobjectType': 'Case' }"/>
     <aura:attribute name="message" type="String" default=""/>
     <aura:attribute name="contactNumber" type="String" default=""/>
     <aura:attribute name="recordId" type="String" default=""/>
     <aura:attribute name="templateId" type="String" default=""/>
     <aura:attribute name="MapSMSTemplate" type="Map" default="{}"/>
-    <aura:attribute name="SMSTemplate" type="String[]" />
-    <aura:attribute name="Templates" type="String" />
+    <aura:attribute name="SMSTemplate" type="String[]"/>
+    <aura:attribute name="Templates" type="String"/>
     <aura:attribute name="parseDateTH" type="String" default=""/>
     <aura:attribute name="parseDateEN" type="String" default=""/>
     
@@ -54,7 +54,7 @@
                     <!-- <lightning:input readonly="true" type="Datetime" aura:id="lastsentdate" name="lastsentdate" label="Last Sent Date" value="{!v.caseObj.Last_Sent_Date__c}" /> -->
                     <label class="slds-form-element__label">Last Sent Date</label>
                     <div class="slds-form-element__static div-time slds-form-element_stacked">
-                        <lightning:formattedDateTime value="{! v.apptObj.Last_Sent_Date__c }" year="numeric" month="short"
+                        <lightning:formattedDateTime value="{! v.caseObj.Last_Sent_Date__c }" year="numeric" month="short"
                                                      day="numeric" hour="2-digit" minute="2-digit" second="2-digit" />
                     </div>
                     <lightning:select aura:id="sms_language" name="sms_language" label="SMS Language" onchange="{! c.onChangeLanguage }">

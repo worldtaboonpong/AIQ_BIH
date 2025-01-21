@@ -7,7 +7,7 @@ public class RequestReplyEmailRegisTest {
         system.schedule('Auto Send Warning Mail',  '0 1 * * * ?', pp);
 
         BatchReplyEmailRegis obj = new BatchReplyEmailRegis();
-        //Database.executeBatch(obj);
+        Database.executeBatch(obj);
         
 
         Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator2());

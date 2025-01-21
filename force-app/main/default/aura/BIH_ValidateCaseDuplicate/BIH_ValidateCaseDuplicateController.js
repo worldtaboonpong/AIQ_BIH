@@ -1,6 +1,6 @@
 ({
 	doInit : function(component, event, helper) {
-        //console.log( '----ONINIT----');
+        console.log( '----ONINIT----');
         
         var actions = [
             { label: 'Person', name: 'show_person' },
@@ -89,7 +89,7 @@
                 // component.set('v.showError',true);
                 // errors[i] = true;
             }
-            //console.log('Errors: ',errors[i]);
+            console.log('Errors: ',errors[i]);
             
             
             // console.log('--');

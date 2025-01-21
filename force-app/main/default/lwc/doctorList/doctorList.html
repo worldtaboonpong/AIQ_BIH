@@ -1,0 +1,10 @@
+<template>
+    <!-- Lightning Accordion to display doctorList -->
+    <lightning-accordion allow-multiple-sections="true">
+        <template for:each={doctorList} for:item="doctor">
+            <lightning-accordion-section key={doctor.docSlotKey} label={doctor.doctorName} data-id={doctor.docSlotKey} onsectiontoggle={handleSectionToggle}>
+                <c-doctor-calendar onselectdate={handleSelectDate}></c-doctor-calendar>
+            </lightning-accordion-section>
+        </template>
+    </lightning-accordion>
+</template>

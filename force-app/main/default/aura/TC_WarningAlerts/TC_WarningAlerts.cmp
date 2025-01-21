@@ -5,6 +5,6 @@
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     
     <aura:iteration items="{!v.patientAlerts}" var="item">
-        <img title="{!item.iconAlert}" src="{!$Resource.TC_WarningAlerts + '/' + item.iconPath}"/>
+        <img src="{!$Resource.TC_WarningAlerts + '/' + item}"/>
     </aura:iteration>
 </aura:component>

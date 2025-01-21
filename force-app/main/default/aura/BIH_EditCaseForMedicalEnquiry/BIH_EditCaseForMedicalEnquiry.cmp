@@ -115,6 +115,7 @@
     <aura:attribute name="LikelyPrognosisList" type="List" />
     <aura:attribute name="WhenConsultList" type="List" />
     <aura:attribute name="NationalityList" type="List" />
+    <aura:attribute name="PreferredLanguageList" type="List" />
     <!-- <aura:attribute name="campaignTxt" type="String" default=""/> -->
 
     <div>
@@ -405,6 +406,16 @@
                     <lightning:input aura:id="subject_case" required="true" name="subject_case" label="Subject" value="{!v.caseObj.Subject}" />
                 </div>
                 <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_1-of-2">
+                <lightning:select required="true" name="status" label="Status"
+                        value="{!v.caseObj.Status}" onchange="{! c.onChangeStatus }">
+                        <aura:iteration items="{!v.PickList.Status}" var="option">
+                            <option value="{!option.value}" selected="">{!option.label}</option>
+                        </aura:iteration>
+                    </lightning:select>
+                    </div>
+                </div>
+                <div class="slds-grid slds-gutters">
 
                     <div class="slds-col slds-size_1-of-1">
                         <label class="slds-form-element__label">Case Detail</label>
@@ -545,8 +556,8 @@
                 </div>
                 <div class="slds-grid slds-gutters">
                     <div class="slds-col slds-size_1-of-1">
-                        <lightning:textarea name="Medical Enquiry Case Comment" label="Case Comment"
-                            value="{!v.caseObj.Medical_Enquiry_Case_Comment__c}" />
+                        <lightning:textarea name="case_comment" label="Case Comment"
+                            value="{!v.caseObj.Case_Comment__c}" />
                     </div>
                 </div>
 
@@ -557,9 +568,6 @@
 			</h3>
                 <div class="slds-grid slds-gutters">	
                     <div class="slds-col slds-size_1-of-2">
-                        	<div>	
-                                <lightning:input name="Endosement" label="Endosement" value="{!v.caseObj.ME_Endosement__c}" />	
-                            </div>
                         	<div>	
                                 <lightning:input name="RCREF" label="RC REF#" value="{!v.caseObj.RCREF__c}" />	
                             </div>
@@ -915,6 +923,17 @@
                         </aura:iteration>
                     </lightning:select>
                     <!-- <aura:if isTrue="{! v.hasDoctor }"> -->
+                    
+                    <lightning:select aura:id="preferred_language"  name="preferred_language" label="Preferred Language"	
+                                        value="{!v.caseObj.Preferred_Language__c}">	
+                                        <option  value="" selected="">None</option>	
+                                	<aura:iteration items="{!v.PreferredLanguageList}" var="item">
+                                            <option value="{!item.item}"  selected="{!item.selected}">
+                                                {!item.item}
+                                            </option>
+                               		</aura:iteration>
+            		</lightning:select>
+                    
                          <lightning:input name="additional_doctor" label="Additional Doctor" value="{!v.caseObj.Additional_Doctor__c}" />
                         <div>
                             <label for="pass_date_to_doctor" class="slds-form-element__label">Pass to Doctor Date</label>
@@ -960,6 +979,7 @@
                                         value="{!v.caseObj.ProcedureME_3__c}" />
                                 </div>
             			</div>
+
                           
                 </div>
                

@@ -168,52 +168,15 @@
 			//helper.stopSpinner(component);
 
 			if(result.status){
-				console.log('success');
-                                    console.log('uuid:'+uuid);
-                                    console.log('hnNumber:'+hnNumber);
-                                    console.log('firstName:'+firstName);
-                                    console.log('lastName:'+lastName);
-                                    console.log('gender:'+gender);
-                                    console.log('dateOfBirthString:'+dateOfBirthString);
-                                    console.log('case_id:'+component.get("v.recordId"));
-                                    console.log('case_no:'+component.get("v.caseObj.CaseNumber"));
-                                    console.log('client_id:'+component.get("v.clientId"));
-                                    console.log('request_session:'+component.get("v.sessionId"));
-                                    console.log('username:'+component.get("v.userName"));
+
 
 				window.open(result.data.redirect_url,'_blank');
 			}else{
-                					console.log('Error');
-                                    console.log('uuid:'+uuid);
-                                    console.log('hnNumber:'+hnNumber);
-                                    console.log('firstName:'+firstName);
-                                    console.log('lastName:'+lastName);
-                                    console.log('gender:'+gender);
-                                    console.log('dateOfBirthString:'+dateOfBirthString);
-                                    console.log('case_id:'+component.get("v.recordId"));
-                                    console.log('case_no:'+component.get("v.caseObj.CaseNumber"));
-                                    console.log('client_id:'+component.get("v.caseObj.clientId"));
-                                    console.log('request_session:'+component.get("v.sessionId"));
-                                    console.log('username:'+component.get("v.userName"));
 				helper.displayToast(component, "Error", result.status_code + ' ' + result.status_message);
 			}
 		  },
 		error: function( jqXhr, textStatus, errorThrown ){
-									console.log('Error2');
-                                    console.log('uuid:'+uuid);
-                                    console.log('hnNumber:'+hnNumber);
-                                    console.log('firstName:'+firstName);
-                                    console.log('lastName:'+lastName);
-                                    console.log('gender:'+gender);
-                                    console.log('dateOfBirthString:'+dateOfBirthString);
-                                    console.log('case_id:'+component.get("v.recordId"));
-                                    console.log('case_no:'+component.get("v.caseObj.CaseNumber"));
-                                    console.log('client_id:'+component.get("v.caseObj.clientId"));
-                                    console.log('request_session:'+component.get("v.sessionId"));
-                                    console.log('username:'+component.get("v.userName"));
-                                    console.log('jqXhr :'+JSON.stringify(jqXhr));
-                                    console.log('textStatus :'+textStatus);
-                                    console.log('errorThrown :'+errorThrown);
+			
 
 			//alert('Cannot connect to PDVS!');
 			//

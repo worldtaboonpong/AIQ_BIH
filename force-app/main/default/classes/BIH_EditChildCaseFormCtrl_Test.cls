@@ -175,7 +175,7 @@ public with sharing class BIH_EditChildCaseFormCtrl_Test {
 
         BIH_CaseContactInformationCtrl.getCaseContactInformation(cs.Id);
         BIH_CaseContactInformationCtrl.getNotefromAccount(accc.Id);
-        //BIH_CaseContactInformationCtrl.saveCase(cs);
+        BIH_CaseContactInformationCtrl.saveCase(cs);
         
         
         
@@ -259,6 +259,7 @@ public with sharing class BIH_EditChildCaseFormCtrl_Test {
         BIH_EditChildCaseFormCtrl.getIndiRefferDetail();
         BIH_EditChildCaseFormCtrl.getReviewByDetail();
         BIH_EditChildCaseFormCtrl.getSpecialtyDetail();
+        BIH_EditChildCaseFormCtrl.getLikelyProDetail();
         BIH_EditChildCaseFormCtrl.getWhenConsultDetail();
         BIH_EditChildCaseFormCtrl.getGenderNewPatientDetail();
         BIH_EditChildCaseFormCtrl.getTitleNewPatientDetail();
@@ -266,17 +267,6 @@ public with sharing class BIH_EditChildCaseFormCtrl_Test {
         BIH_EditChildCaseFormCtrl.getGenderExtPatientDetail();
         BIH_EditChildCaseFormCtrl.getNationalityDetail();
         BIH_EditChildCaseFormCtrl.getPreferLangDetail();
-        BIH_EditChildCaseFormCtrl.getInsureName1Detail();
-        BIH_EditChildCaseFormCtrl.getInsureName2Detail();
-        BIH_EditChildCaseFormCtrl.getInsureName3Detail();
-        BIH_EditChildCaseFormCtrl.getClinicName1Detail();
-        BIH_EditChildCaseFormCtrl.getClinicName2Detail();
-        BIH_EditChildCaseFormCtrl.getClinicName3Detail();
-        BIH_EditChildCaseFormCtrl.getStationDetail();
-        BIH_EditChildCaseFormCtrl.getCustomerTypeDetail();
-        BIH_EditChildCaseFormCtrl.getTaskItemDetail();
-        BIH_EditChildCaseFormCtrl.getTaskCategoryDetail();
-        BIH_EditChildCaseFormCtrl.getTaskStatusDetail();
         Test.stopTest();
     }
     

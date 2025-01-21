@@ -113,35 +113,22 @@ public class BIH_CaseSendAutoSMS {
     
     @future(callout=true)
     public static void calloutSendSms(string caseid) {
-        string messagesEng = 'Kindly complete your registration online with Bumrungrad International Hospital:'+'\n'+'https://bumrungrad--uat.sandbox.my.salesforce-sites.com/liveAgentSetupFlow/preregistration?id='+caseid +'\n'+'\n'+'Thank you and we look forward to serving you.'+'\n'+'Registration Department.'+'\n'+'\n'+'Please kindly discard this request, if you have already submitted the link.'+'\n'+'\n'+'Before your arrival, please read the attached registration documents for your consideration and convenience in providing services and medical care. Please click https://sforce.co/3bxQvGR';
-        string messagesThai = 'กรุณากรอกแบบฟอร์มลงทะเบียนออนไลน์ของท่านกับโรงพยาบาลบำรุงราษฎร์ ผ่านช่องทางคลิก:'+'\n'+' https://bumrungrad--uat.sandbox.my.salesforce-sites.com/liveAgentSetupFlow/preregistration?id='+caseid +'&lang=th'+'\n'+'\n'+'ขอขอบคุณที่ไว้วางใจโรงพยาบาลบำรุงราษฎร์'+'\n'+'แผนกลงทะเบียน'+'\n'+'\n'+'ขออภัยหากท่านได้กรอกข้อมูลประวัติดังกล่าวกับทางโรงพยาบาลแล้ว'+'\n'+'\n'+'โปรดอ่านเอกสารประกอบการลงทะเบียนที่แนบมานี้ก่อนเข้ารับบริการ เพื่อประกอบการตัดสินใจของท่านและเพื่อความสะดวกรวดเร็วในการให้บริการและบริบาลแก่ท่าน กรุณาคลิก https://sforce.co/3no5tlg';
+        string messagesEng = 'Kindly complete your registration online with Bumrungrad International Hospital:'+'\n'+' https://www.bumrungrad.com/en/preregistration/?id='+caseid +'\n'+'\n'+'Thank you and we look forward to serving you.'+'\n'+'Registration Department.'+'\n'+'\n'+'Please kindly discard this request, if you have already submitted the link.'+'\n'+'\n'+'Before your arrival, please read the attached registration documents for your consideration and convenience in providing services and medical care. Please click https://sforce.co/3bxQvGR';
+        string messagesThai = 'กรุณากรอกแบบฟอร์มลงทะเบียนออนไลน์ของท่านกับโรงพยาบาลบำรุงราษฎร์ ผ่านช่องทางคลิก:'+'\n'+' https://www.bumrungrad.com/th/preregistration/?id='+caseid +'\n'+'\n'+'ขอขอบคุณที่ไว้วางใจโรงพยาบาลบำรุงราษฎร์'+'\n'+'แผนกลงทะเบียน'+'\n'+'\n'+'ขออภัยหากท่านได้กรอกข้อมูลประวัติดังกล่าวกับทางโรงพยาบาลแล้ว'+'\n'+'\n'+'โปรดอ่านเอกสารประกอบการลงทะเบียนที่แนบมานี้ก่อนเข้ารับบริการ เพื่อประกอบการตัดสินใจของท่านและเพื่อความสะดวกรวดเร็วในการให้บริการและบริบาลแก่ท่าน กรุณาคลิก https://sforce.co/3no5tlg';
         string messages = '';
         string contactNumber = '';
         string patientnationality = '';
-        List<case> caseObj = [SELECT Id,Full_Name__c,First_Name_New_Patient__c,Last_Name_New_Patient__c,First_Name_Patient__c,Last_Name_Patient__c,Primary_Phone_Existing_Patient__c,Primary_Phone_New_Patient__c,Nationality__c,Account_Nationality__c,Registration_URL__c,Nationality_New_Patient__c,
+        
+        List<case> caseObj = [SELECT Id,Primary_Phone_Existing_Patient__c,Primary_Phone_New_Patient__c,Nationality__c,Account_Nationality__c,Registration_URL__c,Nationality_New_Patient__c,
                               Last_Sent_Date__c,SMS_Sent__c FROM CASE WHERE id =:caseid];
-        string patientname = caseObj[0].Full_Name__c;
-        string patientFirstnameManual = caseObj[0].First_Name_Patient__c;
-        string patientLastnameManual = caseObj[0].Last_Name_Patient__c;
-        string messagesEng1 = 'Dear Sir/Madam'+' '+patientname+'\n'+'\n'+'Kindly complete your registration online with Bumrungrad International Hospital:'+'\n'+' https://bumrungrad--uat.sandbox.my.salesforce-sites.com/liveAgentSetupFlow/preregistration?id='+caseid +'\n'+'\n'+'Thank you and we look forward to serving you.'+'\n'+'Registration Department.'+'\n'+'\n'+'Please kindly discard this request, if you have already submitted the link.'+'\n'+'\n'+'Before your arrival, please read the attached registration documents for your consideration and convenience in providing services and medical care. Please click https://sforce.co/3bxQvGR';
-        string messagesThai1 = 'เรียน คุณ'+' '+patientname+'\n'+'\n'+'กรุณากรอกแบบฟอร์มลงทะเบียนออนไลน์ของท่านกับโรงพยาบาลบำรุงราษฎร์ ผ่านช่องทางคลิก:'+'\n'+' https://bumrungrad--uat.sandbox.my.salesforce-sites.com/liveAgentSetupFlow/preregistration?id='+caseid +'&lang=th'+'\n'+'\n'+'ขอขอบคุณที่ไว้วางใจโรงพยาบาลบำรุงราษฎร์'+'\n'+'แผนกลงทะเบียน'+'\n'+'\n'+'ขออภัยหากท่านได้กรอกข้อมูลประวัติดังกล่าวกับทางโรงพยาบาลแล้ว'+'\n'+'\n'+'โปรดอ่านเอกสารประกอบการลงทะเบียนที่แนบมานี้ก่อนเข้ารับบริการ เพื่อประกอบการตัดสินใจของท่านและเพื่อความสะดวกรวดเร็วในการให้บริการและบริบาลแก่ท่าน กรุณาคลิก https://sforce.co/3no5tlg';
-        string messagesEng2 = 'Dear Sir/Madam'+' '+patientFirstnameManual+' '+patientLastnameManual+'\n'+'\n'+messagesEng;
-        string messagesThai2 = 'เรียน คุณ'+' '+patientFirstnameManual+' '+patientLastnameManual+'\n'+'\n'+messagesThai;
-        system.debug('caseObj[0].First_Name_Patient__c'+caseObj[0].First_Name_Patient__c);
+        
         if(caseObj.size() > 0){
             
             contactNumber = caseObj[0].Primary_Phone_New_Patient__c != ''? caseObj[0].Primary_Phone_New_Patient__c : caseObj[0].Primary_Phone_Existing_Patient__c;
   			patientnationality = caseObj[0].Nationality_New_Patient__c;
-            if(patientnationality == 'Thai' && caseObj[0].Full_Name__c != ' ' && caseObj[0].Full_Name__c != null){
-                messages = messagesThai1;
-            }else if(patientnationality == 'Thai' && caseObj[0].First_Name_Patient__c != ' '&& caseObj[0].First_Name_Patient__c != null){
-                messages = messagesThai2;
-            }else if(patientnationality != 'Thai' && caseObj[0].Full_Name__c != ' '&& caseObj[0].Full_Name__c != null){
-                messages = messagesEng1;
-            }else if(patientnationality != 'Thai' && caseObj[0].First_Name_Patient__c != ' ' && caseObj[0].First_Name_Patient__c != null){
-                messages = messagesEng2;
-            }
-            else{
+            if(patientnationality == 'Thai'){
+                messages = messagesThai;
+            }else{
                 messages = messagesEng;
             }
         }

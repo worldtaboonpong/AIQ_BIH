@@ -93,7 +93,7 @@ public class BatchStampFirstResponseMEteamTest {
             
             
             BatchStampFirstResponseMEteam obj = new BatchStampFirstResponseMEteam();
-            //Database.executeBatch(obj);
+            Database.executeBatch(obj);
           }
         /*
         //create case

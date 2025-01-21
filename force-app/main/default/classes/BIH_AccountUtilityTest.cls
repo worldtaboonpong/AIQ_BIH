@@ -11,7 +11,7 @@ public class BIH_AccountUtilityTest {
         BIH_AccountQuickDetailCtrl.AccountRecordObj = null;
         
         BIH_AccountQuickDetailCtrl.getCaseByAccountId(accPersonList.get(0).id);
-        BIH_AccountQuickDetailCtrl.getCaseByAccountId(accList.get(0).id);
+		BIH_AccountQuickDetailCtrl.getCaseByAccountId(accList.get(0).id);
         BIH_AccountQuickDetailCtrl.getAccount(accList.get(0).id);
         BIH_AccountQuickDetailCtrl.getUserCurrent();
         BIH_AccountQuickDetailCtrl.showContactCenterNote();

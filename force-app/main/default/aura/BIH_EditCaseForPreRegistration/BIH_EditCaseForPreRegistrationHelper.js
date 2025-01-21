@@ -877,6 +877,7 @@ getCampaignList: function (component, event, helper) {
         });
         $A.enqueueAction(action);
     },
+                                
     getGenderNewPatientlist: function (component, event, helper) {
         var action = component.get('c.getGenderNewPatientDetail');
         action.setCallback(this, function (response) {
@@ -886,32 +887,6 @@ getCampaignList: function (component, event, helper) {
                 var returnValues = response.getReturnValue();
                 //alert("Success1");
                 component.set('v.GenderNewPatientList', returnValues);
-                //alert("Success2"+returnValues);
-                
-
-            } else if (state === "ERROR") {
-                var errors = response.getError();
-                if (errors) {
-                    if (errors[0] && errors[0].message) {
-                        console.log(errors);
-                        helper.displayToast(component, "Error", errors[0].message);
-                    }
-                } else {
-                    console.log("Unknown error");
-                }
-            }
-        });
-        $A.enqueueAction(action);
-    },
-   getTitleExtPatientlist: function (component, event, helper) {
-        var action = component.get('c.getTitleExtPatientDetail');
-        action.setCallback(this, function (response) {
-            var state = response.getState();
-            if (state === "SUCCESS") {
-                //alert("Success");
-                var returnValues = response.getReturnValue();
-                //alert("Success1");
-                component.set('v.TitleExtPatientList', returnValues);
                 //alert("Success2"+returnValues);
                 
 
@@ -955,6 +930,34 @@ getCampaignList: function (component, event, helper) {
         });
         $A.enqueueAction(action);
     },
+    /*  
+   getTitleExtPatientlist: function (component, event, helper) {
+        var action = component.get('c.getTitleExtPatientDetail');
+        action.setCallback(this, function (response) {
+            var state = response.getState();
+            if (state === "SUCCESS") {
+                //alert("Success");
+                var returnValues = response.getReturnValue();
+                //alert("Success1");
+                component.set('v.TitleExtPatientList', returnValues);
+                //alert("Success2"+returnValues);
+                
+
+            } else if (state === "ERROR") {
+                var errors = response.getError();
+                if (errors) {
+                    if (errors[0] && errors[0].message) {
+                        console.log(errors);
+                        helper.displayToast(component, "Error", errors[0].message);
+                    }
+                } else {
+                    console.log("Unknown error");
+                }
+            }
+        });
+        $A.enqueueAction(action);
+    },
+   
    	getGenderExtPatientlist: function (component, event, helper) {
         var action = component.get('c.getGenderExtPatientDetail');
         action.setCallback(this, function (response) {
@@ -1137,5 +1140,101 @@ getCampaignList: function (component, event, helper) {
             }
         });
         $A.enqueueAction(action);
-    },                               
+    }, */    
+   getpatientaccountlist: function (component, event, helper) {
+        var action = component.get('c.getAccountDetailList');
+        var recordCaseId = component.get("v.recordId");
+        
+        action.setParams({
+                "caseId" :recordCaseId
+            });
+        action.setCallback(this, function (response) {
+            var state = response.getState();
+            if (state === "SUCCESS") {
+
+                var returnValues = response.getReturnValue();
+
+                component.set('v.caseObj.Account_First_Name__c', returnValues.Account_First_Name__c);
+                alert('+++++++++First_Name : '+returnValues.First_Name_Patient__c);
+                if(returnValues.First_Name_Patient__c == null || returnValues.First_Name_Patient__c == ''){
+                    component.set('v.NewPatientFirstName', returnValues.Account_First_Name__c);
+                }else{
+                    component.set('v.NewPatientFirstName', returnValues.First_Name_Patient__c);
+                }
+                //component.set('v.PatientFirstName', returnValues.Account_First_Name__c);
+                //component.set('v.NewPatientFirstName', returnValues.Account_First_Name__c);
+                //{!v.caseObj.First_Name_New_Patient__c}
+                
+                component.set('v.caseObj.Account_Last_Name__c', returnValues.Account_Last_Name__c);
+                alert('+++++++++Last_Name : '+returnValues.Last_Name_Patient__c);
+                if(returnValues.Last_Name_Patient__c == null || returnValues.Last_Name_Patient__c == ''){
+                    component.set('v.NewPatientLastName', returnValues.Account_Last_Name__c);
+                }else{
+                    component.set('v.NewPatientLastName', returnValues.Last_Name_Patient__c);
+                }
+                
+                
+                component.set('v.caseObj.Account_Gender__c', returnValues.Account_Gender__c);
+                alert('+++++++++Gender : '+returnValues.Gender_Patient__c);
+                
+                if(returnValues.Gender_Patient__c == null || returnValues.Gender_Patient__c == ''){
+                    component.set('v.NewPatientGender', returnValues.Account_Gender__c);
+                }else{
+                    component.set('v.NewPatientGender', returnValues.Gender_Patient__c);
+                }
+                
+                
+                component.set('v.caseObj.Account_DOB__c', returnValues.Account_DOB__c);
+                alert('+++++++++DOB : '+returnValues.Date_Of_Birth_Patient__c);
+                if(returnValues.Date_Of_Birth_Patient__c == null || returnValues.Date_Of_Birth_Patient__c == ''){
+                    component.set('v.NewPatientDOB', returnValues.Account_DOB__c);
+                }else{
+                    component.set('v.NewPatientDOB', returnValues.Date_Of_Birth_Patient__c);
+                }
+                
+                
+                component.set('v.caseObj.Account_Nationality__c', returnValues.Account_Nationality__c);
+                if(returnValues.Nationality_New_Patient__c == null || returnValues.Nationality_New_Patient__c == ''){
+                    component.set('v.NewPatientNationality', returnValues.Account_Nationality__c);
+                }else{
+                    component.set('v.NewPatientNationality', returnValues.Nationality_New_Patient__c);
+                }
+                
+                component.set('v.caseObj.Account_Country__c', returnValues.Account_Country__c);
+                if(returnValues.Country_of_Ressidence_Patient__c == null || returnValues.Country_of_Ressidence_Patient__c == ''){
+                    component.set('v.NewPatientCountry', returnValues.Account_Country__c);
+                }else{
+                    component.set('v.NewPatientCountry', returnValues.Country_of_Ressidence_Patient__c);
+                }
+                
+                component.set('v.caseObj.Account_Email__c', returnValues.Account_Email__c);
+                 if(returnValues.Email_New_Patient__c == null || returnValues.Email_New_Patient__c == ''){
+                    component.set('v.NewPatientEmail', returnValues.Account_Email__c);
+                }else{
+                    component.set('v.NewPatientEmail', returnValues.Email_New_Patient__c);
+                }
+                
+                component.set('v.caseObj.Account_Primary_Phone__c', returnValues.Account_Primary_Phone__c);
+                if(returnValues.Primary_Phone_New_Patient__c == null || returnValues.Primary_Phone_New_Patient__c == ''){
+                    component.set('v.NewPatientPrimaryPhone', returnValues.Account_Primary_Phone__c);
+                }else{
+                    component.set('v.NewPatientPrimaryPhone', returnValues.Primary_Phone_New_Patient__c);
+                } 
+                
+                alert('+++++++++CaseNumber : '+returnValues.CaseNumber);
+                component.set('v.CaseNumber', returnValues.CaseNumber);
+            } else if (state === "ERROR") {
+                var errors = response.getError();
+                if (errors) {
+                    if (errors[0] && errors[0].message) {
+                        console.log(errors);
+                        helper.displayToast(component, "Error", errors[0].message);
+                    }
+                } else {
+                    console.log("Unknown error");
+                }
+            }
+        });
+        $A.enqueueAction(action);
+    },                                
 })

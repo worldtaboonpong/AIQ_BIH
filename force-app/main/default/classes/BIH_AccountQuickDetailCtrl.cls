@@ -59,5 +59,6 @@ public class BIH_AccountQuickDetailCtrl {
             return null;    
         }        
     }
+    
 
 }

@@ -1,0 +1,29 @@
+.timeslot-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.timeslot {
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.slds-popover {
+    position: absolute;
+    background-color: #003366; /* Adjusted to match the second image's popup style */
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 1000;
+}
+
+.account-info {
+    margin: 5px 0;
+    background-color: #004080; /* Matches inner style of the popup */
+    padding: 5px;
+    border-radius: 3px;
+}

@@ -1,6 +1,6 @@
 @IsTest
 public class TC_BookAppointmentCtrlTest {
-    @TestSetup
+	@TestSetup
     static void setup() {
         TC_TestDataFactory.insertConfigData();
     }
@@ -18,7 +18,7 @@ public class TC_BookAppointmentCtrlTest {
         Test.setMock(HttpCalloutMock.class, new TC_TrakCareServiceMock(
             TC_TrakCareServiceMock.schedulesResponse
         ));
-        TC_BookAppointmentCtrl.getDoctorTimeSlots(sl.Id, string.valueOf(date.today()), null, null);
+        TC_BookAppointmentCtrl.getDoctorTimeSlots(sl.Id, string.valueOf(date.today()));
         Map<String, Object> mapObj = TC_BookAppointmentCtrl.reviewAppointment(accList.get(0).Id, sl.Id+'#7079||54305#10:00', string.valueOf(date.today()));
         Test.stopTest();
         TC_BookAppointmentCtrl.bookAppointmentRecord((Appointment__c)mapObj.get('Appointment'));

@@ -1,12 +1,3 @@
-/*-----------------------------------------------------------------------------------------------
-Author     : 
-Company    : AIQ
-Description: 
-Test Class : BIH_CaseUtilityTest
-Objects    : Case
-History    :  
-10102022       ParthT   Clean-Up 
--------------------------------------------------------------------------------------------------*/
 global class BIH_CaseUtility {
 	// public BIH_CaseUtility() {
 		
@@ -449,7 +440,6 @@ global class BIH_CaseUtility {
         Schema.DescribeSobjectResult results = Schema.describeSObjects(new String[]{'Case'})[0];
         for (Schema.PicklistEntry entry : results.fields.getMap().get(field_name).getDescribe().getPicklistValues()) {
             if (entry.isActive()) {
-                System.debug('454 entry: '+entry.getValue());
                     values.add(entry.getValue());
              } 
         }
@@ -551,12 +541,20 @@ global class BIH_CaseUtility {
 
         System.debug('cc.Channel__c : '+cc.Channel__c);
         System.debug('cc.recordTypeId : '+cc.recordTypeId);
-
+        
+        /*System.debug('a1 : ');
+        if (cc.Channel__c == 'PreRegistration'){
+            System.debug('a2 : ');
+        }
+        System.debug('a3 : ');
+        if (cc.recordTypeId == 'Registration Case'){
+            System.debug('a4 : ');
+        }*/
         
         System.debug('cc.recordTypeId : '+cc.recordTypeId);
         System.debug('REGISTRATION_CASE_RECORDTYPE : '+REGISTRATION_CASE_RECORDTYPE);
         
-        if (cc.Channel__c == 'PreRegistration' || cc.recordTypeId == REGISTRATION_CASE_RECORDTYPE || cc.Channel__c == 'Insurance' ||cc.recordTypeId == Insurance_Case_RECORDTYPE  ){
+        if (cc.Channel__c == 'PreRegistration' || cc.recordTypeId == REGISTRATION_CASE_RECORDTYPE || cc.Channel__c == 'Insurance' ||cc.recordTypeId == Insurance_Case_RECORDTYPE){
             isPreRegis = true;
         }
         
@@ -582,6 +580,7 @@ global class BIH_CaseUtility {
         return isPC;
     }
 
+    
 
     @AuraEnabled
     public static Case getSMSCase(String recordId){
@@ -636,7 +635,7 @@ global class BIH_CaseUtility {
     @AuraEnabled
     public static Map<String,SMS_Template__c> getSMSTemplate(){
         
-        List<SMS_Template__c> sms = [SELECT Id,SMS_Template_Subject__c,Field_Mapping_TH__c,Field_Mapping_EN__c, SMS_TH__c, SMS_EN__c,SMS_JP__c  FROM SMS_Template__c ];
+        List<SMS_Template__c> sms = [SELECT Id,SMS_Template_Subject__c,Field_Mapping_TH__c,Field_Mapping_EN__c, SMS_TH__c, SMS_EN__c FROM SMS_Template__c];
         Map<String,SMS_Template__c> a = new Map<String,SMS_Template__c>();
         for (SMS_Template__c s : sms) {
             a.put(s.SMS_Template_Subject__c,s);
@@ -726,7 +725,7 @@ global class BIH_CaseUtility {
         }
         return picklistFieldValues;
    }
-   @AuraEnabled
+    @AuraEnabled
     public static void closeCaseByMyselfAction(Id caseId) {
         // Fetch the case record
         Case caseRecord = [SELECT Id, Status,Close_Case_Reason__c FROM Case WHERE Id = :caseId LIMIT 1];
@@ -749,5 +748,5 @@ global class BIH_CaseUtility {
         
         // Update the case record
         update caseRecord;
-    }   
+    }    
 }

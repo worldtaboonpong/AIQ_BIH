@@ -29,9 +29,7 @@ public class DeleteContactCTIBatchTest {
         String days = BIH_Constants.DELETE_CTI_CONTACT_DAYS;
         String query = 'SELECT ID,MobilePhone,Phone,AccountId,Firstname,createddate FROM Contact WHERE Phone != null and CreatedDate = LAST_N_DAYS:'+days;
         DeleteContactCTIBatch memberPurge = new DeleteContactCTIBatch(query);
-        
-        DeleteContactCTISchedule sh1 = new DeleteContactCTISchedule();
-        String sch = '0 0 1 * * ?'; system.schedule('DeleteContactCTISchedule Test', sch, sh1); 
+        Id BatchProcessId = Database.ExecuteBatch(memberPurge);
         Test.stopTest();
     }
 }

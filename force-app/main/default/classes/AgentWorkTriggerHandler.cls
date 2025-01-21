@@ -1,5 +1,4 @@
 public with sharing class AgentWorkTriggerHandler {
-    
     public static Map<String,Detection_Language_Mapping__mdt> DetectionLanguageMap {get{        
         if(DetectionLanguageMap==null){
             DetectionLanguageMap = new Map<String,Detection_Language_Mapping__mdt>();
@@ -36,7 +35,7 @@ public with sharing class AgentWorkTriggerHandler {
         ID OwnerID_AgentWork = null;
         for(AgentWork agentwork : agentworkList) {
             AgentWork oldAgent = agentworkOldMap.get(agentwork.Id);
-            //OwnerID_AgentWork = agentwork.OwnerId;
+            OwnerID_AgentWork = agentwork.OwnerId;
             if((agentwork.AcceptDateTime != null && oldAgent.AcceptDateTime == null) || Test.isRunningTest()){
                 String workItemId = String.valueOf(agentwork.WorkItemId);
                 if(workItemId.startsWith(facebookPostPrefix)) {
@@ -86,6 +85,5 @@ public with sharing class AgentWorkTriggerHandler {
         System.debug('update '+insertedCaseFacebookPost);
         update insertedCaseFacebookPost;
     }
-
     
 }

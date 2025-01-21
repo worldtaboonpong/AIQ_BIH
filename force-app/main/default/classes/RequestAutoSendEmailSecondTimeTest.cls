@@ -7,7 +7,7 @@ public class RequestAutoSendEmailSecondTimeTest {
         system.schedule('Auto Send Follow up Second Mail',  '0 1 * * * ?', pp);
 
         BatchAutoSendEmailSecondTime obj = new BatchAutoSendEmailSecondTime();
-        //Database.executeBatch(obj);
+        Database.executeBatch(obj);
         
 
         Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator2());

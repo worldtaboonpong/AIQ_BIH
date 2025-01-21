@@ -6,7 +6,7 @@ public class BatchAutoSendEmailSecondTimeTest {
         system.schedule('StampScheduledAutoSendEmailFirstTime 1 day 11',  '0 1 * * * ?', pp);
 
         BatchAutoSendEmailSecondTime obj = new BatchAutoSendEmailSecondTime();
-        //Database.executeBatch(obj);
+        Database.executeBatch(obj);
     }
 
 }

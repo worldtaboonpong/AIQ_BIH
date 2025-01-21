@@ -6,19 +6,15 @@
 			"caseId": recordId,
 		});
 		action.setCallback(this, function (response) {
-			//console.log(response);
+			console.log(response);
 
 			var state = response.getState();
-			//console.log(state);
+			console.log(state);
 
 			if (state === "SUCCESS") {
-                var cmpEvent = $A.get('e.c:MinorEvent');//component.getEvent("minorEventRegister");
-                cmpEvent.setParams({"message" : "Minor Check" });
-                cmpEvent.fire();
-                
-				//console.log('--- CaseContact ---');
+				console.log('--- CaseContact ---');
 				var responseValue = response.getReturnValue();
-				//console.log(responseValue);
+				console.log(responseValue);
 
 				component.set("v.caseObj", responseValue.caseObj);
 				component.set("v.userObj", responseValue.userObj);
@@ -64,7 +60,7 @@
 					// Subscribe to an event
 					empApi.subscribe(channel, replayId, $A.getCallback(eventReceived => {
 						// Process event (this is called each time we receive an event)
-						//console.log('Received event ', JSON.stringify(eventReceived));
+						console.log('Received event ', JSON.stringify(eventReceived));
 
 						//alert('PLATFORM EVENT RECEIVED!!! with CaseId: '+eventReceived.data.payload.Case_Id__c);
 			
@@ -81,7 +77,7 @@
 					.then(subscription => {
 						// Subscription response received.
 						// We haven't received an event yet.
-						//console.log('Subscription request sent to: ', subscription.channel);
+						console.log('Subscription request sent to: ', subscription.channel);
 						// Save subscription to unsubscribe later
 						cmp.set('v.subscription', subscription);
 					});
@@ -142,7 +138,7 @@
 			var workspaceAPI = component.find("workspace");
 			workspaceAPI.getFocusedTabInfo().then(function (response) {
 				var focusedTabId = response.tabId;
-				//console.log('focusedTabId :', focusedTabId);
+				console.log('focusedTabId :', focusedTabId);
 
 				workspaceAPI.refreshTab({
 					tabId: focusedTabId,
@@ -155,7 +151,7 @@
 		
 	},
 	getNotefromAccount: function (component){
-		//console.log("----START GETNOTE----");
+		console.log("----START GETNOTE----");
 		
 		var action = component.get("c.getNotefromAccount");
 		var caseObj = component.get("v.caseObj");
@@ -165,7 +161,7 @@
 		});
 		action.setCallback(this, function (response) {
 			var returnValues = response.getReturnValue();
-			//console.log("returnValues1 :", returnValues);
+			console.log("returnValues1 :", returnValues);
 			
 			if (returnValues.Note__c != null){
 				component.set("v.accObj",returnValues);

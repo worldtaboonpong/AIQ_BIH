@@ -6,7 +6,7 @@ public with sharing class BatchCaseNotifyTest {
         system.schedule('Notify Case Over 1 day 11',  '0 1 * * * ?', pp);
 
         BatchCaseNotify obj = new BatchCaseNotify();
-        //Database.executeBatch(obj);
+        Database.executeBatch(obj);
         
 
         // run at anonymuse look up schedue job

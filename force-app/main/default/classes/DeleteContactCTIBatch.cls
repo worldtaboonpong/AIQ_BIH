@@ -1,4 +1,4 @@
-global class DeleteContactCTIBatch implements Queueable { /**Change to Queueable*/
+global class DeleteContactCTIBatch implements Database.Batchable<sObject>, Database.Stateful, Database.AllowsCallouts {
     global Integer recordsProcessed = 0;
     global Set<String> phoneList = new Set<String>();
     global Datetime startTime{get;set;}
@@ -12,19 +12,12 @@ global class DeleteContactCTIBatch implements Queueable { /**Change to Queueable
         query = q;
     }
     
-    /**Change to Queueable
     global Database.QueryLocator start(Database.BatchableContext BC) {
         startTime = Datetime.now();
         return Database.getQueryLocator(query);
     }
-    */
 
-    /**Change to Queueable*/
-    //global void execute(Database.BatchableContext bc,List<Contact> scope){
-    global void execute(QueueableContext context){
-        startTime = Datetime.now();
-        List<Contact> scope = Database.query(query);
-
+    global void execute(Database.BatchableContext bc,List<Contact> scope){
         try {
             List<Id> conList = new List<Id>();
             List<Task> newListTask = new List<Task>();

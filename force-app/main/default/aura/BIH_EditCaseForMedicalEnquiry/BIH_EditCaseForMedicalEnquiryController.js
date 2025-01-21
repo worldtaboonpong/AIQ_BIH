@@ -68,8 +68,7 @@
 				// //console.log(JSON.parse(JSON.stringify(cmp.get("v.pageReference").state)));
 				var getRecordTypeId = cmp.get("v.recordTypeId");
 				//console.log('getRecordTypeId: ', cmp.get("v.recordTypeId"));
-				//alert("getRecordTypeId : "+getRecordTypeId);
-                
+		
 				var caseObj = cmp.get('v.caseObj');
 				caseObj.RecordTypeId = getRecordTypeId;
 				cmp.set('v.caseObj', caseObj);

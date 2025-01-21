@@ -75,7 +75,7 @@
 				-->
                 
                 <lightning:button class="slds-theme_neutral" label="SMS Message" onclick="{!c.showModalSMSMessage}"/>
-                <!--<lightning:button class="slds-theme_neutral" iconPosition="left" variant="neutral" label="Appointment Card" onclick="{!c.navigateToGeneratePDF}" iconName="utility:download" />-->
+                <lightning:button class="slds-theme_neutral" iconPosition="left" variant="neutral" label="Appointment Card" onclick="{!c.navigateToGeneratePDF}" iconName="utility:download" />
                 
 
             </div>

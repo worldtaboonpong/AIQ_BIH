@@ -7,16 +7,15 @@ global class BatchCloseFollowUpCase implements Database.Batchable<sObject>, Data
         List<case> listAutoCloseCaseCase = [ select id,OwnerId,Follow_Up_Start_Time__c ,
         IsFirstFollowupMailSent__c,IsSecondFollowupMailSent__c,Status
             from case 
-            where Follow_Up_Start_Time__c  <    : datetime.now().AddDays(-6)
+            where Follow_Up_Start_Time__c  <    : datetime.now().AddDays(-9)
             //Follow_Up_Start_Time__c  <    : datetime.now().AddDays(-9)
-            //where Follow_Up_Start_Time__c  <    : datetime.now().addMinutes(-5)
+            //where Follow_Up_Start_Time__c  <    : datetime.now().addMinutes(-9)
             //and (Owner.name = 'Registration Team' or   
             //        Owner.UserRole.name =  'BIH Registration Manager' )
             and (Status = 'Pending')
             and IsFirstFollowupMailSent__c   = true                           
             and IsSecondFollowupMailSent__c  = true
-            and ((Pass_to_Doctor_Date__c = null) OR (Pass_to_Doctor_Date__c != null and Reply_from_Doctor_Date__c != null))  
-            and (NOT (Owner.UserRole.Name LIKE 'Clinic%' OR Owner.Name LIKE 'Clinic%'))                                
+            and Pass_to_Doctor_Date__c = null                                
             ];
                                 
             System.debug('listAutoCloseCaseCase size : ' + listAutoCloseCaseCase.size());
