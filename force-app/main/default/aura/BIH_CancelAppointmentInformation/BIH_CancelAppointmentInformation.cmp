@@ -1,0 +1,115 @@
+<aura:component controller="BIH_GeneralWebInformationCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,lightning:isUrlAddressable" access="global">
+	<aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="caseObj" type="Case"  />
+    <aura:attribute name="isexpanded" type="Boolean" default="true" />
+    <aura:attribute name="isexpanded2" type="Boolean" default="true" />
+    <aura:attribute name="isCancel" type="Boolean" default="false" />
+    <!-- <aura:attribute name="isView" type="Boolean" default="true" /> -->
+    <aura:attribute name="loading" type="Boolean" default="false" />
+
+    <aura:if isTrue="{! v.caseObj.Cancellation_Appointment__c}">
+     <div class="{! 'case slds-section' + (v.isexpanded ? ' slds-is-open' : '')}">
+        <h3 class="slds-section__title slds-theme_shade">
+            <button aria-controls="divContent" aria-expanded="{!v.isexpanded}" onclick="{!c.changeState}"
+                class="slds-button slds-section__title-action">
+                <lightning:icon aura:id="articleOne" iconName="utility:switch" size="xx-small" alternativeText="switch" />
+                <span class="slds-truncate" title="Section Title">Cancellation Appointment</span>
+            </button>
+        </h3>
+    
+        <aura:if isTrue="{! v.loading }">
+            <lightning:spinner alternativeText="Loading" />
+        </aura:if>
+        
+    
+        <div class="slds-section__content" aura:id="container" aria-hidden="{!!v.isexpanded}" id="divContent" style="position:relative;">
+            <lightning:recordViewForm recordId="{!v.caseObj.Id}" objectApiName="Case">
+    
+            <div style="padding:0 0.80rem;">
+                <div class="slds-grid slds-gutters">
+                   
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:outputField fieldName="Type_of_Request" />
+                            <lightning:outputField fieldName="MD_Code__c" />
+                            <lightning:outputField fieldName="Doctor_Name__c" />
+                            <lightning:outputField fieldName="Specialty__c" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <label class="slds-form-element__label">Appt Cancellation Date</label>
+                            <div class="slds-form-element__static div-time slds-form-element_stacked">
+                                <lightning:formattedDateTime value="{! v.caseObj.Appt_Cancellation_Date__c }" year="numeric" month="short"
+                                    day="numeric"/>
+                            </div>
+                            <lightning:outputField fieldName="Additional_Appt_Cancellation_Date__c" />
+                            <lightning:outputField fieldName="Requestor__c" />
+                            <lightning:outputField fieldName="Cost_Center_Cancel__c" />
+                            <lightning:outputField fieldName="Department_Cancel__c" />
+                        </div>
+                </div>
+            </div>
+            </lightning:recordViewForm>
+        </div>
+        
+    </div>
+    <div class="{! 'case slds-section' + (v.isexpanded2 ? ' slds-is-open' : '')}">
+        <h3 class="slds-section__title slds-theme_shade">
+            <button aria-controls="divContent" aria-expanded="{!v.isexpanded2}" onclick="{!c.changeState2}"
+                class="slds-button slds-section__title-action">
+                <lightning:icon aura:id="articleOne" iconName="utility:switch" size="xx-small" alternativeText="switch" />
+                <span class="slds-truncate" title="Section Title">Cancellation Patient Information</span>
+            </button>
+        </h3>
+    
+        <aura:if isTrue="{! v.loading }">
+            <lightning:spinner alternativeText="Loading" />
+        </aura:if>
+        <div class="slds-section__content" aura:id="container" aria-hidden="{!!v.isexpanded2}" id="divContent" style="position:relative;">
+            <lightning:recordViewForm recordId="{!v.caseObj.Id}" objectApiName="Case">
+    
+            <div style="padding:0 0.80rem;">
+                <div class="slds-grid slds-gutters">
+                   
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:outputField fieldName="Hospital_Number_HN__c" />
+                            <lightning:outputField fieldName="Nationality__c" />
+                            <lightning:outputField fieldName="Gender__c" />
+                            <label class="slds-form-element__label">Date of Birth</label>
+                            <div class="slds-form-element__static div-time slds-form-element_stacked">
+                                <lightning:formattedDateTime value="{! v.caseObj.Date_of_Birth__c }" year="numeric" month="short"
+                                    day="numeric"/>
+                            </div>
+                            <label class="slds-form-element__label">App Date</label>
+                            <div class="slds-form-element__static div-time slds-form-element_stacked">
+                                <lightning:formattedDateTime value="{! v.caseObj.App_Date__c }" year="numeric" month="short"
+                                    day="numeric"/>
+                            </div>
+                            <!-- <label class="slds-form-element__label">App Time</label>
+                            <div class="slds-form-element__static div-time slds-form-element_stacked">
+                                <lightning:formattedDateTime value="{!v.caseObj.App_Time__c}" minute="2-digit" hour="2-digit"
+                                hour12="false" />
+                            </div> -->
+                            <lightning:input label="App Time" readonly="true" value="{! v.caseObj.App_Time_Format__c }" />
+                            <lightning:outputField fieldName="Service__c" />
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:outputField fieldName="Full_Name__c" />
+                            <lightning:outputField fieldName="Full_Name_Thai__c" />
+                            <lightning:outputField fieldName="Age__c" />
+                            <lightning:outputField fieldName="Location__c" />
+                            <lightning:outputField fieldName="Appt_Status__c" />
+                            <!-- <label class="slds-form-element__label">End Time</label>
+                            <div class="slds-form-element__static div-time slds-form-element_stacked">
+                                <lightning:formattedDateTime value="{!v.caseObj.End_Time__c}" minute="2-digit" hour="2-digit"
+                                hour12="false" />
+                            </div> -->
+                            <lightning:input label="End Time" readonly="true" value="{! v.caseObj.End_Time_Format__c }" />
+
+                            
+                        </div>
+                </div>
+            </div>
+            </lightning:recordViewForm>
+        </div>
+    </div>
+</aura:if>
+</aura:component>

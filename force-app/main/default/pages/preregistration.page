@@ -1,0 +1,835 @@
+<apex:page lightningStylesheets="true" standardController="Case" cache="false" extensions="Preregistrationcls" showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" name="prereg" language="{!pgLanguage}">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />    
+        <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" />
+        <script src='http://cdnjs.cloudflare.com/ajax/libs/textAngular/1.2.2/textAngular.min.js'></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular-resource.min.js"></script>
+        <apex:slds />
+        
+        <title>{!$Label.PreRegPageTitle}</title>
+        <style>
+            body{
+            font-family: open sans,prompt,noto sans jp,noto sans sc,amiri,padauk,hanuman,sans-serif; 
+            text-align: left;
+            }
+            .slds-scope{
+            padding-left: 2%;
+            padding-right: 2%;
+            }
+            .slds-scope .slds-page-header {
+            background: #8a8c8c;
+            }
+            .slds-media__body{
+            text-align:center;
+            color:white;
+            }
+            .textCls{
+            font-size: 1.09375rem;
+            font-weight: 300;
+            color:#646569;
+            text-align: justify;
+            }
+            .slds-scope .slds-form-element__label {
+            color: #0bb288;
+            }
+            .slds-scope hr {
+            display: block;
+            margin: 1rem 0;
+            }
+            
+            .slds-scope .slds-input{
+            color: #495057;
+            }
+            
+            .slds-scope .slds-file-selector {
+            display: contents;
+            }
+            
+            .btn-primary {
+            color: #fff;
+            background-color: #0bb288;
+            border-color: #0bb288;
+            }
+            
+            .textColor{
+            color: #646569;
+            }
+            .Sectionheading{
+            
+            font-weight: 700!important;
+            color: #646569;
+            }
+            
+            .custom-file {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            height: calc(1.4em + 0.75rem + 2px);
+            margin-bottom: 0;}
+            
+            .custom-file-label {
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            z-index: 1;
+            height: calc(1.4em + 0.75rem + 2px);
+            padding: 0.375rem 0.75rem;
+            font-weight: 400;
+            line-height: 1.4;
+            color: #495057;
+            background-color: #fff;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            }
+            
+            .slds-scope .slds-button_brand[disabled], .slds-scope .slds-button_brand:disabled, .slds-scope .slds-button--brand[disabled], .slds-scope .slds-button--brand:disabled {
+            background-color: rgb(201, 199, 197) !important;
+            }
+        </style>
+        
+        <apex:includeScript value="{!URLFOR($Resource.jquery_angular_sortable, '/jquery.min.js')}" />
+        <apex:includeScript value="{!URLFOR($Resource.jquery_angular_sortable, 'jquery-ui.min.js')}" />
+        <apex:includeScript value="{!URLFOR($Resource.jquery_angular_sortable, 'angular.min.js')}" />
+        <apex:includeScript value="{!URLFOR($Resource.jquery_angular_sortable, 'sortable.min.js')}" />
+        <script>
+        var ngApp = angular.module('myNgApp', ['ui.sortable']);
+        ngApp.controller('myController', function ($scope, $window) {
+            $scope.Iseditableform =  {!Iseditableform} ; 
+            //console.log( $scope.Iseditableform);
+            if($scope.Iseditableform == true){
+                $scope.case = JSON.parse('{!newCaseStr}');
+                $scope.Titlesoption = JSON.parse('{!Titles2}');
+                $scope.Nationalityoption = JSON.parse('{!Nationality}');
+                $scope.RoomNumber = '';
+                $scope.SubDistrictForeign = '';
+                $scope.insurance = 'No';
+                $scope.Countries =  JSON.parse('{!Countries}');
+                $scope.Languages =  JSON.parse('{!Languages}');
+                $scope.Genders =  JSON.parse('{!Gender}');
+                $scope.Relationship =  JSON.parse('{!Relationship}');
+                $scope.PatientAllergy =  JSON.parse('{!PatientAllergy}');
+                $scope.passport =  null ;
+                $scope.thaiCopy =  null ;
+                $scope.insuranceFront =  null ;
+                $scope.insuranceBack =  null ;
+                $scope.hereby =  false ;
+                $scope.confirm =  false ;
+                $scope.TermsofService =  false ;
+                $scope.case.Date_Of_Birth_Patient__c = new Date($scope.case.Date_Of_Birth_Patient__c);
+                
+                if($scope.case.Title_Patient__c === undefined)
+                    $scope.case.Title_Patient__c = null;
+                
+                if($scope.case.Country_of_Ressidence_Patient__c === undefined)
+                    $scope.case.Country_of_Ressidence_Patient__c  = null; 
+                
+                if($scope.case.Nationality_New_Patient__c === undefined)
+                    $scope.case.Nationality_New_Patient__c = null; 
+                
+                if($scope.case.Preferred_Language_Patient__c === undefined)
+                    $scope.case.Preferred_Language_Patient__c = null; 
+                
+                if($scope.case.Gender_Patient__c === undefined)
+                    $scope.case.Gender_Patient__c = null;
+                
+                if($scope.case.Patient_Allergy__c === undefined)
+                    $scope.case.Patient_Allergy__c = null;
+                
+                if($scope.case.Relationship_Contact_Person__c === undefined)
+                    $scope.case.Relationship_Contact_Person__c = null;
+                
+            }
+            
+            $scope.updatecase = function (form) {
+                //alert(form.$valid);
+                if(form.$valid){
+                    $('.loader').fadeIn();
+                    console.log('>>>>> '+$scope.case.Date_Of_Birth_Patient__c);
+                    $scope.case.Date_Of_Birth_Patient__c = Date.parse($scope.case.Date_Of_Birth_Patient__c);
+                    //console.log($scope.case.Title_Patient__c);
+                    var ca = $scope.case; 
+                    var rnVar = ($("#RoomNumber").val() ? $("#RoomNumber").val() : '');
+                    var sdfVar = ($("#SubDistrictForeign").val() ? $("#SubDistrictForeign").val() : '');
+                    Visualforce.remoting.Manager.invokeAction(
+                        '{!$RemoteAction.Preregistrationcls.updateCase}', JSON.stringify(ca), rnVar, sdfVar,
+                        function(result, event) {
+                            if (event.status) {
+                                window.top.location.href = result;
+                            }else {
+                                $('.loader').fadeOut();
+                                $scope.$apply();
+                            }
+                            //$scope.redirect();
+                        },
+                        { escape: true }
+                    );
+                }
+            }
+            
+            $scope.PassportCopyfile = function (event) {
+                var pass = event.target.files[0];
+                var filename = 'PassportCopy.' + pass.name.split('.').pop();
+                
+                fileToBase64(pass, (base64Data) => { 
+                    Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.Preregistrationcls.fileUpload}',base64Data,filename,$scope.case.Id,
+                    function(result, event) {
+                    
+                    if (event.status) {
+                    
+                }else {
+                    
+                }
+                    
+                    $('.loader').fadeOut();
+                    $scope.$apply();
+                }, { escape: true });
+            })
+        }
+                         $scope.thaiCopyfile = function (event) {
+            var thaiCopy = event.target.files[0];
+            var filename = 'Thai ID Copy.' + thaiCopy.name.split('.').pop();
+            fileToBase64(thaiCopy, (base64Data) => {
+                Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.Preregistrationcls.fileUpload}',base64Data,filename,$scope.case.Id,
+                function(result, event) {
+                
+                if (event.status) {}else {
+                
+            }
+                
+                $('.loader').fadeOut();
+                $scope.$apply();
+            },
+                { escape: true }
+                        );
+        })
+        }
+        $scope.insurancefile = function (event,type) {
+            var insuranceCopy = event.target.files[0];
+            var filename = type + ' Insurance Copy.' + insuranceCopy.name.split('.').pop();
+            console.log(filename);
+            fileToBase64(insuranceCopy, (base64Data) => {
+                Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.Preregistrationcls.fileUpload}',base64Data,filename,$scope.case.Id,
+                function(result, event) {
+                
+                if (event.status) {}else {
+                
+            }
+                
+                $('.loader').fadeOut();
+                $scope.$apply();
+            },
+                { escape: true }
+                        );
+        })
+        }
+        /* POC 
+                           $scope.fileSelected = function (event) {
+                                console.log(event.target.files);
+                                $scope.passport= event.target.files[0];
+                                fileToBase64($scope.passport, (base64Data) => {
+                                    Visualforce.remoting.Manager.invokeAction(
+                                        '{!$RemoteAction.Preregistrationcls.fileUpload}', base64Data,$scope.passport.name,
+                                        function(result, event) {
+                                        
+                                        if (event.status) {}else {}
+                                        
+                                        $('.loader').fadeOut();
+                                        $scope.$apply();
+                                    },
+                                        { escape: true }
+                                    );
+                                })
+
+                             
+
+
+                            };
+                            */
+        const fileToBase64 = (file, callback) => {
+            const blob = new Blob([file], {type: file.type} )
+            blob.name = file.name
+            const reader = new FileReader();
+        reader.onload = () => {
+            callback(reader.result)
+            console.log(reader.result);
+        }
+            reader.readAsDataURL(blob);
+            
+        }
+            
+            
+        });//End of Ng app
+            
+            </script>
+        
+    </head>
+    <body>
+        <table role="presentation" style="width:100%;border:none;border-spacing:0;">
+            <tr>
+                <td align="center" style="padding:0;">
+                    <table role="presentation" style="width:100%;border:none;border-spacing:0;text-align:left;font-family: Tahoma, Arial, Helvetica, sans-serif;font-size:16px;line-height:22px;color:#363636;background-color:#F2F2F2;">
+                        <tr>
+                            <td style="padding-top:10px;padding-right:20px;padding-bottom:10px;padding-left:20px;text-align:center;background-color:#0BB288;">
+                                <a style="text-decoration:none !important;">
+                                    <img src="https://bumrungrad--c.documentforce.com/servlet/servlet.ImageServer?id=015BB0000009cIe&oid=00D2v000000MY2S&lastMod=1663666062000" />
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-left:50px;padding-right:50px;padding-top:30px;padding-bottom:0;">
+                                <h1 style="margin-top:0;margin-bottom:16px;font-size:28px;line-height:32px;font-weight:bold;letter-spacing:-0.02em;color:#0BB288;font-family: Tahoma, Arial, Helvetica, sans-serif;">{!$Label.PreRegInformation}</h1>
+                                <p style='line-height:normal;font-size:14px;font-family: Tahoma, Arial, Helvetica, sans-serif;color:#0BB288;font-weight:bold;'>
+                                    {!$Label.PreRegCaseNumber}: {!caseNumber}
+                                </p>
+                                <p style='line-height:normal;font-size:14px;font-family: Tahoma, Arial, Helvetica, sans-serif;color:#646569;'>
+                                    {!$Label.PreRegDear} {!patientName},
+                                </p>
+                                <p style='line-height:normal;font-size:14px;font-family: Tahoma, Arial, Helvetica, sans-serif;color:#646569;text-align:justify;text-justify:inter-word;'>
+                                    {!$Label.PreRegGreetingsP1}<BR/><BR/>
+                                    {!$Label.PreRegGreetingsP2}
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        
+        <!--Only content within the slds-scope div will be styled with the slds system-->
+        <div class="slds-scope" ng-app="myNgApp" ng-controller="myController" ng-cloak="true">
+            <form class="slds-p_bottom" name="form" id="theForm" style="width:100%" ng-submit="submitForm(formName)">
+                <div ng-if="Iseditableform != true">
+                    <p class="textCls" style="text-align: center;padding: 10%;">
+                        {!$Label.PreRegThankYou}
+                    </p>
+                </div>
+                <div ng-if="Iseditableform == true">
+                    
+                    <div class="slds-p-left_medium slds-p-right_medium">
+                        
+                        <!--Now we declare an slds grid using the classes below-->
+                        <div class="slds-grid slds-gutters slds-wrap">
+                            
+                            <!--By using slds-col slds-size_1-of-1 we are saying this column takes up all the space available in the row-->
+                            <div class="slds-col slds-size_1-of-1 slds-p-top_large slds-media__body">
+                                <div class="slds-page-header">
+                                    <span> {!$Label.PreRegOnlineReg} </span>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-p-top_large">
+                                <span class="Sectionheading" >{!$Label.PreRegPersonalInformation}</span>
+                            </div>
+                            
+                             <!--Sand box 1-->
+                            <div class="slds-col slds-size_1-of-1 slds-p-top_large">
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-p-top_large">
+                                    <hr/>
+                                    <label class="Sectionheading" for="Allergy-id">{!$Label.PreRegAllergyHeader}</label>
+                                </div>
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                    <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegAllergy}</label>
+                                    <!--
+                                    <select name="Allergy" ng-model="case.Patient_Allergy__c" required="true" class="slds-select">
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                    </select>
+                                    -->
+                                 
+                                    
+                                    
+                                <select ng-if="case.Patient_Allergy__c == undefined" id="PatientAllergy" name="PatientAllergy" style="width: 100%;" ng-model="case.Patient_Allergy__c"  required="true"    ng-options="value  for (key , value) in PatientAllergy track by key" 
+                                        class="slds-select">
+                                </select>
+                                
+                                <select  style="width: 100%;" id="PatientAllergy" name="PatientAllergy" ng-if="case.Patient_Allergy__c != undefined " ng-model="case.Patient_Allergy__c"  required="true"    ng-options="key  for (key , value) in PatientAllergy track by value"
+                                        class="slds-select">
+                                </select>
+                                
+                                    
+                                </div>
+                                
+                                
+                                
+                                
+                                
+                                
+                                <div ng-if="case.Patient_Allergy__c =='Yes'" class="slds-col slds-size_1-of-2 slds-large-size_1-of-2 slds-p-around_medium">
+                                    <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegYesAllergy}</label>
+                                    <input type="text" ng-required="true" ng-model="case.Allergy__c" placeholder="" id="Insurance" class="slds-input"/>    
+                                </div>
+                                <div ng-if="case.Patient_Allergy__c =='No'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                </div>
+                                <hr/>
+                            </div>
+
+                            
+                            
+                             <!--Sand box 1-->
+                            
+                            <!--Here we just apply some vertical space-->
+                            <div class="slds-p-vertical_xx-large"></div>
+                            <hr/>
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-4 slds-p-around_medium">
+                                <!--The form element and everything inside is used to create the slds input-->
+                                <label class="slds-form-element__label" for="phone-id">{!$Label.PreRegTitle}</label>
+                                <select style="width: 100%;" id="title2" name="title2" ng-if="case.Title_Patient__c == undefined" ng-model="case.Title_Patient__c"  required="true"    ng-options="value  for (key , value) in Titlesoption track by key" 
+                                        class="slds-select">
+                                </select>
+                                
+                                <select style="width: 100%;" id="title" name="title" ng-if="case.Title_Patient__c != undefined " ng-model="case.Title_Patient__c"  required="true"    ng-options="key  for (key , value) in Titlesoption track by value"
+                                        class="slds-select">
+                                </select>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-4 slds-p-around_medium">
+                                
+                                <label class="slds-form-element__label" for="First name-id">{!$Label.PreRegFirstName}</label>
+                                <input type="text" ng-model="case.First_Name_Patient__c"  ng-required="true" Class="slds-input" label="First name"/>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-4 slds-p-around_medium">
+                                
+                                <label class="slds-form-element__label" for="Middle-name-id">{!$Label.PreRegMiddleName}</label>
+                                <input type="text" ng-model="case.Middle_Name_Patient__c"  Class="slds-input" label="Middle name"/>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-4 slds-p-around_medium">
+                                
+                                <label class="slds-form-element__label" for="Last-name-id">{!$Label.PreRegLastName}</label>
+                                <input type="text" ng-model="case.Last_Name_Patient__c" name="LastName"  required="true" Class="slds-input" label="Last name"/>
+                                <!-- <span ng-show="hasError('LastName', 'required')">required</span> -->
+                                <!-- <span ng-show="form.LastName.$error.required">Last Name is required</span> -->
+                            </div>
+                            
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                <label class="slds-form-element__label" for="Date-of-Birth-id">{!$Label.PreRegDateOfBirth}</label>
+                                
+                                <input ng-model="case.Date_Of_Birth_Patient__c"   type="date" id="colour-id" 
+                                       class="slds-input slds-datepicker" required="true" ng-model-options="{timezone: 'UTC'}"/>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegGender}</label>
+                                <select ng-if="case.Gender_Patient__c == undefined" id="Gender2" name="Gender2" style="width: 100%;" ng-model="case.Gender_Patient__c"  required="true"    ng-options="value  for (key , value) in Genders track by key" 
+                                        class="slds-select">
+                                </select>
+                                
+                                <select  style="width: 100%;" id="Gender" name="Gender" ng-if="case.Gender_Patient__c != undefined " ng-model="case.Gender_Patient__c"  required="true"    ng-options="key  for (key , value) in Genders track by value"
+                                        class="slds-select">
+                                </select>
+                                
+                                
+                                
+                                
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegNationality}</label>
+                                
+                                <select  style="width: 100%;" required="true" ng-model="case.Nationality_New_Patient__c"  ng-if="case.Nationality_New_Patient__c == undefined " ng-options="value  for (key , value) in Nationalityoption track by key"  
+                                        class="slds-select">
+                                </select>
+                                <select  style="width: 100%;" id="title" name="title" ng-if="case.Nationality_New_Patient__c != undefined " ng-model="case.Nationality_New_Patient__c"  required="true"    ng-options="key  for (key , value) in Nationalityoption track by value"
+                                        class="slds-select">
+                                </select>
+                                
+                                
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegCountryOfResidence}</label>
+                                
+                                
+                                <select  style="width: 100%;" required="true" ng-model="case.Country_of_Ressidence_Patient__c" ng-if="case.Country_of_Ressidence_Patient__c == undefined" ng-options="value  for (key , value) in Countries track by key"  
+                                        class="slds-select">
+                                </select>
+                                <select  style="width: 100%;" id="title" name="title" ng-if="case.Country_of_Ressidence_Patient__c != undefined" ng-model="case.Country_of_Ressidence_Patient__c"  required="true"    ng-options="key  for (key , value) in Countries track by value"
+                                        class="slds-select">
+                                </select>
+                                
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-p-top_large">
+                                
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegPreferredLanguage}</label>
+                                <select  style="width: 100%;" required="true" ng-model="case.Preferred_Language_Patient__c" ng-if="case.Preferred_Language_Patient__c == undefined" ng-options="value  for (key , value) in Languages track by key" 
+                                        class="slds-select">
+                                </select>
+                                
+                                <select  style="width: 100%;" id="title" name="title" ng-if="case.Preferred_Language_Patient__c != undefined" ng-model="case.Preferred_Language_Patient__c"  required="true"    ng-options="key  for (key , value) in Languages track by value"
+                                        class="slds-select">
+                                </select>
+                            </div>
+                            <div ng-if="case.Nationality_New_Patient__c != 'Thai'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                <label class="slds-form-element__label" for="Passport-id">{!$Label.PreRegPassportNumber}</label>
+                                <input type="text"    ng-model="case.Passport_Number_Patient__c"  ng-required="true" Class="slds-input" label="Passport or Thai ID Card Number" required="true"/>
+                            </div>
+                            <div ng-if="case.Nationality_New_Patient__c == 'Thai'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                <label class="slds-form-element__label" for="Passport-id">{!$Label.PreRegThaiId}</label>
+                                <input type="text"    ng-model="case.Thai_ID_Card_Number_Patient__c"  ng-required="true" Class="slds-input" label="Passport or Thai ID Card Number" required="true"/>
+                            </div>
+                            
+                            <!-- <input type="file" onchange="angular.element(this).scope().fileSelected(event)" /> -->
+                            <!-- <input type="file" onchange="angular.element(this).scope().fileSelected(this)" ng-Model="fileToUpload"/> -->
+                            
+                            <!-- <input type="file"  multiple="multiple" onchange="angular.element(this).scope().fileSelected(event)" class="slds-file-selector__input slds-button slds-button_neutral" />  -->
+                            <div ng-if="case.Nationality_New_Patient__c != 'Thai'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium"> 
+                                
+                                <label class="slds-form-element__label" for="Passport-id">{!$Label.PreRegPassportCopy}</label>
+                                <div class="custom-file"> 
+                                    <input type="file" onchange="angular.element(this).scope().PassportCopyfile(event)" lass="slds-file-selector__button slds-button slds-button_neutral"/>
+                                </div>
+                                
+                            </div> 
+                            <div ng-if="case.Nationality_New_Patient__c == 'Thai'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                <label class="slds-form-element__label" for="Passport-id">{!$Label.PreRegThaiIdCardCopy}</label>
+                                <div class="custom-file"> 
+                                    <input type="file" multiple="multiple"  onchange="angular.element(this).scope().thaiCopyfile(event)" lass="slds-file-selector__button slds-button slds-button_neutral"/>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegPrimaryPhoneNumber}</label>
+                                    <div class="slds-form-element__control">
+                                        <input type="tel" ng-required="true"  ng-model="case.Primary_Phone_New_Patient__c" placeholder="+663456788" id="telephone" class="slds-input"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegEmail}</label>
+                                <input type="email"  ng-model="case.Email_New_Patient__c" placeholder="Example : example@domain.com" id="email" class="slds-input"/>
+                            </div>
+                            
+                            <div class="slds-col slds-size_1-of-1 slds-p-top_large">
+                                <hr/>
+                                <label class="Sectionheading" for="favourite-id">{!$Label.PreRegMailingAddress}</label>
+                            </div>
+                            
+                            <div ng-if="case.Country_of_Ressidence_Patient__c == 'Thailand'" class="slds-col slds-size_1-of-1 slds-p-top_large">
+                                
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegAddress}</label>
+                                <input type="text"  ng-model="case.Address_Thailand__c" placeholder="1234 Main St" id="Address" label="Address" ng-if="case.Country_of_Ressidence_Patient__c == 'Thailand'" class="slds-input" required="true"/>
+                                
+                            </div> 
+                            <div ng-if="case.Country_of_Ressidence_Patient__c == 'Thailand'" class="slds-col  slds-large-size_1-of-2 slds-p-around_medium">
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegDistrict}</label>
+                                <input type="text"  ng-model="case.District_Thailand__c" placeholder="" id="District" label="District" ng-if="case.Country_of_Ressidence_Patient__c == 'Thailand'" class="slds-input" required="true"/>
+                            </div>
+                            
+                            <div ng-if="case.Country_of_Ressidence_Patient__c == 'Thailand'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegSubDistrict}</label>
+                                <input type="text"  ng-model="case.Sub_district_Thailand__c" placeholder="" id="Sub-district" ng-if="case.Country_of_Ressidence_Patient__c == 'Thailand'" label="Sub-district" class="slds-input" required="true"/>
+                                
+                            </div>
+                            
+                            <div ng-if="case.Country_of_Ressidence_Patient__c == 'Thailand'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">                        
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegProvince}</label>
+                                <input type="text"  ng-model="case.State_Province_Thailand__c" placeholder="" id="Province" label="Province" ng-if="case.Country_of_Ressidence_Patient__c == 'Thailand'" class="slds-input" required="true"/>                                                
+                            </div>
+                            
+                            <div ng-if="case.Country_of_Ressidence_Patient__c == 'Thailand'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegPostcode}</label>
+                                <input type="text"  ng-model="case.Postcode_Thailand__c" placeholder="" id="Postcode" label="Postcode" ng-if="case.Country_of_Ressidence_Patient__c == 'Thailand'" class="slds-input" required="true"/>                                                                        
+                            </div>
+                            
+                            
+                            <div ng-if="case.Country_of_Ressidence_Patient__c != 'Thailand'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">                        
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegAddressPo}</label>
+                                <input type="text"  ng-model="case.Address_Thailand__c" placeholder="" id="Address" label="Address"  ng-if="case.Country_of_Ressidence_Patient__c != 'Thailand'" class="slds-input" required="true"/>                                                                        
+                            </div>
+                            
+                            <div ng-if="case.Country_of_Ressidence_Patient__c != 'Thailand'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">    
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegTownCity}</label>
+                                <input type="text"  ng-model="case.District_Thailand__c" placeholder="" id="Town" label="Town"  ng-if="case.Country_of_Ressidence_Patient__c != 'Thailand'" class="slds-input" required="true"/>                                                                        
+                            </div>
+                            
+                            <div  ng-if="case.Country_of_Ressidence_Patient__c != 'Thailand'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegStateProvince}</label>
+                                <input type="text"  ng-model="case.State_Province_Thailand__c" placeholder="" id="State"  ng-if="case.Country_of_Ressidence_Patient__c != 'Thailand'" label="Province" class="slds-input" required="true"/>                                                                          
+                            </div>
+                            
+                            <div ng-if="case.Country_of_Ressidence_Patient__c != 'Thailand'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">                        
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegPostcode}</label>
+                                <input type="text"  ng-model="case.Postcode_Thailand__c" placeholder="" id="Postcode" label="Postcode"  ng-if="case.Country_of_Ressidence_Patient__c != 'Thailand'" class="slds-input" required="true"/>                                                                                                  
+                            </div>
+                            
+                            <div ng-if="case.Country_of_Ressidence_Patient__c != 'Thailand'" class="slds-col slds-size_1-of-1 slds-p-top_large">
+                                <hr/>
+                                <label class="Sectionheading" for="favourite-id">{!$Label.PreRegTemporary}</label>
+                            </div>
+                            
+                            <div ng-if="case.Country_of_Ressidence_Patient__c != 'Thailand'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium" >
+                                <label class="slds-form-element__label" for="hotel">{!$Label.PreRegInHotel}</label>
+                                <select name="hotel" ng-model="case.Staying_In_Hotel__c" class="slds-input">
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            
+                            <div class="">
+                                &nbsp;
+                            </div> 
+                            <div  ng-if="case.Staying_In_Hotel__c =='Yes'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                <label class="slds-form-element__label" for="Address">{!$Label.PreRegHotelName}</label>
+                                <input type="text" ng-model="case.Address_foreign__c" placeholder="" id="Address" label="Address" class="slds-input"/>
+                            </div>
+                            <div  ng-if="case.Staying_In_Hotel__c =='Yes'"  class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegRoomNumber}</label>
+                                <input type="text" ng-model="RoomNumber" placeholder="" id="RoomNumber" label="RoomNumber" class="slds-input"/>                                  
+                            </div>
+                            
+                            <div  ng-if="case.Staying_In_Hotel__c =='Yes'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegProvince}</label>
+                                <input type="text" ng-model="case.State_Province_foreign__c" placeholder="" id="Province" label="Province" class="slds-input"/>      
+                            </div>
+                            
+                            <div   ng-if="case.Staying_In_Hotel__c =='Yes'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegMobileNumberThailand}</label>                        
+                                <input type="tel" ng-required="true"  ng-model="case.Mobile_Number_In_Thailand__c" placeholder="+663456788" id="telephone" class="slds-input"/>             
+                            </div>
+                            
+                            <div  ng-if="case.Staying_In_Hotel__c =='No'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegAddress}</label>
+                                <input type="text" ng-model="case.Address_foreign__c" placeholder="1234 Main St" id="Address" label="Address" class="slds-input"/>
+                            </div>
+                            
+                            <div ng-if="case.Staying_In_Hotel__c =='No'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">    
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegDistrict}</label>
+                                <input type="text" ng-model="case.Town_City_foreign__c" placeholder="" id="District" label="District" class="slds-input"/>
+                            </div>
+                            
+                            <div ng-if="case.Staying_In_Hotel__c =='No'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">    
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegSubDistrict}</label>
+                                <input type="text" ng-model="SubDistrictForeign" placeholder="" id="SubDistrictForeign" label="Sub-district" class="slds-input"/>
+                            </div>
+                            
+                            <div ng-if="case.Staying_In_Hotel__c =='No'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">                        
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegProvince}</label>
+                                <input type="text"  ng-model="case.State_Province_foreign__c" placeholder="" id="Province" label="Province" class="slds-input"/>      
+                            </div>
+                            
+                            <div ng-if="case.Staying_In_Hotel__c =='No'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegPostcode}</label>
+                                <input type="text" ng-model="case.Postcode_foreign__c" placeholder="" id="Postcode" label="Postcode" class="slds-input"/>    
+                            </div>
+                            
+                            <div ng-if="case.Staying_In_Hotel__c =='No'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">    
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegMobileNumberThailand}
+                                </label>
+                                <input type="tel" ng-required="true"  ng-model="case.Mobile_Number_In_Thailand__c" placeholder="+663456788" id="telephone" class="slds-input"/>                                     
+                            </div>
+                            
+                            <!--
+                             <div class="slds-col slds-size_1-of-1 slds-p-top_large">
+                                <hr/>
+                                <label class="Sectionheading" for="Allergy-id">{!$Label.PreRegAllergyHeader}</label>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-p-top_large" style="display: flex;">
+                                <label class="slds-form-element__label" for="allergy1-id" >{!$Label.PreRegAllergy}</label>
+                                <input type="radio" value="Yes" name="ins" ng-model="allergy" /> Yes
+                                <input type="radio" value="No" name="ins"  ng-model="allergy" /> No
+                            </div>
+                            <div ng-if="allergy =='Yes'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">    
+                                <label class="slds-form-element__label" for="allergy1-id" >{!$Label.PreRegYesAllergy}</label>
+                                <input type="text" ng-required="true"  ng-model="case.Allergy__c" placeholder="" id="Insurance" class="slds-input"/>                                     
+                            </div>
+                            -->
+                            
+                            <div class="slds-col slds-size_1-of-1 slds-p-top_large">
+                                <hr/>
+                                <label class="Sectionheading" for="favourite-id">{!$Label.PreRegEmergencyContact}</label>
+                            </div>
+                            <div  class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">    
+                                <label class="slds-form-element__label" for="First name-id">{!$Label.PreRegEmergencyName}</label>
+                                <input type="text" ng-model="case.First_Name_Contact_Person__c"  ng-required="true" Class="slds-input" label="First name"/>                                   
+                            </div>
+                            <div  class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">    
+                                <label class="slds-form-element__label" for="Last-name-id">{!$Label.PreRegEmergencyLastName}</label>
+                                <input type="text" ng-model="case.Last_Name_Contact_Person__c" name="LastName"  required="true" Class="slds-input" label="Last name"/>                                     
+                            </div>
+                            <div  class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">    
+                            <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegMobile}
+                                </label>
+                                <input type="tel" ng-required="true"  ng-model="case.Phone_Contact_Person__c" placeholder="+663456788" id="telephone" class="slds-input"/>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegEmergencyEmail}</label>
+                                <input type="email"  ng-model="case.Email_Contact_Person__c" placeholder="Example : example@domain.com" id="email" class="slds-input"/>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegRelationship}</label>
+                                <select ng-if="case.Relationship_Contact_Person__c == undefined" id="Relationship" name="Relationship" style="width: 100%;" ng-model="case.Relationship_Contact_Person__c"  required="true"    ng-options="value  for (key , value) in Relationship track by key" 
+                                        class="slds-select">
+                                </select>
+                                
+                                <select  style="width: 100%;" id="Relationship" name="Relationship" ng-if="case.Relationship_Contact_Person__c != undefined " ng-model="case.Relationship_Contact_Person__c"  required="true"    ng-options="key  for (key , value) in Relationship track by value"
+                                        class="slds-select">
+                                </select>
+                                
+                                
+                                
+                                
+                            </div>
+                            
+                            <div class="slds-col slds-size_1-of-1 slds-p-top_large">
+                                <hr/>
+                                <label class="Sectionheading" for="favourite-id">{!$Label.PreRegPayorInformation} </label>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-p-top_large" style="display: flex;">
+                                <label class="slds-form-element__label" for="favourite-id" >{!$Label.PreRegDoHaveInsurance}</label>
+                                <input type="radio" value="Yes" name="ins" ng-model="insurance" /> Yes
+                                <input type="radio" value="No" name="ins"  ng-model="insurance" /> No
+                            </div>
+                            <div ng-if="insurance =='Yes'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">    
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegInsuranceCompanyName}</label>
+                                <input type="text" ng-required="true"  ng-model="case.Health_Insurance_Co__c" placeholder="" id="Insurance" class="slds-input"/>                                     
+                            </div>
+                            <div ng-if="insurance =='Yes'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">    
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegMemberId}</label>
+                                <input type="text" ng-required="true"  ng-model="case.MemberID__c" placeholder="" id="MemberID__c" class="slds-input"/>                                     
+                            </div>
+                            <div ng-if="insurance =='Yes'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">    
+                                <label class="slds-form-element__label" for="favourite-id">{!$Label.PreRegPolicyNumber}</label>
+                                <input type="text" ng-required="true"  ng-model="case.PolicyNumber__c" placeholder="" id="PolicyNumber" class="slds-input"/>                                     
+                            </div>
+                            <div ng-if="insurance =='Yes'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">    
+                                <label class="slds-form-element__label" for="Passport-id">{!$Label.PreRegInsuranceCardFront}</label>
+                                <div class="custom-file"> 
+                                    <input type="file"   onchange="angular.element(this).scope().insurancefile(event,'Front')" lass="slds-file-selector__button slds-button slds-button_neutral"/>
+                                </div>
+                            </div>
+                            <div ng-if="insurance =='Yes'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">  
+                                &nbsp;  
+                            </div>
+                            <div ng-if="insurance =='Yes'" class="slds-col slds-size_1-of-1 slds-large-size_1-of-2 slds-p-around_medium">    
+                                <label class="slds-form-element__label" for="Passport-id">{!$Label.PreRegInsuranceCardBack}k</label>
+                                <div class="custom-file"> 
+                                    <input type="file"  onchange="angular.element(this).scope().insurancefile(event,'Back')" lass="slds-file-selector__button slds-button slds-button_neutral"/>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-col slds-size_1-of-1 slds-p-top_large" style="display: flow-root;padding-left: 1.25rem;">
+                                <hr/>
+                                <input type="checkbox" Class="slds-checkbox" id="TermsofService"  ng-model="TermsofService" name="TermsofService"  ng-required="true" required="true" />
+                                
+                                <span class="textColor"> {!$Label.PreRegTc1} <a style="color: #0bb288;" target="_blank"  href="https://www.bumrungrad.com/en/terms-of-service">{!$Label.PreRegTc2} </a> &amp; <a style="color: #0bb288;" target="_blank" href="https://www.bumrungrad.com/privacy-policy">{!$Label.PreRegTc3}</a>.</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-p-top_large" style="display: flow-root;padding-left: 1.25rem;">
+                                <input type="checkbox" Class="slds-checkbox" id="confirm" name="confirm" ng-model="confirm"  ng-required="true" required="true" />
+                                <span class="textColor"> {!$Label.PreRegTc4} </span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-p-top_large" style="display: flow-root;padding-left: 1.25rem;">
+                                <input type="checkbox" Class="slds-checkbox" id="hereby" name="hereby" ng-model="hereby" ng-required="true" required="true" />
+                                <span class="textColor"> {!$Label.PreRegTc5} </span>
+                            </div>
+                            
+                            <!--To finish our form we just add an slds styled button-->
+                            <div class="slds-col slds-size_1-of-1 slds-p-top_large">
+                                <button  ng-click="updatecase(form );"     class="slds-button slds-button_brand slds-align_absolute-center btn-primary" style="color: #fff;background-color: #0bb288;border-color: #0bb288;padding-left: 4%;padding-right: 4%;font-weight: 400;">{!$Label.PreRegRegister}</button>
+                                <!-- <button  ng-click="redirect()"     class="slds-button slds-button_brand slds-align_absolute-center btn-primary" style="color: #fff;background-color: #0bb288;border-color: #0bb288;padding-left: 4%;padding-right: 4%;font-weight: 400;">redirect</button> -->
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-p-top_large">
+                                <br/>
+                                <br/>
+                            </div>                            
+                        </div>
+                    </div>
+                </div>
+                
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1"
+                         class="slds-modal slds-fade-in-open loader" style="display: none;Z-index: 2000000">
+                    <div id="spinner" class="slds-spinner_container slds-is-relative" style="position: fixed;">
+                        <div role="status" class="slds-spinner slds-spinner--large slds-spinner--brand">
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open loader-backdrop loader" style="display: none;"></div>
+            </form>
+        </div>
+        
+        <table role="presentation" style="width:100%;border:none;border-spacing:0;">
+            <tr>
+                <td align="center" style="padding:0;">
+                    <table role="presentation" style="width:100%;border:none;border-spacing:0;text-align:left;font-family: Tahoma, Arial, Helvetica, sans-serif;font-size:16px;line-height:22px;color:#363636;background-color:#F2F2F2;">
+                        <tr>
+                            <td style="padding-left:50px;padding-right:50px;padding-bottom:0;">
+                                <p style='line-height:normal;font-size:14px;font-family: Tahoma, Arial, Helvetica, sans-serif;color:#646569;text-decoration:none !important;text-align:justify;text-justify:inter-word;'>
+                                    {!$Label.PreRegPatientCorrespondence}<br/>
+                                    <a target="_blank" href="mailto:crm_email@bumrungrad.com" style="color:#0BB288;text-decoration:none !important;" title="Email">{!$Label.PreRegEmail} : crm_email@bumrungrad.com</a><br/>
+                                    <a target="_blank" href="https://www.bumrungrad.com/" style="color:#0BB288;text-decoration:none !important;" title="BUMRUNGRAD">www.bumrungrad.com</a>
+                                </p>
+                                <p style='line-height:normal;font-size:7px;font-family: Tahoma, Arial, Helvetica, sans-serif;color:#646569;text-decoration:none !important;text-align:justify;text-justify:inter-word;'>
+                                    {!$Label.PreRegFooter1} <a target="_blank" href="https://www.bumrungrad.com/en/privacy-policy" style="color:#0BB288;text-decoration:none !important;" title="Privacy Policy">{!$Label.PreRegFooter2}</a>
+                                </p>
+                                <p style='line-height:normal;font-size:7px;font-family: Tahoma, Arial, Helvetica, sans-serif;color:#646569;text-align:justify;text-justify:inter-word;'>
+                                    {!$Label.PreRegFooter3}
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td align="center" style="padding:0;">
+                    <div class="col-2-right" style="width: 60%;display: inline-block;text-align: center;vertical-align: top">
+                        <p style='margin-top:0;margin-bottom:5px;line-height:normal;font-size:14px;font-family: Tahoma, Arial, Helvetica, sans-serif;color:#646569;'>
+                            Bumrungrad International Hospital, 33 Sukhumvit 3, Vadhana, Bangkok 10110 Thailand
+                        </p>
+                        <table width="300" border="0" align="center" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td width="140" align="center" valign="top">
+                                    <table width="140" border="0" align="center" cellspacing="0" cellpadding="0">
+                                        <tr>
+                                            <td width="15" align="center" valign="top">
+                                                <a style='display:inline-block;text-decoration:none !important;color:#646569;margin:0;font-size:14px;font-family: Tahoma, Arial, Helvetica, sans-serif;' href="tel:+6620668888">
+                                                    <img src="https://bumrungrad--c.documentforce.com/servlet/servlet.ImageServer?id=015BB0000009cKB&oid=00D2v000000MY2S&lastMod=1663667027000" alt="IMAGES" />
+                                                </a>
+                                            </td>
+                                            <td width="2" align="center">
+                                            </td>
+                                            <td width="123" align="left" valign="top">
+                                                <a style='display:inline-block;text-decoration:none !important;color:#646569;margin:0;font-size:10px;font-family: Tahoma, Arial, Helvetica, sans-serif;' href="tel:+6620668888">
+                                                    +66 2066 8888
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td width="5" align="center">
+                                </td>
+                                <td width="150" align="center" valign="top">
+                                    <table width="150" border="0" align="center" cellspacing="0" cellpadding="0">
+                                        <tr>
+                                            <td width="22" align="center" valign="top">
+                                                <a style='display:inline-block;text-decoration:none !important;color:#646569;margin:0;font-size:14px;font-family: Tahoma, Arial, Helvetica, sans-serif;' href="mailto:info@bumrungrad.com">
+                                                    <img src="https://bumrungrad--c.documentforce.com/servlet/servlet.ImageServer?id=015BB0000009cKG&oid=00D2v000000MY2S&lastMod=1663667090000" alt="IMAGES" />
+                                                </a>
+                                            </td>
+                                            <td width="2" align="center">
+                                            </td>
+                                            <td width="126" align="left" valign="top">
+                                                <a style='display:inline-block;text-decoration:none !important;color:#646569;margin:0;font-size:10px;font-family: Tahoma, Arial, Helvetica, sans-serif;' href="mailto:info@bumrungrad.com">
+                                                    info@bumrungrad.com
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </body>
+</apex:page>

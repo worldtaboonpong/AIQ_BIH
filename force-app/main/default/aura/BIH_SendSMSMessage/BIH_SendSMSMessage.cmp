@@ -1,0 +1,80 @@
+<aura:component controller="BIH_CaseUtility" implements="force:lightningQuickAction,force:hasRecordId,lightning:hasPageReference" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="loading" type="boolean" default="false" />
+    <aura:attribute name="MapSVTM" type="Map" />
+    <aura:attribute name="caseObj" type="Case" 
+    default="{ 'sobjectType': 'Case' }"/>
+    <aura:attribute name="message" type="String" default=""/>
+    <aura:attribute name="contactNumber" type="String" default=""/>
+    <aura:attribute name="recordId" type="String" default=""/>
+    <aura:attribute name="templateId" type="String" default=""/>
+    <aura:attribute name="MapSMSTemplate" type="Map" default="{}"/>
+    <aura:attribute name="SMSTemplate" type="String[]"/>
+    <aura:attribute name="Templates" type="String"/>
+    <aura:attribute name="parseDateTH" type="String" default=""/>
+    <aura:attribute name="parseDateEN" type="String" default=""/>
+    
+    <!--Start - Fixed Issue Case No.9773-->
+    <aura:attribute name="isDisable" type="boolean" default="false"/>
+    
+    <!--<aura:method name="sendSMSMessage" action="{!c.onSendMessage}">
+        <aura:attribute name="caseId" type="Id"/>
+    </aura:method>-->
+    <!--End - Fixed Issue Case No.9773-->
+    
+    <div class="slds-form" role="list">
+        <aura:if isTrue="{!v.loading}">
+            <lightning:spinner alternativeText="Loading" />
+        </aura:if>
+        <div class="slds-form__row">
+            <div class="slds-size_1-of-2">
+                <div class="slds-m-around_small">
+                    <lightning:input aura:id='mobile_phone' required="true" name="mobile_phone" label="Caller Number" value="{!v.contactNumber}"/>
+                    <lightning:select aura:id='sms_template' value="{!v.Templates}" label="SMS Template" onchange="{!c.onChangeTemplate}">       
+                        <option value="none">--None--</option> 
+                        <aura:iteration items="{!v.SMSTemplate}" var="template">
+                            <option value="{!template}">{!template}</option>
+                        </aura:iteration> 
+                    </lightning:select> 
+                    
+                    <!-- <div class="uiOutputRichText" linkify="true" >
+                            <aura:unescapedHtml aura:id="message" value="{!v.caseObj.SMS_Message__c}"/>
+                       </div> -->
+                    <!-- <aura:unescapedHtml value="{!v.caseObj.Subject}" /> -->
+                </div>
+            </div>
+            <div class="slds-size_1-of-2" >
+                <div class="slds-m-around_small">
+                    <!-- <lightning:input readonly="true" type="Datetime" aura:id="lastsentdate" name="lastsentdate" label="Last Sent Date" value="{!v.caseObj.Last_Sent_Date__c}" /> -->
+                    <label class="slds-form-element__label">Last Sent Date</label>
+                    <div class="slds-form-element__static div-time slds-form-element_stacked">
+                        <lightning:formattedDateTime value="{! v.caseObj.Last_Sent_Date__c }" year="numeric" month="short"
+                                                     day="numeric" hour="2-digit" minute="2-digit" second="2-digit" />
+                    </div>
+                    <lightning:select aura:id="sms_language" name="sms_language" label="SMS Language" onchange="{! c.onChangeLanguage }">
+                        <option value="TH">Thai</option>
+                        <option value="EN">English</option>
+                        <option value="JP">Japan</option>
+                    </lightning:select>
+                </div>
+            </div>
+            <div class="slds-size_2-of-2">
+                <div class="slds-m-around_small">
+                    <lightning:textarea aura:id="message" required="true" name="message" label="SMS Message" value="{!v.message}"/>
+                </div>
+            </div>
+            <!--Start - Fixed Issue Case No.9773-->
+            <div class="slds-size_2-of-2 ">
+            	<div class="slds-m-around_small slds-float_right">
+                	<lightning:button variant="brand" disabled="{!v.isDisable}" label="Confirm" onclick="{!c.onSendMessage}"/>
+                </div>
+            </div>
+            <!--End - Fixed Issue Case No.9773-->
+        </div>
+        
+        <!-- <div class="slds-form__row">
+                <div class="slds-size_1-of-2">
+                </div>
+            </div> -->
+    </div>
+</aura:component>

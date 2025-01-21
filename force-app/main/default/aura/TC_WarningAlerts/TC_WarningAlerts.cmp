@@ -1,0 +1,10 @@
+<aura:component controller="TC_WarningAlertsController" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global">
+    <aura:attribute name="selectedCase" type="String"/>
+    <aura:attribute name="patientAlerts" type="List" default="[]"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:iteration items="{!v.patientAlerts}" var="item">
+        <img title="{!item.iconAlert}" src="{!$Resource.TC_WarningAlerts + '/' + item.iconPath}"/>
+    </aura:iteration>
+</aura:component>

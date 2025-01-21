@@ -1,0 +1,9 @@
+<apex:component >
+    <apex:attribute name="record" type="Case" description="The Case record"/>
+    
+    <apex:outputPanel rendered="{!record.Age_Formula__c <= 16}">
+        <div style="color: red;">
+            Warning: The patient age is 16 years or less.
+        </div>
+    </apex:outputPanel>
+</apex:component>

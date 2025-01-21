@@ -1,0 +1,17 @@
+<apex:page standardController="EmailMessage" extensions="EmailMessageToHtmlFileController">
+<apex:includeScript value="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" />
+<apex:stylesheet value="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <apex:form >
+        <!-- Button to save HTML content as a file -->
+        <div id="buttons" class="col-sm-50 btn-group-lg" role="group" aria-label="Save button group">
+            <apex:commandButton value="Save as HTML File" action="{!saveAsHtmlFile}" styleClass="btn btn-primary" />
+        </div>
+    </apex:form>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // If you need any custom jQuery initialization, it can go here
+            console.log('Document is ready');
+        });
+    </script>
+</apex:page>

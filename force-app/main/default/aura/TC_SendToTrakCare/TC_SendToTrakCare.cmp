@@ -1,0 +1,12 @@
+<aura:component implements="force:appHostable,force:hasRecordId,flexipage:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" controller="TC_SendToTrakCareCtrl">
+    <aura:attribute name="recordId" type="String" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <div class="slds-align--absolute-center">
+        <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_large">
+            <span class="slds-assistive-text">Loading...</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+</aura:component>

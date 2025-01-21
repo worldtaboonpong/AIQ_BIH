@@ -1,0 +1,17 @@
+.THIS lightning-input input.slds-input{
+    border-bottom: 1px solid rgb(221, 219, 218);
+    border-radius: 0;
+}
+.THIS lightning-input .slds-input:focus,.THIS lightning-input .slds-input:active {
+    box-shadow: 0 0 0px !important;
+}
+.THIS .slds-spinner_container{
+    z-index: 3 !important;
+    padding-top: 20%;
+}
+.THIS .slds-spinner.slds-spinner_medium{
+    /* position: fixed; */
+    position: sticky;
+    top: 50%;
+    left: 65%;
+}

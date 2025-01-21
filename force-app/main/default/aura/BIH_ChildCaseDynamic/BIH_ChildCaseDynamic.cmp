@@ -1,0 +1,110 @@
+<!--Parent Lightning Compomemt-->
+<aura:component controller="BIH_ChildCaseDynamicCtrl" Implements="flexipage:availableForRecordHome,force:hasRecordId">
+    <!--Init handler which is call doInit js function on component Load-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="ShowModule" type="boolean" default="false" />
+    <!--Event handler for Add and Delete Row Event which is fire from Child Component-->
+    <aura:handler name="DeleteRowEvt" event="c:DeleteRowEvt" action="{!c.removeDeletedRow}" />
+    <aura:handler name="AddRowEvt" event="c:AddNewRowEvt" action="{!c.addNewRow}" />
+    <aura:handler name="verifyRowEvt" event="c:VerifyRowEvt" action="{!c.verifyRowEvt}" />
+    <aura:handler name="accountEvt" event="c:AccountEvt" action="{!c.accountEvt}" />
+    
+    <!--Aura Attribute for store Contact Object List as Array-->
+    <aura:attribute name="caseList" type="Object[]" />
+    <aura:attribute name="ParentCase" type="Case" />
+    <aura:attribute name="hnNumber" type="String" default="" />
+    <aura:attribute name="dateOfBirth" type="String" default=""/>
+    <aura:attribute name="fullName" type="String" default=""/>
+    <aura:attribute name="gender" type="String" default="" />
+    <aura:attribute name="rowIndexLastPick" type="String" />
+    <aura:attribute name="loading" type="Boolean" default="false" />
+    <aura:attribute name="picklistTmp" type="String[]" />
+    <aura:attribute name="childCaseMap" type="Map" />
+    <aura:attribute name="ownerMap" type="Map" />
+    <aura:attribute name="recordtypeMap" type="Map" />
+
+    
+
+    <aura:if isTrue="{! v.loading }">
+        <lightning:spinner alternativeText="Loading" />
+    </aura:if>
+    <!--Table Part-->
+    <h3 class="slds-section__title slds-theme_shade" style="margin: 1rem 0;">
+        <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Case Detail</span>
+    </h3>
+    <div class="slds-grid slds-gutters">
+        <!-- <div class="slds-col slds-size_1-of-1">
+                        <div aura:id="output" class="slds-box editor slds-text-longform">
+                            <lightning:inputRichText value="{!v.caseObj.Description}" placeholder="Type something interesting" />
+                        </div>
+                    </div> -->
+    
+        <div class="slds-col slds-size_1-of-1">
+            <!-- <label class="slds-form-element__label"></label> -->
+            <!-- <lightning:textarea name="case_detail" label="Case Detail" value="{!v.caseObj.Description}" /> -->
+            <div class="slds-box editor slds-text-longform">
+                <lightning:formattedRichText value="{!v.ParentCase.Case_Detail__c}">
+                </lightning:formattedRichText>
+            </div>
+    
+        </div>
+    </div>
+    <h3 class="slds-section__title slds-theme_shade" style="margin: 1rem 0;">
+        <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Create Related Case</span>
+    </h3>
+    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+        <thead>
+            <tr class="slds-text-title_caps">
+                <th scope="col">
+                    <div class="slds-truncate">No.</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="First Name">Hospital Number</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Last Name">Patient First Name</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Last Name">Patient Last Name</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Last Name">Channel</div>
+                </th>
+            </tr>
+        </thead>
+        <tbody> 
+            <!--Iterate the child Component for display Table rows 
+               with pass the List Item Index for track the Every child Component 
+               and pass each List Contact Instance -->
+            <aura:iteration items="{!v.caseList}" var="item" indexVar="index">
+                <c:BIH_ChildCaseItemDynamic CaseInstance="{!item}" picklstTmp="{!v.picklistTmp}" rowIndex="{!index}" />
+            </aura:iteration>
+        </tbody>
+    </table>
+    <br />
+    <!--Save Button which is call Save js function on click -->
+    <button class="slds-button slds-button_brand" onclick="{!c.Save}">Add</button>
+
+
+    
+    
+    <aura:if isTrue="{!v.ShowModule}">
+        <div style="max-width: 50rem;" >
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <a class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick="{! c.hideModal }">
+                            <lightning:icon iconName="utility:close" class="slds-icon slds-icon_small" size="small" alternativeText="close" />
+                        </a>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Search Patient</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <c:BIH_VerifyPatient isFirstTime="true" hnNumber="{!v.hnNumber}" dateOfBirth="{!v.dateOfBirth}" fullName="{!v.fullName}" gender="{!v.gender}"/>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+</aura:component>

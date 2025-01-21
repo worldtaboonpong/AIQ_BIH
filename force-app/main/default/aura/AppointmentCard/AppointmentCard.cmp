@@ -1,0 +1,273 @@
+<aura:component controller="GenerateAppointmentCard" Implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:isUrlAddressable">
+    
+    
+    <lightning:workspaceAPI aura:id="workspace" />
+    
+    <!-- <aura:attribute name="toPickList" type="String[]" default="BKK,CNX" /> -->
+    <aura:attribute name="toPickList" type="String[]" default="Bangladesh,Other Country" />
+    <aura:attribute name="selectedCase" type="Id" default="" />
+    <aura:attribute name="caseObj" type="Case" default="" />
+    <aura:attribute name="letterObj" type="Object" />
+    <aura:attribute name="letterPersonTypePatientObj" type="Object[]" />
+    <aura:attribute name="letterPersonTypeAttendantObj" type="Object[]" />
+    <aura:attribute name="isOtherCountry" type="Boolean" default="false" />
+    <aura:attribute name="personListForDelete" type="Invitation_Letter_Person__c[]" />
+    <aura:attribute name="countryPicklist" type="String[]" />
+    <aura:attribute name="specialtyPicklist" type="String[]" />
+    <aura:attribute name="embassyPicklist" type="String[]" />
+    <!-- <aura:registerEvent name="oSaveAndGenerate" type="c:saveEvt" /> -->
+    <!-- <aura:method name="SaveAndGenerate" action="{!c.onSaveAndGenerate}" /> -->
+    
+    
+    <!--  //////////////////////////////////////////////-->
+    <aura:attribute name="tmp_Hospital_Number_HN" type="String" default="" />
+    <aura:attribute name="Salutation" type="String" default="" />
+    <aura:attribute name="Name" type="String" default="" />
+    <aura:attribute name="DOB" type="String" default="" />
+    <aura:attribute name="Age" type="String" default="" />
+    <aura:attribute name="fullname" type="String" default="" />
+    
+    <aura:attribute name="columns" type="List" />
+    <aura:attribute name="data" type="Object" />
+    
+    
+    <aura:attribute name="loading" type="Boolean" default="false" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    
+    <div class="container-content" style="position:relative">
+        <aura:if isTrue="{! v.loading }">
+            <lightning:spinner alternativeText="Loading" />
+        </aura:if>
+        
+        <div class="slds-form">
+            <div class="slds-form-element slds-form-element_horizontal">
+                <img src="{!$Resource.LogoPDF}" style="float:left; height:100px;"/>
+            </div><br/><br/><br/>
+            <br/>
+        </div>
+        <br/>
+
+        <div class="slds-form">
+            <br/><br/>
+            <h3 class="slds-section__title slds-theme_shade">	
+                <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Patient Appointment Details</span>	
+            </h3>
+        </div>
+        <br/>
+        <!--
+            <div class="slds-form" >
+                <div class="slds-form__row">
+                    <div class="slds-form__item" role="listitem">
+                        <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                            <label class="slds-form-element__label" for="horizontal-form-element-id-01">Assigned To</label>
+                            <div class="slds-form-element__control">
+                                <input type="text" id="horizontal-form-element-id-01" readonly="" class="slds-input" value="Jack Rogers" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-form__item" role="listitem">
+                        <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                            <label class="slds-form-element__label" for="horizontal-combobox-id-01" id="combobox-label-id-17">Team Name</label>
+                            <div class="slds-form-element__control">
+                                <div class="slds-combobox_container">
+                                    
+                                    <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                        
+                                        <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                            <input type="text" class="slds-input slds-combobox__input slds-combobox__input-value" id="horizontal-combobox-id-01" aria-autocomplete="list" aria-controls="horizontal-listbox-id-01" aria-expanded="false" aria-haspopup="listbox" autoComplete="off"
+                                                   role="combobox" placeholder="Search..." value="Salesforce Lightning Design System" />
+                                            
+                                            <button class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" title="Clear the text input">
+                                                
+                                                <span class="slds-assistive-text">Clear the text input</span>
+                                            </button>
+                                            
+                                        </div>
+                                        
+                                        <div id="horizontal-listbox-id-01" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" aria-label="{{Placeholder for Dropdown Items}}" tabindex="0" aria-busy="false">
+                                            <ul class="slds-listbox slds-listbox_vertical" role="presentation"></ul>
+                                        </div>
+                                        
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            -->
+        
+        
+        
+        <div class="slds-form">
+            <div class="slds-form__row">
+                <div class="slds-form__item" role="listitem">
+                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                        <label class="slds-align_absolute-center slds-form-element__label" for="single-form-element-id-02">Hospital Number HN : </label>
+                        <div class="slds-form-element__control">
+                            <input type="text" readonly="true" id="single-form-element-id-02" class="slds-input" value="{!v.tmp_Hospital_Number_HN}" />
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-form__item" role="listitem">
+                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                        <label class="slds-form-element__label" for="single-form-element-id-03">Date Of Birth : </label>
+                        <div class="slds-form-element__control">
+                            <input type="text" readonly="true" id="single-form-element-id-03"  class="slds-input" value="{!v.DOB}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slds-form__row">
+                <div class="slds-form__item" role="listitem">
+                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                        <label class="slds-form-element__label" for="single-form-element-id-04">Name : </label>
+                        <div class="slds-form-element__control">
+                            <input type="text" readonly="true" id="single-form-element-id-04" class="slds-input" value="{!v.fullname}" />
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-form__item" role="listitem">
+                    <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                        <label class="slds-form-element__label" for="single-form-element-id-05">Age : </label>
+                        <div class="slds-form-element__control">
+                            <input type="text" readonly="true" id="single-form-element-id-05"  class="slds-input" value="{!v.Age}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+
+        </div>
+        
+        
+        
+        
+        <!--
+            <div class="slds-grid slds-gutters">	
+                <div class="slds-col slds-size_1-of-2">
+                    <div>	
+                        <lightning:input readonly="true" name="Hospital_Number_HN" label="Hospital_Number_HN : " value="{!v.tmp_Hospital_Number_HN}" />	
+                    </div>
+                    <div>	
+                        <lightning:input readonly="true" name="dob" label="Date Of Birth : " value="{!v.DOB}" />	
+                    </div>
+                    
+                </div>	
+                
+                <div class="slds-col slds-size_1-of-2">
+                    <div>	
+                        <lightning:input readonly="true" name="Name" label="Name : " value="{!v.fullname}" />	
+                    </div>
+                    <div>	
+                        <lightning:input readonly="true" name="Age" label="Age : " value="{!v.Age}" />
+                    </div>
+                    
+                    
+                </div>
+            </div>
+        
+        -->
+        <br/>
+        <div class="slds-form">
+            
+            <lightning:datatable  aura:id="dtTable" 
+                                 columns="{! v.columns }"
+                                 data="{! v.data }"
+                                 keyField="Id"
+                                 hideCheckboxColumn="true"
+                                 hidescorebar="true"
+                                 >
+            </lightning:datatable>
+        </div>  
+        
+        
+        <!--
+            <div class="slds-form-element slds-form-element_horizontal">
+                <div class="slds-size_1-of-2">
+                    <lightning:input type="date" name="date" label="Date" value="{!v.letterObj.Generate_Date__c}" />
+                </div>
+            </div>
+            
+            <div class="slds-form-element slds-form-element_horizontal">
+                <lightning:input type="text" readonly="true" name="from_letter" label="From : "
+                    value="{!v.letterObj.LetterFrom__c}" />
+            </div>
+           
+            <div class="slds-form-element slds-form-element_horizontal">
+                <div class="slds-size_1-of-2">
+                    <lightning:select name="embassy_letter" label="Type : " value="{!v.letterObj.LetterEmbassyType__c}">
+                        <aura:iteration items="{!v.embassyPicklist}" var="c">
+                            <option text="{!c}"></option>
+                        </aura:iteration>
+                    </lightning:select>
+                </div>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <div class="slds-size_1-of-2">
+                    <lightning:select name="to_letter" label="To : " value="{!v.letterObj.LetterTo__c}"
+                        onchange="{!c.onChangeLetterTo}">
+                        <aura:iteration items="{!v.toPickList}" var="c">
+                            <option text="{!c}"></option>
+                        </aura:iteration>
+                    </lightning:select>
+                </div>
+            </div>
+            <aura:if isTrue="{! v.isOtherCountry }">
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <div class="slds-size_1-of-2">
+                        <lightning:input type="text" name="country_letter" label="Country : "
+                            value="{!v.letterObj.LetterCountryText__c}" />
+                    </div>
+                </div>
+            </aura:if>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <div class="slds-size_1-of-2">
+                    <lightning:input readonly="true" type="text" name="ref_number" label="Reference No"
+                        value="{!v.letterObj.LetterRefNo__c}" />
+                </div>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <div class="slds-size_1-of-2">
+                    <lightning:input type="text" name="subject" label="Subject" value="{!v.letterObj.LetterSubject__c}" />
+                </div>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <div class="slds-size_1-of-2">
+                    <lightning:input type="text" name="to_dear" label="Dear" value="{!v.letterObj.LetterDear__c}" />
+                </div>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <lightning:inputRichText formats="['size', 'bold', 'italic', 'underline','list', 'align','clean', 'table', 'header']" labelVisible="true" label="Content" value="{!v.letterObj.Content__c}" />
+                
+            </div>
+            -->
+        
+        
+        
+        
+        <!--
+        <c:BIH_DynamicInvitationLetterPerson specialtyPicklist="{!v.specialtyPicklist}" letterObj="{!v.letterObj}" personListForDelete="{!v.personListForDelete}"
+            personList="{!v.letterPersonTypePatientObj}" PersonType="patient" />
+        <c:BIH_DynamicInvitationLetterPerson specialtyPicklist="{!v.specialtyPicklist}"  letterObj="{!v.letterObj}" personListForDelete="{!v.personListForDelete}"
+            personList="{!v.letterPersonTypeAttendantObj}" PersonType="attendant" />
+        -->
+        
+        
+        
+        
+        
+        
+        <div class="container-button">
+            <lightning:button variant="Neutral" label="Cancel" title="Cancel" onclick="{! c.handleClick }" />
+            <lightning:button variant="brand" label="Generate PDF" title="Generate PDF" onclick="{! c.onSaveAndGenerate }" />
+        </div>
+    </div>
+    
+    
+    
+</aura:component>

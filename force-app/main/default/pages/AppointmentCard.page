@@ -1,0 +1,324 @@
+<apex:page controller="AppointmentCardPDF" renderAs="pdf" showHeader="false" sidebar="false" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false">
+    <head>
+        
+        <style>
+            
+            @page {
+            margin: 0.5cm 1cm 0.5cm 1cm;
+            @bottom-center{
+            content : element(footer);
+            }
+            }
+            div.footer{
+            position : running(footer);
+            }
+            body{
+            font-family: Arial Unicode MS;
+            font-size: 14px;
+            -fs-pdf-font-embed: embed;
+            -fs-pdf-font-encoding: Identity-H;
+            }
+            table { 
+            border-collapse:collapse;
+            border: .02em solid black;
+            
+            }
+            
+            td, th { 
+            border: .02em solid black;
+            padding : 5px;
+            }
+            table.htmlDetailElementTable { 
+            border-collapse:unset;
+            border: none;
+            /* margin: 0.5c/m 1cm 0.5cm 0.5cm; */
+            /* padding-left:1cm; */
+            
+            }
+            table.htmlDetailElementTable p { 
+            margin: 0 auto;
+            }
+            table.htmlDetailElementTable p:first-child { 
+            }
+            
+            .htmlDetailElementTable td,.htmlDetailElementTable th { 
+            border: none;
+            }
+            .sfdc_richtext{
+            padding-left: 10%;
+            }
+            .noBorder {
+            border:none !important;
+            }
+            .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            text-align: center;
+            /* Other header styles */
+            }
+            .footer1 {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            }
+            .content {
+            padding-top: 180px; /* Adjust to match the header's height */
+            padding-bottom: 0px; /* Adjust to match the footer's height */
+            /* Other content styles */
+            }
+            .no-page-break {
+            page-break-inside: avoid;
+            }
+            .long-text {
+            white-space: normal; /* or 'pre-wrap' if you want to preserve line breaks */
+            overflow: hidden; /* or 'auto' if you want to add a scrollbar for long content */
+            max-height: 200px; /* Adjust as needed */
+            }
+            .page-break {
+            page-break-after: always;
+            }
+            .table-wrapper {
+            page-break-inside: avoid;
+            }
+            .page-break-after {
+            page-break-after: always;
+            }
+            
+            
+            
+        </style>
+        
+    </head>
+    
+    <body>
+        <apex:variable value="{!0}" var="checklastPage" />
+        <apex:repeat value="{!mapPageWrapper}" var="page" >
+            <apex:variable value="{!checklastPage+1}" var="checklastPage" />
+            <!--Heeder Logo-->
+            <div class="header">
+                
+                <div style="position:absolute; top:0;left:0;">
+                    
+                    <apex:image url="{!$Resource.LogoPDF }" style="float:left; height:100px;" />
+                </div>
+                
+                <!--Date-->
+                <div style="padding-top:100px;">
+                    <table style="width: 100%;" class="noBorder">
+                        <tbody>
+                            <tr>
+                                <td class="noBorder" valign="top" style="text-align: center;">
+                                    <div style="overflow-wrap: break-word;word-break: break-all;width: 140px"><center>APPOINTMENT LIST</center></div>
+                                </td>
+                                <td class="noBorder" valign="top" style="text-align: center;">
+                                    <div style="overflow-wrap: break-word;word-break: break-all;width: 150px">HN {!Hospital_Number_HN}</div>
+                                    <img style = "width: 100px;height:30px;" src="{!Barcode}"/>
+                                </td>
+                                <td class="noBorder" valign="top" style="text-align: left;">
+                                    <div style="overflow-wrap: break-word;word-break: break-all;width: 150px">{!Name}</div>
+                                </td>
+                                <!--td class="noBorder" valign="top" style="text-align: center;">
+                                    <div style="overflow-wrap: break-word;word-break: break-all;width: 160px"></div>
+                                </td-->
+                                <td class="noBorder" valign="top" style="text-align: left;">
+                                    <div style="overflow-wrap: break-word;word-break: break-all;width: 150px">
+                                        <apex:outputText value="{!IF(apptObj[0].Account__r.Nationality__c == 'Thai', 'วันเกิด', 'DOB')}"/>
+                                        <span>
+                                            {!DOB1}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="noBorder" valign="top" style="text-align: left;">
+                                    <div style="overflow-wrap: break-word; word-break: break-all; width: 160px">
+                                        <apex:outputText value="{!IF(apptObj[0].Account__r.Nationality__c == 'Thai', 'อายุ', 'Age')}"/>
+                                        {!AgeInYearsMonthsDays}
+                                    </div>
+                                </td>
+                            </tr>
+                            <!--tr>
+                                <td class="noBorder"><div style="overflow-wrap: break-word;word-break: break-all;width: 160px"></div></td>
+                                <td class="noBorder" valign="top" style="text-align: center;"><div style="overflow-wrap: break-word;word-break: break-all;width: 160px"> <img style = "width: 100px;height:30px;" src="{!Barcode}"/></div></td>
+                                
+
+                                
+                            </tr-->
+                            
+                            
+                        </tbody>
+                    </table>
+                    
+                </div>
+                
+            </div>
+            
+            <div class="content">  
+                
+                
+                <hr />
+                <table style="width: 100%;padding:2% 0 2% 0; border-top:2px solid black; border-bottom: 2px solid black;">
+                    <thead class="fixed-header">
+                        <tr>
+                            <th class="noBorder" style="width: 20%;">
+                                <center>
+                                    <apex:outputText value="{!IF(apptObj[0].Account__r.Nationality__c == 'Thai', 'วัน', 'Date')}" />
+                                </center>
+                            </th>
+                            <th class="noBorder" style="width: 20%;">
+                                <center>
+                                    <apex:outputText value="{!IF(apptObj[0].Account__r.Nationality__c == 'Thai', 'เวลา', 'Time')}" />
+                                </center>
+                            </th>
+                            <th class="noBorder" style="width: 60%;">
+                                <center>
+                                    <apex:outputText value="{!IF(apptObj[0].Account__r.Nationality__c == 'Thai', 'นัดพบ', 'Care provider / Resource')}" />
+                                </center>
+                            </th>
+                        </tr>
+                    </thead>                     
+                    <hr/>
+                    <tbody> 
+                        <apex:repeat value="{!mapPageWrapper[page].lineitems}" var="item" id="apptObjTable" >
+                            <tr>
+                                <td  class="noBorder" valign="top" style="text-align: center;">
+                                    <div style="overflow-wrap: break-word;word-break: break-all;width: 145px;">{!item.datestr}</div>
+                                </td>
+                                <td class="noBorder" valign="top" style="text-align: center;">
+                                    <div style="overflow-wrap: break-word;word-break: break-all;width: 115px">
+                                        {!item.timestr}</div>
+                                </td>
+                                <td class="noBorder" valign="top" style="text-align: left;">
+                                    {!item.care1}<br/> 
+                                    {!item.care2} 
+                                <br/><apex:outputText rendered="{!apptObj[0].Account__r.Nationality__c == 'Thai' && NOT(ISBLANK(item.care3))}">
+                                        <B>ข้อแนะนำ:</B><br/>
+                                        {!item.care3}
+                                    </apex:outputText>
+                                    <apex:outputText rendered="{!(apptObj[0].Account__r.Nationality__c != 'Thai' || ISBLANK(item.care3))}">
+                                        <B>Instruction:</B><br/>
+                                        {!item.care3}
+                                    </apex:outputText>  
+                                </td>
+                                
+                            </tr>
+                        </apex:repeat>
+                    </tbody>
+                    
+                </table>
+                
+                
+            </div>
+                
+            
+            
+            <br/> <br/> <br/> 
+            
+            <div class="footer1">
+                <div>
+                    <p style="text-align: center;">
+                        <apex:outputText value="{!IF(apptObj[0].Account__r.Nationality__c == 'Thai', '*** กรุณานำยาที่ท่านใช้ประจำมาด้วยทุกครั้งที่มาพบแพทย์ ***', '*** Please bring all of your current medication to every doctor\'s appointment ***')}"/>
+                    </p>
+
+                </div>
+                <div >
+                    <table>
+                        
+                        <tbody>
+                            <tr>
+                                
+                                <!-- For Thai Nationality -->
+                               
+                                    <td style="width: 100%; bottom:0; text-align: left;">
+                                         <apex:outputPanel rendered="{!apptObj[0].Account__r.Nationality__c == 'Thai'}">
+                                        <apex:outputText value="หากต้องการเปลี่ยนแปลงนัด กรุณาติดต่อแผนกนัด โทร 0 2066 8888 "/>
+                                        <br/>
+                                        <apex:outputText value="สำหรับแผนกต่อไปนี้กรุณาเลื่อนนัดโดยตรง"/>
+                                        <table style="width: 100%;">
+                                            <tbody>
+                                                <tr>
+                                                    <td style="width: 60%; border: solid rgb(255, 255, 255);" class="fr-cell-fixed ">
+                                                        <apex:outputText value="- แผนก Skin and Aesthetic Center 0 2011 4286,0 2011 4291"/>
+                                                        <br/>
+                                                        <apex:outputText value="- ศูนย์ศัลยกรรมตกแต่ง โทร 0 2011 3691"/>
+                                                    </td>
+                                                    <td style="width: 6%; border: solid rgb(255, 255, 255);">
+                                                    </td>
+                                                    <td style="width: 40%; border: solid rgb(255, 255, 255);">
+                                                        <apex:outputText value="- แผนกกายภาพบำบัด โทร 0 2011 2450"/><br/>
+                                                        <apex:outputText value="- ศูนย์มะเร็งฮอไรซัน โทร 0 2011 2342"/>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        </apex:outputPanel>
+                                        
+                                        <!-- For Other Nationalities -->
+                                        <apex:outputPanel rendered="{!apptObj[0].Account__r.Nationality__c != 'Thai'}">
+                                             <apex:outputText value="If you would like to modify your appointment, please call Contact Center +66 2066 8888"/>
+                                        <br/>
+                                        <apex:outputText value="Please direct contact for the following clinic:"/>
+                                        <table style="width: 100%;">
+                                            <tbody>
+                                                <tr>
+                                                    <td style="width: 60%; border: solid rgb(255, 255, 255);" class="fr-cell-fixed ">
+                                                        <apex:outputText value="- Skin and Aesthetic Center Tel. +66 2011 4286 , +66 2011 4291"/>
+                                                        <br/>
+                                                        <apex:outputText value="- Plastic Center Tel. +66 2011 3691"/>
+                                                    </td>
+                                                    <td style="width: 40%; border: solid rgb(255, 255, 255);">
+                                                        <apex:outputText value="- Physiotherapy Center Tel.+66 2011 2450"/><br/>
+                                                        <apex:outputText value="- Horizon Cancer Center Tel.+66 2011 2342"/>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                          
+                                            
+                                        </apex:outputPanel>
+                                        
+                                        
+                                    </td>
+                                
+                                
+
+                                
+                            </tr>
+                        </tbody>
+                    </table> 
+
+                </div>
+                <div >
+                   
+                    <apex:outputPanel rendered="{!apptObj[0].Account__r.Nationality__c != 'Thai'}">
+                        <p>
+                            - Please confirm your appointment with your country referral office at least 72 hours in advance.<br/>
+                            - To check our international offices, please access the Bumrungrad website.<br/>
+                            - BI Interpreter service is free of charge
+                        </p>
+                    </apex:outputPanel>
+                    
+                </div>
+                
+                <apex:outputPanel rendered="{!apptObj[0].Account__r.Nationality__c == 'Thai'}">
+                    <div style="margin-left:31px;">
+                        33 สุขุมวิท ซอย 3 เขตวัฒนา กรุงเทพหานคร 10110 โทร 0 2066 8888 โทรสาร 0 2011 5100 www.bumrungrad.com
+                    </div>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!apptObj[0].Account__r.Nationality__c != 'Thai'}">
+                    <div style="margin-left:60px;">
+                        33 Sukhumvit Soi 3, Wattana, Bangkok Tel.+66 2066 8888 Fax.+66 2011 5100 www.bumrungrad.com
+                    </div>
+                </apex:outputPanel>
+
+                
+                
+                
+            </div>
+            <apex:outputPanel rendered="{!pageSize != checklastPage}">
+                <div style="page-break-after: always"></div>
+            </apex:outputPanel>
+        </apex:repeat>
+    </body>
+    
+
+</apex:page>

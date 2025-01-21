@@ -1,0 +1,26 @@
+.THIS .slds-modal__container{
+    width: 100% !important;
+    max-width: 75rem !important;
+}
+.THIS .slds-modal__content{
+    min-height: 400px;
+    position: relative;
+}
+.THIS .slds-modal__close {
+    width: 2rem;
+    height: 2rem;
+    position: absolute;
+    top: .5rem !important;
+    right: .5rem !important;
+}
+.THIS.slds-spinner_container{
+    z-index: 3 !important;
+}
+.THIS .slds-spinner.slds-spinner_medium{
+    position: sticky;
+    margin: 6rem 0 6rem 27rem;
+}
+.THIS .slds-box.editor.slds-text-longform{
+    max-height: 300px;
+    overflow: auto;
+}

@@ -1,0 +1,14 @@
+<apex:page standardController="EmailMessage" language="th" renderAs="pdf" applyHtmlTag="false" showHeader="false" extensions="EmailPrintControllerExtension"  applyBodyTag="false" contentType="text/html;charset=UTF-8">
+    <html>
+         <head>
+        </head>
+        <body>
+            <!-- Your PDF content goes here -->
+            <div style="font-family: Arial Unicode MS;font-weight: 900; ">
+                <apex:outputText value="{!EmailContent}" escape="false" />
+            </div>
+            <!--<apex:outputText value="{!EmailContent}" escape="false" />-->
+           
+        </body>
+    </html>
+</apex:page>

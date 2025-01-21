@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="Event template">
+    <aura:attribute name="indexVar" type="Integer" description="Use For Verify" />
+</aura:event>

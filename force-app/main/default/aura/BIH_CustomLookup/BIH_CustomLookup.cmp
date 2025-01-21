@@ -1,0 +1,85 @@
+<aura:component controller="BIH_CustomLookUpController"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+    access="global">
+    <!--declare attributes-->
+    <aura:attribute name="selectedRecord" type="sObject" default="{}"
+        description="Use,for store SELECTED sObject Record" />
+    <aura:attribute name="listOfSearchRecords" type="List"
+        description="Use,for store the list of search records which returns from apex class" />
+    <aura:attribute name="SearchKeyWord" type="string" />
+    <aura:attribute name="showField" type="string" default="" />
+    <aura:attribute name="objectAPIName" type="string" default="" />
+    <aura:attribute name="fieldAPIName" type="string" default="" />
+    <aura:attribute name="fieldAPINameAddition1" type="string" default="" />
+    <aura:attribute name="fieldAPINameAddition2" type="string" default="" />
+    <aura:attribute name="TypeAPISearch" type="string" default="SOSL"  description="SOQL or SOSL"/>
+    <aura:attribute name="IconName" type="string" default="" />
+    <aura:attribute name="label" type="string" default="" />
+    <aura:attribute name="Message" type="String" default="" />
+    <aura:attribute name="Required" type="Boolean" default="false" />
+    
+
+    <aura:attribute name="showError" type="Boolean" default="false" />
+    <aura:attribute name="showErrors" type="Boolean[]" default="null"/>
+    <aura:attribute name="indexError" type="Integer" default="0"/>
+
+    <!--declare events hendlers-->
+    <aura:handler name="oSelectedRecordEvent" event="c:BIH_SelectedsObjectRecordEvent" action="{!c.handleComponentEvent}" />
+
+
+    <!-- https://www.lightningdesignsystem.com/components/lookups/ -->
+
+    <div onmouseleave="{!c.onblur}" aura:id="searchRes" class="slds-form-element slds-lookup slds-is-close"
+        data-select="single">
+        <aura:if isTrue="{!v.Required}">
+            <abbr class="slds-required" title="required" >*</abbr>
+        </aura:if>
+        <label class="slds-form-element__label" for="lookup-348">{!v.label}</label>
+        <!--This part is for display search bar for lookup-->
+        <div class="slds-form-element__control">
+
+            <div class="slds-input-has-icon slds-input-has-icon--right">
+                <!-- This markup is for when an record is selected -->
+                <div aura:id="lookup-pill" class="{! 'slds-pill-container' + (v.selectedRecord != null? ' slds-show':' slds-hide') }">
+                    <lightning:pill class="pillSize" label="{!v.selectedRecord.Name}" name="{!v.selectedRecord.Name}"
+                        onremove="{! c.clear }">
+                        <aura:set attribute="media">
+                            <lightning:icon iconName="{!v.IconName}" size="x-small" alternativeText="{!v.IconName}" />
+                        </aura:set>
+                    </lightning:pill>
+                </div>
+                <div aura:id="lookupField" class="{! (v.selectedRecord != null? ' slds-hide':' slds-show') }">
+                    <lightning:icon class="slds-input__icon slds-show" iconName="utility:search" size="x-small"
+                        alternativeText="search" />
+                    <span class="slds-icon_container  slds-combobox__input-entity-icon" title="record">
+                        <lightning:icon class="slds-icon slds-icon slds-icon_small slds-icon-text-default"
+                            iconName="{!v.IconName}" size="x-small" alternativeText="icon" />
+                        <span class="slds-assistive-text"></span>
+                    </span>
+                    <ui:inputText blur="{!c.requiredOnBlur}" click="{!c.onfocus}" updateOn="keyup" keyup="{!c.keyPressController}"
+                        class="{! (v.showError == true? ' slds-has-error':'') + ' slds-lookup__search-input slds-input leftPaddingClass' }" value="{!v.SearchKeyWord}"
+                        placeholder="search.." />
+                </div>
+            </div>
+            <!-- <aura:if isTrue="!v.showErrors[index] != null">
+                    showError = v.showErrors[index];
+            </aura:if> -->
+            <aura:if isTrue="{!v.showError &amp;&amp; v.selectedRecord == null}">
+                    <!-- {!v.showError} -->
+                        <div class="slds-form-element__help">
+                            Complete this field.
+                        </div>
+            </aura:if>
+        </div>
+        <!--This part is for Display typehead lookup result List-->
+        <ul style="{! (v.showError == true? 'margin-top:-20px !important;':'margin-top:0px !important;') + ' min-height:40px;' }"
+            class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid slds-lookup__menu slds"
+            role="listbox">
+            <lightning:spinner class="slds-hide" variant="brand" size="small" aura:id="mySpinner" />
+            <center> {!v.Message}</center>
+            <aura:iteration items="{!v.listOfSearchRecords}" var="singleRec">
+                <c:BIH_CustomLookupResult oRecord="{!singleRec}" IconName="{!v.IconName}" />
+            </aura:iteration>
+        </ul>
+    </div>
+</aura:component>

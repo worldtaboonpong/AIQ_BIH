@@ -1,0 +1,17 @@
+<aura:component controller="BIH_CreateQuickCaseContactCenterCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global">
+    <aura:html tag="style">
+        .slds-modal__content{
+            background: transparent;
+            box-shadow: none !important;
+        }
+        .slds-button.slds-modal__close{
+            display:none;
+        }
+    </aura:html>
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="recordId" type="String" />
+    <div class="exampleHolder">
+            <lightning:spinner alternativeText="Loading" />
+    </div>
+</aura:component>

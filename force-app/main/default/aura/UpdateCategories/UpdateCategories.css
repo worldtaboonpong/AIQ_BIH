@@ -1,0 +1,19 @@
+.THIS {
+    background-color: white;
+    padding: 0rem;
+    position: relative;
+}
+.THIS .slds-modal__container{
+    width: 100% !important;
+    max-width: 75rem !important;
+}
+
+.THIS .slds-modal__content {
+    background: white !important;
+}
+.THIS .slds-spinner.slds-spinner_medium{
+    position: fixed;
+}
+.THIS #campaign_spinner .slds-spinner{
+    position: absolute;
+}

@@ -1,0 +1,97 @@
+<aura:component controller="BIH_VerifyPatientCtrl"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,lightning:isUrlAddressable"
+    access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="isFirstTime" type="Boolean" default="false" />
+    <!-- <aura:attribute name="isNew" type="Boolean" default="false"/> -->
+    <aura:attribute name="data" type="Object[]" />
+    <aura:attribute name="columns" type="List" />
+    <aura:attribute name="recordId" type="String" />
+    <!-- <aura:attribute name="pdvsEndpoint" type="String" />
+    <aura:attribute name="userName" type="String" />
+    <aura:attribute name="sessionId" type="String" /> -->
+    <aura:attribute name="hnNumber" type="String" default=""/>
+    <aura:attribute name="dateOfBirth" type="String" default=""/>
+    <aura:attribute name="fullName" type="String" />
+    <aura:attribute name="firstName" type="String" default=""/>
+    <aura:attribute name="lastName" type="String" default=""/>
+    <aura:attribute name="gender" type="String" default=""/>
+    <aura:attribute name="rowIndex" type="Integer" /> 
+    <aura:attribute name="loading" type="Boolean" default="false" />
+    <aura:attribute name="isErrorMessage" type="Boolean" default="false" />
+    <aura:attribute name="hasInfoForSearch" type="Boolean" default="false" />
+    <aura:attribute name="patientObj" type="Account" default="{ 'sobjectType': 'Account'}" />
+    <aura:registerEvent name="accountEvt" type="c:AccountEvt" />
+
+    <ltng:require 
+    scripts="{!$Resource.jQuery}" />
+
+    <aura:if isTrue="{! v.loading }">
+        <lightning:spinner alternativeText="Loading" />
+    </aura:if>
+    <div class="slds-grid slds-gutters">
+        <div class="slds-col slds-size_10-of-12">
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_2-of-12">
+                    <lightning:input name="hnNumber" label="Hospital Number" value="{!v.hnNumber}" />
+                </div>
+                <div class="slds-col slds-size_3-of-12">
+                    <lightning:input name="firstName" label="First Name" value="{!v.firstName}" />
+                </div>
+                <div class="slds-col slds-size_3-of-12">
+                    <lightning:input name="lastName" label="Last Name" value="{!v.lastName}" />
+                </div>
+                <div class="slds-col slds-size_2-of-12">
+                    <lightning:input type="date" name="dateOfBirth" label="Date of Birth" value="{!v.dateOfBirth}" />
+                </div>
+                <div class="slds-col slds-size_2-of-12">
+                    <lightning:select name="gender" label="Gender" aura:id="" value="{!v.gender}">
+                        <option text="" value="" selected="">All</option>
+                        <option text="" value="1" selected="">Male</option>
+                        <option text="" value="2" selected="">Female</option>
+                        <option text="" value="3" selected="">Unidentified</option>
+                    </lightning:select>
+                </div>
+            </div>
+        </div>
+        <div class="slds-col slds-size_2-of-12">
+            <div style="height:100%;display: flex;align-items: flex-end;justify-content: center;">
+                <lightning:button iconName="utility:clear" label="Clear" title="Clear" onclick="{!c.onClear}" />
+                <!-- <aura:if isTrue="{! v.isNew }"> -->
+                <lightning:button variant="brand" iconName="utility:search" label="Search" title="Search" onclick="{!c.onSearch}" />
+                <!-- </aura:if> -->
+                <!-- <aura:if isTrue="{!! v.isNew }">
+                <lightning:button variant="brand" iconName="utility:search" label="Search" title="Search" onclick="{!c.onSearchPDVS}" />
+                </aura:if> -->
+            </div>
+        </div>
+    </div>
+
+    
+    
+    <!-- handlers-->
+    <!-- <aura:handler name="init" value="{! this }" action="{! c.init }" /> -->
+    
+    
+    <!-- the container element determine the height of the datatable -->
+    <!-- <aura:if isTrue="{! v.isNew }"> -->
+    <div style="max-height: 300px;margin-top: 2rem;" >
+        <lightning:datatable class="table-verify"  keyField="id" data="{! v.data }" columns="{! v.columns }" onrowaction="{!c.handleRowAction}" hideCheckboxColumn="true"/>
+    </div>
+    <aura:if isTrue="{! ( v.data.length == 0 || v.data == null ) &amp;&amp; !v.isErrorMessage  &amp;&amp; !v.hasInfoForSearch}">
+      <div style="text-align: center;font-size: .8rem; margin: 1rem 0;">
+        ----- DATA NOT FOUND -----
+      </div>
+    </aura:if>
+    <aura:if isTrue="{!  v.isErrorMessage }">
+        <div style="text-align: center;font-size: .8rem; margin: 1rem 0;">
+            ----- PLEASE TRY AGAIN -----
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!  v.hasInfoForSearch }">
+        <div style="text-align: center;font-size: .8rem; margin: 1rem 0;">
+            ----- There is no patient information for searching. -----
+        </div>
+    </aura:if>
+    <!-- </aura:if> -->
+</aura:component>

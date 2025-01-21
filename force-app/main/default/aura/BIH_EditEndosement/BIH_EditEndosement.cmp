@@ -1,0 +1,36 @@
+<aura:component controller="BIH_EditEndosementCtrl"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,lightning:isUrlAddressable,lightning:hasPageReference"
+    access="global">
+    
+    <lightning:empApi aura:id="empApi" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="recordTypeId" type="String"/>
+    <aura:attribute name="Endosement" type="String" default="" />
+    <aura:attribute name="caseObj" type="Case" />
+    <div>
+        <div class="slds-section slds-is-open">
+            <h3 class="slds-section__title slds-theme_shade">	
+                <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Endorsement Message</span>	
+			</h3>
+                <div class="slds-grid slds-gutters">	
+                    <div class="slds-col slds-size_1-of-1">
+                        	<div>	
+                                <lightning:textarea name="Endosement" label="Endorsement" value="{!v.Endosement}" />	
+                            </div>
+                        	
+                    </div>	
+                </div>
+            
+            
+            <div class="container-btn-group">
+                <lightning:button class="slds-button slds-button--neutral uiButton--neutral uiButton forceActionButton"
+                    label="Cancel" title="Cancel" onclick="{! c.onCancel }" />
+                <lightning:button class="slds-button slds-button--neutral uiButton--brand uiButton forceActionButton"
+                    label="Save" title="Save" onclick="{! c.onSave }" /> 
+            </div>
+        </div>
+    </div>
+</aura:component>

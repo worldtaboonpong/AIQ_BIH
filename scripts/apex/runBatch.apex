@@ -1,0 +1,1 @@
+Database.executeBatch(new TC_BatchUpdateAppointment(),10);

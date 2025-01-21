@@ -1,0 +1,14 @@
+<template>
+    <lightning-card title="Next Upcoming Appointment">
+        <template if:true={appointment}>
+            <p>Location: {appointment.Location__c}</p>
+            <p>Doctor: {appointment.Doctor__c}</p>
+            <p>Date: {appointment.Appointment_Date__c}</p>
+            <p>Time: {appointment.Appointment_Time__c}</p>
+            <p>Status: {appointment.Appointment_Status__c}</p>
+        </template>
+        <template if:true={error}>
+            <p>{error}</p>
+        </template>
+    </lightning-card>
+</template>

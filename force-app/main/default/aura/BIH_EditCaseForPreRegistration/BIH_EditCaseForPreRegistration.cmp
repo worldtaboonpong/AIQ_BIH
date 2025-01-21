@@ -1,0 +1,1016 @@
+<aura:component controller="BIH_EditChildCaseFormCtrl"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,lightning:isUrlAddressable,lightning:hasPageReference"
+    access="global">
+    <lightning:empApi aura:id="empApi" />
+    <!-- <aura:attribute name="options" type="List" access="PRIVATE" />
+    <aura:attribute name="caseObj.Priority" type="String" access="PRIVATE" /> -->
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:handler name="accountEvt" event="c:AccountEvt" action="{!c.accountEvt}" />
+    <aura:attribute name="ShowModule" type="boolean" default="false" />
+    <!-- <aura:handler event="c:CaseCampaign" action="{!c.onSavewithCampaign}"/> -->
+    <!-- <aura:attribute name="txtCampaign" type="String" default=""/> -->
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="recordTypeId" type="String"/>
+
+    <aura:attribute name="isNew" type="Boolean" default="false"/>
+    <aura:attribute name="pdvsEndpoint" type="String" />
+    <aura:attribute name="userName" type="String" />
+    <aura:attribute name="sessionId" type="String" />
+    <aura:attribute name="clientId" type="String" />
+
+    <aura:attribute name="caseObj" type="Case" default="{ 'sobjectType': 'Case'}" />
+
+    <aura:attribute name="patientObj" type="Account" default="{ 'sobjectType': 'Account'}" />
+    <aura:attribute name="senderObj" type="Account" default="{ 'sobjectType': 'Account'}" />
+    <aura:attribute name="OwnerObj" type="Account" default="{ 'sobjectType': 'Account'}" />
+    <aura:attribute name="UserObj" type="User" default="{ 'sobjectType': 'User'}" />
+    <aura:attribute name="doctorObj" type="Doctor__c" default="{ 'sobjectType': 'Doctor__c'}" />
+    <aura:attribute name="ownerType" type="String" default="user" />
+
+    <aura:attribute name="PickList" type="Map" default="{}" />
+    <aura:attribute name="priorityPickList" type="String[]" />
+    <aura:attribute name="TypeofpaymentPickList" type="String[]" />	
+    <aura:attribute name="MethodofpaymenttelemedPickList" type="String[]" />
+    <aura:attribute name="case_originPickList" type="String[]" />
+    <aura:attribute name="PayorTypePickList" type="String[]" />
+        <aura:attribute name="PatientTypePickList" type="String[]" />
+        <aura:attribute name="channelPickList" type="String[]" />
+    <aura:attribute name="pending_teamPickList" type="String[]" />
+    <aura:attribute name="pending_reasonPickList" type="String[]" />
+    <aura:attribute name="statusPickList" type="String[]" />
+    <aura:attribute name="close_case_reasonPickList" type="String[]" />
+    <aura:attribute name="close_case_teamPickList" type="String[]" />
+    <aura:attribute name="specialty_DoctorPickList" type="String[]" />
+    <!--<aura:attribute name="Appointment_Time_picklistPickList" type="String[]" /> -->
+    <aura:attribute name="lead_sourcePickList" type="String[]" />
+    <aura:attribute name="isRequiredEscalateDate" type="boolean" default="false" />
+    <aura:attribute name="isErrorEscalateDate" type="boolean" default="false" />
+    <aura:attribute name="ServiceDetail" type="String" />
+
+    <aura:attribute name="MapCaseCateLVL_1" type="Map" default="{}" />
+    <aura:attribute name="CaseCateLVL_1" type="String[]" />
+    <aura:attribute name="MapCaseCateLVL_2" type="Map" default="{}" />
+    <aura:attribute name="CaseCateLVL_2" type="String[]" />
+    <aura:attribute name="MapCaseCateLVL_3" type="Map" default="{}" />
+    <aura:attribute name="CaseCateLVL_3" type="String[]" />
+    <aura:attribute name="MapDoctorAll" type="Map" default="{}" />
+    <aura:attribute name="MapSLA" type="Map" />
+    <aura:attribute name="MapSLACC" type="Map" />
+    <aura:attribute name="MapServiceDetailEN" type="Map" />
+    <aura:attribute name="MapServiceDetailTH" type="Map" />
+    <aura:attribute name="FlightMap" type="Map" />
+    <aura:attribute name="buildingMap" type="Map" />
+    <aura:attribute name="PaymentMap" type="Map" />
+    <aura:attribute name="ArriveTimeList" type="String[]" />
+    <aura:attribute name="departmentList" type="String[]" />
+    <aura:attribute name="SegmentList" type="String[]" />
+    <aura:attribute name="checkInTime" type="Time" />
+    <aura:attribute name="checkOutTime" type="Time" />
+    
+
+    <aura:attribute name="CaseCateLVL_2_disableField" type="boolean" default="true" />
+    <aura:attribute name="CaseCateLVL_3_disableField" type="boolean" default="true" />
+    <aura:attribute name="close_case_reason_disableField" type="boolean" default="true" />
+    <aura:attribute name="pending_team_reason_disableField" type="boolean" default="true" />
+    <aura:attribute name="THTemplate" type="boolean" default="false" />
+    
+    <aura:attribute name="caseOwnerValue" type="sObject" default="{}" />
+    <!-- <aura:attribute name="patientHNValue" type="sObject" default="{}" /> -->
+    <aura:attribute name="patientNameValue" type="sObject" default="{}" />
+    <aura:attribute name="doctorNameValue" type="sObject" default="null" />
+    <aura:handler name="change" value="{!v.doctorNameValue}" action="{!c.onChangeDoctor}"/>
+
+    <aura:attribute name="personReasonNameValue" type="sObject" default="{}" />
+    <aura:attribute name="defaultRepOptions" type="List" default="[]"/>
+    
+    <!-- <aura:attribute name="senderHNValue" type="sObject" default="{}" /> -->
+    <aura:attribute name="senderNameValue" type="sObject" default="{}" />
+    <aura:attribute name="isOwnerTypeUser" type="Boolean" default="true" />
+    <!-- <aura:attribute name="hasDoctor" type="Boolean" default="false" /> -->
+    <!-- <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}" /> -->
+    <aura:attribute name="loading" type="Boolean" default="false" />
+    <aura:attribute name="isAirportTransferRecordType" type="Boolean" default="false" />
+    <!-- <aura:attribute name="isClinicRecordType" type="Boolean" default="false" /> -->
+
+    <aura:attribute name="isContactCenter" type="Boolean" default="false" />
+    <aura:attribute name="isRequiredSenderEmail" type="Boolean" default="true" />
+  
+    <aura:attribute name="OfferCampaginPickList" type="String[]" />
+    <aura:attribute name="NonOfferCampaginPickList" type="String[]" />
+    <aura:attribute name="isShowCampaignDetail" type="Boolean" default="false"  />
+    <aura:attribute name="isCampaignLoading" type="Boolean" default="false"  />
+    <aura:attribute name="campaignMasterObj" type="Case_Campaign_Master__c" />
+    <aura:attribute name="remainCampaign" type="Integer" default="0" />
+    <aura:attribute name="interestPickList" type="String[]" default="" />
+    <aura:attribute name="isResetCate" type="Boolean" default="true"  />
+    <!-- <aura:attribute name="campaignTxt" type="String" default=""/> -->
+    <aura:attribute name="PreRegisOwnerList" type="List" />
+    <aura:attribute name="PreRegisFollowerList" type="List" />
+    <aura:attribute name="InprogressReasonList" type="List" />
+    <aura:attribute name="inprogress_case_reason_disableField" type="boolean" default="true" />
+    <aura:attribute name="GenderNewPatientList" type="List" />
+    <aura:attribute name="TitleNewPatientList" type="List" />
+    <aura:attribute name="TitleExtPatientList" type="List" />
+    <aura:attribute name="GenderExtPatientList" type="List" />
+    <aura:attribute name="NewPatientFirstName" type="String" />
+    <aura:attribute name="NewPatientLastName" type="String" />
+    <aura:attribute name="NewPatientGender" type="String" />
+    <aura:attribute name="PatientCountry" type="String" />
+   	<aura:attribute name="NewPatientDOB" type="String" />
+    <aura:attribute name="NewPatientNationality" type="String" />
+    <aura:attribute name="NewPatientCountry" type="String" />
+    <aura:attribute name="NewPatientEmail" type="String" />
+    <aura:attribute name="NewPatientPrimaryPhone" type="String" />
+    <aura:attribute name="ExtPatientFirstName" type="String" />
+    <aura:attribute name="ExtPatientLastName" type="String" />
+    <aura:attribute name="ExtPatientGender" type="String" />
+    <aura:attribute name="ExtPatientDOB" type="String" />
+    <aura:attribute name="ExtPatientNationality" type="String" />
+    <aura:attribute name="ExtPatientCountry" type="String" />
+    <aura:attribute name="ExtPatientEmail" type="String" />
+    <aura:attribute name="ExtPatientPrimaryPhone" type="String" />
+    <aura:attribute name="CaseNumber" type="String" />
+	
+    
+    <div>
+        <aura:if isTrue="{! v.loading }">
+            <lightning:spinner alternativeText="Loading" />
+        </aura:if>
+        <div class="slds-section slds-is-open">
+
+            <h3 class="slds-section__title slds-theme_shade">
+                <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Contact Information</span>
+            </h3>
+            <div aria-hidden="false" class="slds-section__content">
+                <div class="slds-grid slds-gutters">
+                    
+                    <div class="slds-col slds-size_1-of-2">
+                        <c:BIH_CustomLookup objectAPIName="account" fieldAPIName="Name" IconName="standard:account"
+                            selectedRecord="{!v.senderNameValue}" showField="Email__c" label="Sender Name" />
+                        <lightning:input aura:id="sender_email" name="sender_email"  label="Sender Email"
+                            value="{!v.caseObj.SuppliedEmail}" />
+                        <aura:if isTrue="{! (!v.loading )&amp;&amp; (v.isAirportTransferRecordType )}">
+                        <ui:inputCheckbox name="walk_in" label="Walk-in" value="{!v.caseObj.Walk_in__c}" change="{!c.onClickWalkIn}"/>
+                        </aura:if>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col slds-size_10-of-12">
+                                <lightning:input name="patient_hn" label="Patient HN"
+                                    value="{!v.caseObj.Hospital_Number_HN__c}" />
+                            </div>
+                            <div class="slds-col slds-size_2-of-12">
+                                <div style="height:100%;display: flex;align-items: flex-end;justify-content: flex-end;">
+                                    <!-- <lightning:button variant="brand" class="btn-100-width" iconName="utility:search" label="Verify"
+                                        title="Verify" onclick="{! c.showModal }" /> -->
+                                        <aura:if isTrue="{! v.caseObj.Verified_Patient__c }">
+                                        
+                                            <lightning:button variant="brand" class="btn-100-width" iconName="utility:search" label="Verified"
+                                        title="Verified" onclick="{! c.onSearchPDVS }" />
+                                            <aura:set attribute="else">
+
+
+                                                <aura:if isTrue="{! v.isNew }">
+                                                    <lightning:button variant="destructive" class="btn-100-width" iconName="utility:search" label="Verify"
+                                        title="Verify" onclick="{! c.onSearchPDVS }"  />
+
+                                        <aura:set attribute="else">
+                                            <lightning:button variant="destructive" class="btn-100-width" iconName="utility:search" label="Verify"
+                                        title="Verify" onclick="{! c.showModal }"  />
+                                        </aura:set>
+
+                                                    </aura:if>
+                                                
+
+
+
+                                        
+                                            </aura:set>
+                                        
+                                        </aura:if>
+                                </div>
+                            </div>
+                        </div>
+
+                        <c:BIH_CustomLookup objectAPIName="account" fieldAPIName="Name" IconName="standard:account"
+                            selectedRecord="{!v.patientNameValue}" label="Patient Name" />
+
+                        <lightning:input aura:id="fullname" name="fullname" label="Fullname"
+                        value="{!v.caseObj.Full_Name__c}" />
+                    </div>
+
+                </div>
+            </div>
+<!-- ####### Clinic Information ####### -->
+<!-- <aura:if isTrue="{!(v.isClinicRecordType )}">
+        <h3 class="slds-section__title slds-theme_shade">
+            <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Clinic Information</span>
+        </h3>
+        <div aria-hidden="false" class="slds-section__content">
+        
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_2-of-2">
+                    <lightning:textarea aura:id="question_to_clinic" name="question_to_clinic" label="Question to Clinic" value="{!v.caseObj.Question_to_Clinic__c}" />
+
+                </div>
+            </div>
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_2-of-2">
+                    <lightning:textarea aura:id="case_solution" name="case_solution" label="Case Solution" value="{!v.caseObj.Case_Solution__c}" />
+                </div>
+            </div>
+        </div>
+</aura:if> -->
+
+<!-- ####### Airport transfer section ####### -->
+<!-- {!isAirportTransferRecordType} -->
+            <aura:if isTrue="{! (!v.loading )&amp;&amp; (v.isAirportTransferRecordType )}">
+                <h3 class="slds-section__title slds-theme_shade">
+                    <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Airport Transfer Info</span>
+                </h3>
+                <div aria-hidden="false" class="slds-section__content">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:select aura:id="request_by" name="request_by" label="Request By" value="{!v.caseObj.Request_By__c}">
+                                <option value="" selected="">--None--</option>    
+                                <aura:iteration items="{!v.PickList.Request_By__c}" var="option">
+                                    <option value="{!option.value}" selected="" >{!option.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+                            <lightning:input aura:id="other_request_by" name="other_request_by" label="Other Request By" value="{!v.caseObj.Other_Request_By__c}" />
+                            <lightning:select aura:id="case_arr_dep" name="case_arr_dep" label="Case (Arr/Dep)" value="{!v.caseObj.Case_arr_dep__c}">
+                            <option value="" selected="">--None--</option>    
+                            <aura:iteration items="{!v.PickList.Case_arr_dep__c}" var="option">
+                                <option value="{!option.value}"  selected="">{!option.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+
+                            <lightning:input type="date" name="arrivaldate" label="Arrival Date" value="{!v.caseObj.Arrival_Date__c}"/>
+
+                            <lightning:select aura:id="numbers_of_patients" name="numbers_of_patients" label="No. of Patients"
+                                value="{!v.caseObj.Number_Of_Patient__c}">
+                                <option value="" selected="">--None--</option>
+                                <aura:iteration items="{!v.PickList.Number_Of_Patient__c}" var="option">
+                                    <option value="{!option.value}"  selected="">{!option.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+                        
+                            <lightning:select aura:id="from" name="From" label="From" value="{!v.caseObj.From__c}">
+                                    <option value="" selected="">--None--</option>    
+                            <aura:iteration items="{!v.PickList.From__c}" var="option">
+                                <option value="{!option.value}"  selected="">{!option.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+                            <lightning:input aura:id="from_other-hotel" name="from_other-hotel" label="From Other Hotel" value="{!v.caseObj.From_Other_Hotel__c}" />
+
+                            <lightning:input type="date" name="checkindate" label="Check In Date" value="{!v.caseObj.Check_In_Date__c}"/>
+                            
+                            <lightning:input type="time" name="check_out" label="Check Out Time" value="{!v.checkOutTime}" />
+
+                            <lightning:select aura:id="vehicle_type" name="vehicle_type" label="Vehicle Type" value="{!v.caseObj.Vehicle_Type__c}">
+                                    <option value="" selected="">--None--</option>    
+                            <aura:iteration items="{!v.PickList.Vehicle_Type__c}" var="option">
+                                <option value="{!option.value}"  selected="">{!option.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+                            <lightning:input name="aot_number" label="AOT Number (No./month)" value="{!v.caseObj.AOT_NO__c}" />
+                            <lightning:input type="number" name="limousine_price" label="Limousine Price" value="{!v.caseObj.AOT_Limousine_Price__c}" />
+                            <lightning:select aura:id="queue_card" name="queue_card" label="Queue Card" value="{!v.caseObj.Queue_Card__c}">
+                            <option value="" selected="">--None--</option>    
+                            <aura:iteration items="{!v.PickList.Queue_Card__c}" var="option">
+                                <option value="{!option.value}"  selected="">{!option.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            
+                            <lightning:select aura:id="gate" name="gate" label="Gate" value="{!v.caseObj.Gate__c}">
+                                    <option value="" selected="">--None--</option>    
+                            <aura:iteration items="{!v.PickList.Gate__c}" var="option">
+                                <option value="{!option.value}" selected="">{!option.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+
+                            <lightning:select aura:id="flight_number" name="flight_number" label="Flight Number" onchange="{! c.onChangeFlightNumber }" value="{!v.caseObj.Flight_Number__c}">
+                                <option value="" selected="">--None--</option>
+                                <aura:iteration items="{!v.PickList.Flight_Number__c}" var="option">
+                                    <option value="{!option.value}"  selected="">{!option.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+                            <lightning:input name="other_flight" label="Other Flight" value="{!v.caseObj.Other_Flight__c}" />
+                            <lightning:select aura:id="arrival_time" name="arrival_time" label="Arrival Time" value="{!v.caseObj.Arrival_Time__c}">    
+                                <option value="" selected="">--None--</option>
+                                <aura:iteration items="{!v.ArriveTimeList}" var="option">
+                                    <option value="{!option.value}" selected="">{!option.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+
+                            <lightning:select aura:id="numbers_of_Relatives" name="numbers_of_Relatives" label="No. of Relatives" value="{!v.caseObj.Number_Of_Relative__c}">
+                                    <option value="" selected="">--None--</option>   
+                                <aura:iteration items="{!v.PickList.Number_Of_Relative__c}" var="option">
+                                    <option value="{!option.value}" selected="">{!option.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+
+                            <lightning:select aura:id="to" name="to" label="To"
+                                value="{!v.caseObj.To__c}">
+                                <option value="" selected="">--None--</option>
+                                <aura:iteration items="{!v.PickList.To__c}" var="option">
+                                        <option value="{!option.value}" selected="">{!option.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+
+                            <lightning:input aura:id="to_other-hotel" name="to_other-hotel" label="To Other Hotel" value="{!v.caseObj.To_Other_Hotel__c}" />
+                            <!--blank-->
+                            <lightning:input type="time" name="checkintime" label="Check In Time" value="{!v.checkInTime}"/>
+
+
+                            <lightning:input name="limousine_no" label="Limousine Voucher No. (Van NO.)" value="{!v.caseObj.Limousine_NO__c}" />
+
+                            <lightning:select aura:id="method_of_payment" name="method_of_payment" label="Method Of Payment" onchange="{! c.onChangePaymentMethod }" value="{!v.caseObj.Method_Of_Payment__c}">
+                                <option value="" selected="">--None--</option>
+                                <aura:iteration items="{!v.PickList.Method_Of_Payment__c}" var="option">
+                                        <option value="{!option.value}" selected="">{!option.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+
+                            <lightning:select aura:id="segment" name="segment" label="Segment" value="{!v.caseObj.Segment__c}">
+                                    <option value="" selected="">--None--</option>    
+                            <aura:iteration items="{!v.SegmentList}" var="option">
+                                    <option value="{!option.value}" selected="">{!option.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+                            <lightning:input name="cost_center" label="Cost Center" value="{!v.caseObj.Cost_Center__c}" />
+                        </div>
+                
+                    </div>
+                </div>
+                <h3 class="slds-section__title slds-theme_shade">
+                    <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Airport Service Info</span>
+                </h3>
+
+                
+                <div aria-hidden="false" class="slds-section__content">
+
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                                <lightning:dualListbox name="multipleOptions"  
+                                                        label= "Airport Rep's Name" 
+                                                        sourceLabel="Available" 
+                                                        selectedLabel="Selected" 
+                                                        options="{!v.PickList.Airport_Rep_Name__c}" 
+                                                        value="{!v.defaultRepOptions}" 
+                                                        onchange="{! c.handleChangeAirportRep }"/>
+                            </div>
+                        <div class="slds-col slds-size_1-of-2">
+                                <lightning:input type="number" name="other_service_charge" label="Other Service Charge" value="{!v.caseObj.Other_Service_Charge__c}" />
+
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+
+                            <lightning:select aura:id="registration" name="registration" label="Registration" value="{!v.caseObj.Registration__c}">
+                                    <option value="" selected="">--None--</option>   
+                            <aura:iteration items="{!v.PickList.Registration__c}" var="option">
+                                    <option value="{!option.value}" selected="">{!option.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+
+                            <lightning:select aura:id="hotel" name="hotel" label="Hotel (Airport)" value="{!v.caseObj.Hotel_Airport__c}">
+                                    <option value="" selected="">--None--</option>    
+                            <aura:iteration items="{!v.PickList.Hotel_Airport__c}" var="option">
+                                    <option value="{!option.value}"  selected="">{!option.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:select aura:id="appointment" name="appointment" label="Appointment" value="{!v.caseObj.Airport_Appointment__c}">
+                                    <option value="" selected="">--None--</option>  
+                            <aura:iteration items="{!v.PickList.Airport_Appointment__c}" var="option">
+                                    <option value="{!option.value}" selected="">{!option.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+
+                            <lightning:select aura:id="ro" name="ro" label="RO" value="{!v.caseObj.RO__c}">
+                                    <option value="" selected="">--None--</option>    
+                                <aura:iteration items="{!v.PickList.RO__c}" var="option">
+                                        <option value="{!option.value}" selected="">{!option.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+
+                        </div>
+                    </div>
+                </div>
+                <div aria-hidden="false" class="slds-section__content">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-1">
+                            <lightning:textarea aura:id="note" name="note" label="Note" value="{!v.caseObj.Note__c}" />
+                        </div>
+                    </div>
+                </div>         
+            </aura:if>
+        <!-- ####### Airport transfer section ####### -->
+            
+            <h3 class="slds-section__title slds-theme_shade">
+                <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Case Information</span>
+            </h3>
+            <div aria-hidden="false" class="slds-section__content">
+                <div class="slds-col slds-size_1-of-2">
+                    
+                    <lightning:input aura:id="subject_case" required="true" name="subject_case" label="Subject" value="{!v.caseObj.Subject}" />
+                	
+				</div>
+               
+                <div class="slds-grid slds-gutters">
+ 
+                    <div class="slds-col slds-size_1-of-1">
+                        <!--
+                        <label class="slds-form-element__label">Case Detail</label>
+                        
+                        <div class="slds-box editor slds-text-longform">
+                            <lightning:formattedRichText value="{!v.caseObj.Case_Detail__c}">
+                            </lightning:formattedRichText>
+                        </div>
+						-->
+                    </div>
+                
+                </div>
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_1-of-2">
+                        
+                        <lightning:input name="related_case" readonly="true" label="Case Number"
+                            value="{!v.CaseNumber}" />
+                        
+                        <!-- <lightning:input name="subject_case" label="Subject" value="{!v.caseObj.Subject}" /> -->
+                        <lightning:select aura:id="PRCaseOwner" name="PRCaseOwner" required="true" label="Pre-Regis Case Owner"
+                            value="{!v.caseObj.Pre_Regis_Case_Owner__c}">
+                            <option  value="" selected="">None</option>
+                            <aura:iteration items="{!v.PreRegisOwnerList}" var="item">
+                                <option  value="{!item.item}" selected="">{!item.selected}
+                                    {!item.item}
+                                </option>
+                            </aura:iteration>
+                        </lightning:select>
+                        
+                        <lightning:select aura:id="case_category_lvl_1" required="true" label="Case Category Level1"
+                            value="{!v.caseObj.Case_Category_Level1__c}" onchange="{! c.onChangeCatelvl1 }">
+                            <option value="" selected="">--None--</option>
+                            <aura:iteration items="{!v.CaseCateLVL_1}" var="option">
+                                <option value="{!option.value}" selected="">{!option.label}</option>
+                            </aura:iteration>
+                        </lightning:select>
+                        
+                        <div>
+                            <label for="pass_date_to_doctor" class="slds-form-element__label">Appointment Date</label>
+                            <lightning:input type="date" name="Appointment_Date__c" variant="label-hidden" label="Appointment Date"
+                                value="{!v.caseObj.Appointment_Date__c}" />
+                        </div>
+                        
+                        
+						
+                        <lightning:select aura:id="case_origin" name="case_origin" required="true" label="Case Origin"
+                            value="{!v.caseObj.Origin}">
+                            <option  value="" selected="">None</option>
+                            <aura:iteration items="{!v.PickList.Origin}" var="option">
+                                <option  value="{!option.value}" selected="">{!option.label}</option>
+                            </aura:iteration>
+                        </lightning:select>
+                        
+                        <lightning:select aura:id="PayorType"  name="PatientType" label="Patient Type"
+                            value="{!v.caseObj.Patient_Type__c}" onchange="{! c.onChangePatientType}">
+                            <option  value="" selected="">--None--</option>
+                            <aura:iteration items="{!v.PickList.Patient_Type__c}" var="option">
+                                <option  value="{!option.value}" selected="">{!option.label}</option>
+                            </aura:iteration>
+                        </lightning:select>
+                        
+                        <!--
+                        <lightning:select name="case_category_lvl_2" disabled="{!v.CaseCateLVL_2_disableField}"
+                            label="Case Category Level2" aura:id="case_category_lvl_2"  value="{!v.caseObj.Case_Category_Level2__c}"
+                            onchange="{! c.onChangeCatelvl2 }">
+                            <option value="" selected="">None</option>
+                            <aura:iteration items="{!v.CaseCateLVL_2}" var="option">
+                                <option value="{!option.value}" selected="">{!option.label}</option>
+                            </aura:iteration>
+                        </lightning:select>
+                        -->
+						<lightning:select aura:id="channel"  name="channel" required="true" label="Channel"
+                                value="{!v.caseObj.Channel__c}"> 
+                                <option  value="" selected=""></option>
+                                <aura:iteration items="{!v.PickList.Channel__c}" var="option">
+                                    <option  value="{!option.value}" selected="">{!option.label}</option>
+                                </aura:iteration>
+                            </lightning:select>
+
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-2">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col slds-size_11-of-12">
+                                <aura:if isTrue="{!v.ownerType == 'user'}">
+                                    <c:BIH_CustomLookup Required="true" objectAPIName="User" fieldAPIName="Name"
+                                        IconName="standard:people" showField="Department" selectedRecord="{!v.caseOwnerValue}"
+                                        label="Case Owner" />
+                                    <aura:set attribute="else">
+                                        <c:BIH_CustomLookup Required="true" objectAPIName="Group" fieldAPIName="Name"
+                                            IconName="standard:orders" selectedRecord="{!v.caseOwnerValue}"
+                                            label="Case Owner" />
+                                    </aura:set>
+                                </aura:if>
+                            </div>
+                            <div class="slds-col slds-size_1-of-12">
+                                <div style="height:100%;display: flex;align-items: flex-end;justify-content: center;">
+                                    <lightning:buttonMenu menuAlignment="right" value="{!v.ownerType}" aura:id="menu"
+                                        alternativeText="Show menu" onselect="{! c.handleSelect }">
+                                        <lightning:menuItem aura:id="menuItems" label="User" value="user"
+                                            checked="{!v.isOwnerTypeUser}" iconName="standard:people" />
+                                        <lightning:menuItem aura:id="menuItems" label="Queue" value="queue"
+                                            checked="{!!v.isOwnerTypeUser}" iconName="standard:orders" />
+                                    </lightning:buttonMenu>
+                                </div>
+
+                            </div>
+
+                        </div>
+						<!--
+                        <lightning:select aura:id="PRCaseOwner" name="PRCaseOwner" required="true" label="Pre-Regis Case Owner"
+                            value="{!v.caseObj.Pre_Regis_Case_Owner__c}">
+                            <option  value="" selected="">None</option>
+                            <aura:iteration items="{!v.PreRegisOwnerList}" var="item">
+                                <option  value="{!item.item}" selected="">{!item.selected}
+                                    {!item.item}
+                                </option>
+                            </aura:iteration>
+                        </lightning:select>
+						-->
+                        <lightning:select aura:id="PRCaseFollower" name="PRCaseFollower" label="Pre-Regis Case Follower"
+                            value="{!v.caseObj.Pre_Regis_Case_follower__c}">
+                            <option  value="" selected="">--None--</option>
+                            <aura:iteration items="{!v.PreRegisFollowerList}" var="item">
+                                <option  value="{!item.item}" selected="">{!item.selected}
+                                    {!item.item}
+                                </option>
+                            </aura:iteration>
+                        </lightning:select>
+                        <lightning:select name="case_category_lvl_2" disabled="{!v.CaseCateLVL_2_disableField}"
+                            label="Case Category Level2" aura:id="case_category_lvl_2"  value="{!v.caseObj.Case_Category_Level2__c}"
+                            onchange="{! c.onChangeCatelvl2 }">
+                            <option value="" selected="">--None--</option>
+                            <aura:iteration items="{!v.CaseCateLVL_2}" var="option">
+                                <option value="{!option.value}" selected="">{!option.label}</option>
+                            </aura:iteration>
+                        </lightning:select>
+                        
+                        <lightning:select aura:id="priority" required="true" name="priority" label="Priority"
+                            value="{!v.caseObj.Priority}">
+                            <!-- <option value="" >None</option> -->
+                            <aura:iteration items="{!v.PickList.Priority}" var="option">
+                                <option value="{!option.value}" selected="">{!option.label}</option>
+                            </aura:iteration>
+                        </lightning:select>
+                       
+                        <lightning:input name="related_case" readonly="true" label="Related Case"
+                            value="{!v.caseObj.Parent.CaseNumber}" />
+                        
+                        <lightning:select aura:id="PayorType"  name="PayorType" label="Payor Type"
+                            value="{!v.caseObj.Payor_Type__c}">
+                            <option  value="" selected="">--None--</option>
+                            <aura:iteration items="{!v.PickList.Payor_Type__c}" var="option">
+                                <option  value="{!option.value}" selected="">{!option.label}</option>
+                            </aura:iteration>
+                        </lightning:select>
+                        <label class="slds-form-element__label">Patient data update in TrakCare</label>
+                             <ui:inputCheckbox aura:id="" label="" value="{!v.caseObj.Patient_data_updated_in_TrakCare__c}"/>
+                        
+                        <!--|value1:{!v.caseObj.Channel__c}|<br />
+                        |value2:{!option.value}|<br />
+                        |value3:{!option.label}|<br />-->
+                            
+                            
+                            
+                        
+                        
+
+
+                        <!-- <lightning:input name="case_owner" label="Case Owner" value="{!v.caseObj.OwnerId}" /> -->
+                    </div>
+                </div>
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_1-of-1">
+                        <lightning:textarea name="case_comment" label="Case Comment"
+                            value="{!v.caseObj.Case_Comment__c}" />
+                    </div>
+                </div>
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_1-of-1">
+                        <lightning:textarea name="case_comment_preregistration" label="Case Comment For Pre Registration"
+                            value="{!v.caseObj.Case_Comment_for_Pre_Registration__c}" />
+                    </div>
+                </div>
+
+            </div>
+
+            <h3 class="slds-section__title slds-theme_shade">
+                <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Case Status</span>
+            </h3>
+            <div aria-hidden="false" class="slds-section__content">
+            <!-- <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_1-of-2">
+                </div>
+            </div> -->
+            <div class="slds-grid slds-gutters">
+
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:select required="true" name="status" label="Status"
+                        value="{!v.caseObj.Status}" onchange="{! c.onChangeStatus }">
+                        <aura:iteration items="{!v.PickList.Status}" var="option">
+                            <option value="{!option.value}" selected="">{!option.label}</option>
+                        </aura:iteration>
+                    </lightning:select>
+
+                    
+                    		<!--
+                             <label class="slds-form-element__label">Patient data updated in TrakCare</label>
+                             <ui:inputCheckbox aura:id="" label="" value="{!v.caseObj.Patient_data_updated_in_TrakCare__c}"/>    
+                    		-->
+                    <!-- <lightning:select name="close_case_team" disabled="{!v.close_case_reason_disableField}"
+                                            label="Close Case Team" aura:id="" value="{!v.caseObj.Close_Case_Team__c}">
+                                            <option  value="" selected="">None</option>
+                                            <aura:iteration items="{!v.PickList.}" var="option">
+                                                <option  value="{!option.value}" selected="">{!option.value}</option>
+                                            </aura:iteration>
+                                        </lightning:select> -->
+                     
+                        <!-- <ui:inputCheckbox aura:id="" label="Clinic Reject" value="{!v.caseObj.Clinic_Reject__c}"/> -->
+                   
+                    <!-- <lightning:input name="pending_reason" disabled="{!v.pending_team_reason_disableField}" label=""
+                    value="{!v.caseObj.Pending_Reason__c}" /> -->
+
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:select name="Inprogressreason"  label="In progress Reason"
+                        aura:id="In_progress_reason" value="{!v.caseObj.In_progress_reason__c}">
+                        <option  value="" selected="Waiting for patient reply mail">--none--</option>
+                        <aura:iteration items="{!v.InprogressReasonList}" var="item">
+                            <option  value="{!item.item}" selected="">{!item.selected}
+                                {!item.item}
+                            </option>
+                        </aura:iteration>
+                    </lightning:select>
+                    <lightning:select name="pending_reason" label="Pending Reason" aura:id="" value="{!v.caseObj.Pending_Reason__c}" onchange="{! c.onChangePendingReason }">
+                        <option  value="" selected="">--None--</option>
+                        <aura:iteration items="{!v.PickList.Pending_Reason__c}" var="option">
+                                <option value="{!option.value}" selected="">{!option.label}</option>
+                        </aura:iteration>
+                    </lightning:select>
+                    <!--
+                    <lightning:select name="pending_team" label="Pending Team" aura:id="" value="{!v.caseObj.Pending_team__c}">
+                        <option  value="" selected="">None</option>
+                        <aura:iteration items="{!v.PickList.Pending_team__c}" var="option">
+                                <option value="{!option.value}" selected="">{!option.label}</option>
+                        </aura:iteration>
+                    </lightning:select>
+					-->
+                    <lightning:select name="close_case_reason" disabled="{!v.close_case_reason_disableField}" label="Close Case Reason"
+                        aura:id="" value="{!v.caseObj.Close_Case_Reason__c}">
+                        <option  value="" selected="">--None--</option>
+                        <aura:iteration items="{!v.close_case_reasonPickList}"  var="option">
+                                <option value="{!option}" selected="">{!option}</option>
+                        </aura:iteration>
+                    </lightning:select>
+                    <!-- <aura:if isTrue="{! v.hasDoctor }"> -->
+                    <!--
+                        <div>
+                            <label for="pass_date_to_doctor" class="slds-form-element__label">Appointment Date</label>
+                            <lightning:input type="date" name="Appointment_Date__c" variant="label-hidden" label="Appointment Date"
+                                value="{!v.caseObj.Appointment_Date__c}" />
+                        </div>
+                         <div>
+                            <lightning:input name="Appointment_Time" label="Appointment Time" value="{!v.caseObj.Appointment_Time_Text__c}" />
+                        </div>
+                    -->      
+                </div>
+                <!-- <div class="slds-col slds-size_1-of-2">
+                   
+                </div> -->
+            </div>
+               
+                
+            </div>
+            
+             <h3 class="slds-section__title slds-theme_shade">
+                <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Insurance</span>
+            </h3>
+            <div aria-hidden="false" class="slds-section__content">
+            	<div class="slds-grid slds-gutters">
+
+            	<div class="slds-col slds-size_1-of-2">
+                        <lightning:input aura:id="sender_email" name="insurance_company_name"  label="Insurance Company Name"
+                            value="{!v.caseObj.Insurance_Company_Name__c}" />
+                    	<lightning:input aura:id="sender_email" name="policy_number"  label="Policy Number"
+                            value="{!v.caseObj.Policy_Number__c}" />
+                        
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                        <lightning:input aura:id="sender_email" name="member_id"  label="Member Id"
+                            value="{!v.caseObj.Member_Id__c}" />
+                        
+                </div> 
+                </div>    
+            </div>
+            <aura:if isTrue="{!v.caseObj.Patient_Type__c == 'New patient'}">
+            <h3 class="slds-section__title slds-theme_shade">	
+                <span class="slds-truncate slds-p-horizontal_small" title="Section Title">New Patient Preregistration Information
+				</span>
+            </h3>
+                	<div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-col slds-size_10-of-12">
+                                	<lightning:select aura:id="TitleNewPatient" name="TitleNewPatient" required="false" label="Title"
+                                            value="{!v.caseObj.Title_New_Patient__c}">
+                                            <option  value="" selected="">--None--</option>
+                                            <aura:iteration items="{!v.TitleNewPatientList}" var="item">
+                                                <option  value="{!item.item}" selected="">{!item.selected}
+                                                    {!item.item}
+                                                </option>
+                                            </aura:iteration>
+                        			</lightning:select>
+                                    <lightning:input name="NewPatientFirstName" label="First Name"
+                                        value="{!v.NewPatientFirstName}" />
+                                    <lightning:input name="NewPatientMiddleName" label="Middle Name"
+                                        value="{!v.caseObj.Middle_Name_New_Patient__c}" />
+                                	<lightning:input name="NewPatientLastName" label="Last Name"
+                                        value="{!v.NewPatientLastName}" />
+                     
+                                	<lightning:select aura:id="GenderNewPatient" name="GenderNewPatient" required="false" label="Gender"
+                                            value="{!v.NewPatientGender}">
+                                            <aura:iteration items="{!v.GenderNewPatientList}" var="item">
+                                                <option value="{!item.value}" selected="{!item.value == v.NewPatientGender}">
+                                                    {!item.item}   
+                                                </option>
+                                            </aura:iteration>
+                        			</lightning:select>
+                                
+                                <div>
+                                    <label for="dobnewpatient" class="slds-form-element__label">Date of Birth</label>
+                                    <lightning:input type="date" name="Date_Of_Birth_New_Patient__c" variant="label-hidden" label="Date of Birth"
+                                        value="{!v.NewPatientDOB}" />
+                        		</div>
+                                	<lightning:input name="NewPatientNationality" label="Nationality"
+                                        value="{!v.NewPatientNationality}" />
+                                	<lightning:input name="NewPatientCountry" label="Country of Residence"
+                                        value="{!v.NewPatientCountry}" />
+                                	<lightning:input name="NewPatientEmail" label="Email"
+                                        value="{!v.NewPatientEmail}" />
+                                	<lightning:input name="NewPatientPrimaryPhone" label="Primary Phone"
+                                        value="{!v.NewPatientPrimaryPhone}" />
+                                	<lightning:input name="NewPatientPreferLang" label="Preferred Language"
+                                        value="{!v.caseObj.Preferred_Language_New_Patient__c}" />
+                                	
+                                	
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                    <p><b>Thai Mailing Address</b></p>
+                            	
+                        			<lightning:textarea name="address1" label="Address"
+                                        value="{!v.caseObj.Address_New_Patient__c}" />
+									<lightning:input name="NewPatientsubdistrict" label="Sub-district"
+                                        value="{!v.caseObj.Sub_district_New_Patient__c}" />
+                        			<lightning:input name="NewPatientProvince" label="Province"
+                                        value="{!v.caseObj.Province_New_Patient__c}" />
+                        			<lightning:input name="NewPatientPostcode" label="Postcode"
+                                        value="{!v.caseObj.Postcode_New_Patient__c}" />
+                                    	<p><b>Foreign Mailing Address</b></p>
+                                	<lightning:textarea name="NewPatientAddressPOBox" label="Address / P.O. Box"
+                                        value="{!v.caseObj.Address_P_0_Box_New_Patient__c}" />
+                                	<lightning:input name="NewPatientTownCity" label="Town / City"
+                                        value="{!v.caseObj.Town_City_New_Patient__c}" />
+                                	<lightning:input name="NewPatientState" label="State / Province"
+                                        value="{!v.caseObj.State_Province_New_Patient__c}" />
+                                	<lightning:input name="NewPatientPostcode" label="Postcode"
+                                        value="{!v.caseObj.Foreign_Postcode_New_Patient__c}" />
+                        	</div>   
+                	</div>
+            </aura:if>
+            
+            <aura:if isTrue="{!v.caseObj.Patient_Type__c == 'Existing patient'}">
+            <h3 class="slds-section__title slds-theme_shade">	
+                <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Existing Patient Data Verification
+				</span>	
+            </h3>
+            	<div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <div class="slds-col slds-size_10-of-12">
+                                	<lightning:select aura:id="TitleExtPatient" name="TitleExtPatient" required="false" label="Title"
+                                            value="{!v.caseObj.Title_Existing_Patient__c}">
+                                            <option  value="" selected="">--None--</option>
+                                            <aura:iteration items="{!v.TitleExtPatientList}" var="item">
+                                                <option  value="{!item.item}" selected="">{!item.selected}
+                                                    {!item.item}
+                                                </option>
+                                            </aura:iteration>
+                        			</lightning:select>
+                                    <lightning:input name="ExtPatientFirstName" label="First Name"
+                                        value="{!v.ExtPatientFirstName}" />
+                                    <lightning:input name="ExtPatientMiddleName" label="Middle Name"
+                                        value="{!v.caseObj.Middle_Name_Existing_Patient__c}" />
+                                	<lightning:input name="ExtPatientLastName" label="Last Name"
+                                        value="{!v.ExtPatientLastName}" />
+                                
+                                
+                                	<lightning:select aura:id="GenderExtPatient" name="GenderExtPatient" required="false" label="Gender"
+                                            value="{!v.ExtPatientGender}">
+                                            <aura:iteration items="{!v.GenderExtPatientList}" var="item">
+                                                <option  value="{!item.value}" selected="{!item.value == v.ExtPatientGender}" >
+                                                    {!item.item}
+                                                </option>
+                                            </aura:iteration>
+                        			</lightning:select>
+                                
+                                <div>
+                                    <label for="dobnewpatient" class="slds-form-element__label">Date of Birth</label>
+                                    <lightning:input type="date" name="Date_Of_Birth_Existing_Patient" variant="label-hidden" label="Date of Birth"
+                                        value="{!v.ExtPatientDOB}" />
+                        		</div>
+                                	<lightning:input name="ExtPatientNationality" label="Nationality"
+                                        value="{!v.ExtPatientNationality}" />
+                                	<lightning:input name="ExtPatientCountry" label="Country of Residence"
+                                        value="{!v.ExtPatientCountry}" />
+                                	<lightning:input name="ExtPatientEmail" label="Email"
+                                        value="{!v.ExtPatientEmail}" />
+                                	<lightning:input name="ExtPatientPrimaryPhone" label="Primary Phone"
+                                        value="{!v.ExtPatientPrimaryPhone}" />
+                                	<lightning:input name="ExtPatientPreferLang" label="Preferred Language"
+                                        value="{!v.caseObj.Preferred_Language_Existing_Patient__c}" />
+                                	<lightning:input name="ExtPatientPreferLang" label="Preferred Language"
+                                        value="{!v.caseObj.Thai_ID_Card_Number_Exisiting_Patient__c}" />
+                                
+                                	<lightning:input name="ExtPatientPassportNumber" label="Passport Number"
+                                        value="{!v.caseObj.Passport_Number_Existing_Patient__c}" />
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                    <p><b>Thai Mailing Address</b></p>
+                            	
+                        			<lightning:textarea name="address2" label="Address"
+                                        value="{!v.caseObj.Address_Existing_Patient__c}" />
+									<lightning:input name="ExtPatientsubdistrict" label="Sub-district"
+                                        value="{!v.caseObj.Sub_district_Existing_Patient__c}" />
+                        			<lightning:input name="ExtPatientProvince" label="Province"
+                                        value="{!v.caseObj.Province_Existing_Patient__c}" />
+                        			<lightning:input name="ExtPatientPostcode" label="Postcode"
+                                        value="{!v.caseObj.Postcode_Existing_Patient__c}" />
+                                    	<p><b>Foreign Mailing Address</b></p>
+                                	<lightning:textarea name="ExtPatientAddressPOBox" label="Address / P.O. Box"
+                                        value="{!v.caseObj.Address_P_O_Box_Existing_Patient__c}" />
+                                	<lightning:input name="ExtPatientTownCity" label="Town / City"
+                                        value="{!v.caseObj.Town_City_Existing_Patient__c}" />
+                                	<lightning:input name="ExtPatientState" label="State / Province"
+                                        value="{!v.caseObj.State_Province_Existing_Patient__c}" />
+                                	<lightning:input name="ExtPatientPostcode" label="Postcode"
+                                        value="{!v.caseObj.Postcode_Foreign_Existing_Patient__c}" />
+                        	</div>   
+                	</div>
+                </aura:if>
+            
+            <!--
+            <h3 class="slds-section__title slds-theme_shade">	
+                <span class="slds-truncate slds-p-horizontal_small" title="Section Title">At Home Payment Information</span>	
+            </h3>	
+            <div class="slds-grid slds-gutters">	
+                <div class="slds-col slds-size_1-of-2">	
+                        <lightning:select aura:id="Typeofpayment"  name="Typeofpayment" label="Type of payment"	
+                            value="{!v.caseObj.Type_of_payment__c}">	
+                            <option  value="" selected="">None</option>	
+                            <aura:iteration items="{!v.PickList.Type_of_payment__c}" var="option">	
+                                <option  value="{!option.value}" selected="">{!option.label}</option>	
+                            </aura:iteration>	
+                        </lightning:select>	
+                       <lightning:select aura:id="Methodofpaymenttelemed"  name="Methodofpaymenttelemed" label="Method of payment"	
+                            value="{!v.caseObj.Method_of_payment_telemed__c}">	
+                            <option  value="" selected="">None</option>	
+                            <aura:iteration items="{!v.PickList.Method_of_payment_telemed__c}" var="option">	
+                                <option  value="{!option.value}" selected="">{!option.label}</option>	
+                            </aura:iteration>	
+                        </lightning:select>	
+                <div class="slds-grid slds-gutters">	
+                    <div class="slds-col slds-size_1-of-1">	
+                        <lightning:textarea name="Note_For_At_Home_Payment" label="Note (For At Home Payment)"	
+                            value="{!v.caseObj.Note_For_At_Home_Payment__c}" />	
+                    </div>	
+                </div>	
+            </div>	
+            <div class="slds-col slds-size_1-of-2">	
+                         <div>	
+                            <lightning:input name="Amount" label="Amount" value="{!v.caseObj.Amount__c}" />	
+                        </div>	
+                         <div>	
+                            <lightning:input name="emailforlink" label="email for link" value="{!v.caseObj.email_for_link__c}" />	
+                        </div>	
+                         <div>	
+                            <lightning:input name="IPTcode" label="IPT code" value="{!v.caseObj.IPT_code__c}" />	
+                        </div>	
+                        <div>	
+                            <label for="SentDate" class="slds-form-element__label">Sent Date</label>	
+                            <lightning:input type="date" name="SentDate" variant="label-hidden" label="Sent Date"	
+                                value="{!v.caseObj.Sent_Date__c}" />	
+                        </div>	
+                        <div>	
+                            <label for="PaidDate" class="slds-form-element__label">Paid Date</label>	
+                            <lightning:input type="date" name="PaidDate" variant="label-hidden" label="Paid Date"	
+                                value="{!v.caseObj.Paid_Date__c}" />	
+                        </div>	
+            </div>
+            </div>
+            -->
+            <h3 class="slds-section__title slds-theme_shade last-section">
+                <span class="slds-truncate slds-p-horizontal_small" title="Section Title">System Information</span>
+            </h3>
+            <div aria-hidden="false" class="slds-section__content">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:input name="created_by" readonly="true" label="Created By"
+                            value="{!v.caseObj.CreatedBy.Name}" />
+                        <lightning:input name="last_modified_by" readonly="true" label="Last Modified By"
+                            value="{!v.caseObj.LastModifiedBy.Name}" />
+                             <label class="slds-form-element__label">Is Vitallife Case?</label>
+                             <ui:inputCheckbox aura:id="" label="" value="{!v.caseObj.Is_Vitallife_Case__c}"/>
+                        <!-- <lightning:input name="created_date" readonly="true" label="Created Date" value="{!v.caseObj.CreatedDate}" /> -->
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <label class="slds-form-element__label">Created Date</label>
+                        <div class="slds-form-element__control slds-grow"
+                            style="height: 32px;display: flex;border-bottom: 1px solid rgb(221, 219, 218);">
+
+                            <lightning:formattedDateTime value="{!v.caseObj.CreatedDate}" year="numeric" month="short"
+                                day="numeric" hour="2-digit" minute="2-digit" hour12="false" />
+                        </div>
+
+                        <label class="slds-form-element__label">Last Modified Date</label>
+                        <div class="slds-form-element__control slds-grow"
+                            style="height: 32px;display: flex;border-bottom: 1px solid rgb(221, 219, 218);">
+                            <lightning:formattedDateTime value="{!v.caseObj.LastModifiedDate}" year="numeric"
+                                month="short" day="numeric" hour="2-digit" minute="2-digit" hour12="false" />
+                        </div>
+                        <!--<lightning:input name="last_modified_date" readonly="true" label="Last Modified Date" value="{!v.caseObj.LastModifiedDate}" />-->
+                             <label class="slds-form-element__label">Is TeleMed Case?</label>
+                             <ui:inputCheckbox aura:id="" label="" value="{!v.caseObj.Is_TeleMed_Case__c}"/>              
+                             <!--<lightning:input name="Is_TeleMed_Case" type="checkbox" value="{!v.caseObj.Is_TeleMed_Case__c}" />-->
+                    </div>
+                </div>
+            </div>
+            <!-- <c:BIH_GeneralWebInformation isView="false" caseObj="{!v.caseObj}" />
+            <aura:renderIf isTrue="{!v.isContactCenter}" >
+            <h3 class="slds-section__title slds-theme_shade last-section">
+                <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Campaign</span>
+            </h3>
+            <div aura:id="CaseCampaignSession">
+            <c:BIH_CaseCampaign aura:id="BIH_CaseCampaign" recordId="{!v.recordId}"/>
+            </div> -->
+            
+        <!-- </aura:renderIf> -->
+        <!-- <aura:if isTrue="{!v.isContactCenter}"> -->
+        <!-- <div class="container-btn-group"> -->
+            <!-- button change onsave to onevent -->
+        <!-- </div> -->
+        <!-- <aura:set attribute="else"> -->
+            <div class="container-btn-group">
+                <lightning:button class="slds-button slds-button--neutral uiButton--neutral uiButton forceActionButton"
+                    label="Cancel" title="Cancel" onclick="{! c.onCancel }" />
+                <lightning:button class="slds-button slds-button--neutral uiButton--brand uiButton forceActionButton"
+                    label="Save" title="Save" onclick="{! c.onSave }" /> 
+            </div>
+        <!-- </aura:set> -->
+        <!-- </aura:if> -->
+        </div>
+    </div>
+
+    <aura:if isTrue="{!v.ShowModule}">
+        <div style="max-width: 50rem;">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <a class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+                            onclick="{! c.hideModal }">
+                            <lightning:icon iconName="utility:close" class="slds-icon slds-icon_small" size="small"
+                                alternativeText="close" />
+                        </a>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Search Patient
+                        </h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <c:BIH_VerifyPatient isFirstTime="true" hnNumber="{!v.caseObj.Hospital_Number_HN__c}"
+                            dateOfBirth="{!v.caseObj.Date_of_Birth__c}" fullName="{!v.caseObj.Full_Name__c}"
+                            gender="{!v.caseObj.Gender__c}" recordId="{!v.recordId}" />
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+</aura:component>

@@ -1,0 +1,154 @@
+<aura:component controller="BIH_GeneralWebInformationCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,lightning:isUrlAddressable" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="caseObj" type="Case"  />
+    <aura:attribute name="isexpanded" type="Boolean" default="true" />
+    <aura:attribute name="isView" type="Boolean" default="true" />
+     <aura:attribute name="loading" type="Boolean" default="false" />
+     
+    <aura:if isTrue="{!(v.caseObj.Web_Subject__c  == $Label.c.Make_an_Appointment || 
+                    v.caseObj.Web_Subject__c  == $Label.c.Change_Appointment_Main_Website ||
+                    v.caseObj.Web_Subject__c  == $Label.c.Cancel_Appointment_Main_Website ||
+                    v.caseObj.Web_Subject__c  == $Label.c.To_Reach_the_Contact_Office_In_My_Country ||
+                    v.caseObj.Web_Subject__c  == $Label.c.To_Reach_Bumrungrad_International) }">
+
+<div class="{! 'case slds-section' + (v.isexpanded ? ' slds-is-open' : '')}">
+    <h3 class="slds-section__title slds-theme_shade">
+        <button aria-controls="divContent" aria-expanded="{!v.isexpanded}" onclick="{!c.changeState}"
+            class="slds-button slds-section__title-action">
+            <lightning:icon aura:id="articleOne" iconName="utility:switch" size="xx-small" alternativeText="switch" />
+            <span class="slds-truncate" title="Section Title">Web to Case Information</span>
+        </button>
+    </h3>
+
+    <aura:if isTrue="{! v.loading }">
+        <lightning:spinner alternativeText="Loading" />
+    </aura:if>
+    
+
+    <div class="slds-section__content" aura:id="container" aria-hidden="{!!v.isexpanded}" id="divContent" style="position:relative;">
+        <lightning:recordViewForm recordId="{!v.caseObj.Id}" objectApiName="Case">
+
+        <div style="padding:0 0.80rem;">
+            <div class="slds-grid slds-gutters">
+               
+                <!--1. Make_an_Appointment --> 
+                <aura:if isTrue="{! v.caseObj.Web_Subject__c == $Label.c.Make_an_Appointment}">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="Web_Package_Id__c" />
+                        <lightning:outputField fieldName="Specialty__c" />
+                        <lightning:outputField fieldName="Concern__c" />
+                        <label class="slds-form-element__label">Appointment Date 1</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{! v.caseObj.Appointment_Date__c }" year="numeric" month="short"
+                                day="numeric"/>
+                        </div>
+                        <label class="slds-form-element__label">Appointment Date 2</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{! v.caseObj.Appointment_Date_2__c }" year="numeric" month="short"
+                                day="numeric"/>
+                        </div>
+                        <lightning:outputField fieldName="Phone__c" />
+                        <lightning:outputField fieldName="Cultural_Services__c" />
+                        <lightning:outputField fieldName="Is_Interpreter__c" />
+                        <lightning:outputField fieldName="Is_Contact_Doctor__c" />
+                        <lightning:outputField fieldName="Web_Contact_Information__c" />
+                        
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="Web_Package_Name__c" />
+                        <lightning:outputField fieldName="Web_Doctor_Name__c" />
+                        <lightning:outputField fieldName="IsVisited__c" />
+                        <lightning:outputField fieldName="Appointment_Time_Period__c" />
+                        <lightning:outputField fieldName="Appointment_Time_Period_2__c" />
+                        <lightning:outputField fieldName="Country_of_Residence__c" />
+                        <lightning:outputField fieldName="Cultural_Services_Message__c" />
+                        <lightning:outputField fieldName="Web_Interpreter_Language__c" />
+                        <lightning:outputField fieldName="Web_Doctor_Name_2__c" />
+                        <lightning:outputField fieldName="Contact_Doctor_Message__c" />
+                        
+                    </div>
+                    
+                </aura:if>
+                <!--2. Cancel_Appointment_Main_Website --> 
+                <aura:if isTrue="{! v.caseObj.Web_Subject__c  == $Label.c.Cancel_Appointment_Main_Website }">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="Web_Doctor_Name__c" />
+                        <lightning:outputField fieldName="Appointment_Date__c" />
+                        <!-- <label class="slds-form-element__label"> Appointment Time</label> -->
+                        <!-- <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{! v.caseObj.Appointment_Time__c }"
+                            hour="2-digit" minute="2-digit" hour12="false" />
+                        </div> -->
+                        <lightning:input label="Appointment Time" readonly="true" value="{! v.caseObj.App_Time_Format__c }" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="Cancel_All_Appointment__c" />
+                        <lightning:outputField fieldName="Cancel_Relative_Appointment__c" />
+                        <lightning:outputField fieldName="Relative_Hospital_Number__c" />  
+                    </div> 
+                </aura:if>
+
+                <!--3. Change_Appointment_Main_Website --> 
+                <aura:if isTrue="{! v.caseObj.Web_Subject__c  == $Label.c.Change_Appointment_Main_Website }">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="Appointment_Date__c" />
+                        <lightning:outputField fieldName="New_Appointment_Date__c" />
+                        <lightning:outputField fieldName="Web_Doctor_Name__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:input label="Appointment Time" readonly="true" value="{! v.caseObj.App_Time_Format__c }" />
+                        <lightning:input label="New Appointment Time" readonly="true" value="{! v.caseObj.New_Appointment_Time_Format__c }" />
+                        
+                        <lightning:outputField fieldName="Change_Relative_Appointment__c" />
+                        <lightning:outputField fieldName="Relative_Hospital_Number__c" />
+                    </div> 
+                </aura:if>
+
+                <!--4. To_Reach_the_Contact_Office_In_My_Country--> 
+                <!-- <aura:if isTrue="{! v.caseObj.Web_Subject__c  == $Label.c.To_Reach_the_Contact_Office_In_My_Country  }">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="Web_Country_Bumrungrad_Office__c" />
+                        <lightning:outputField fieldName="Web_Bumrungrad_Office__c" />
+                        <lightning:outputField fieldName="Topic_of_Inquiry__c" />
+                        <lightning:outputField fieldName="Web_Your_Question__c" />
+                        <lightning:outputField fieldName="IsVisited__c" />
+                        <lightning:outputField fieldName="Sender_First_Name__c" />
+                        <lightning:outputField fieldName="Sender_Last_Name__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="SuppliedEmail" />
+                        <lightning:outputField fieldName="Web_Phone__c" />
+                        <lightning:outputField fieldName="Web_Date_of_Birth__c" />
+                        <lightning:outputField fieldName="Gender__c" />
+                        <lightning:outputField fieldName="Web_Nationality__c" />
+                        <lightning:outputField fieldName="Web_Country_of_Residence__c" />
+                    </div>
+                </aura:if> -->
+
+                <!--5. To_Reach_Bumrungrad_International-->
+                <aura:if isTrue="{! v.caseObj.Web_Subject__c  == $Label.c.To_Reach_Bumrungrad_International }">
+                     <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="Web_Package_Id__c" />
+                        <lightning:outputField fieldName="Type_of_Inquiry__c" />
+                        <lightning:outputField fieldName="Medical_Condition__c" />
+                        <lightning:outputField fieldName="Web_Your_Question__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="Web_Package_Name__c" />
+                        <lightning:outputField fieldName="IsVisited__c" />
+                        <lightning:outputField fieldName="Country_of_Residence__c" />
+                        <lightning:outputField fieldName="Phone__c" />
+                    </div>
+                </aura:if> 
+                
+            </div>
+            <div class="slds-grid slds-wrap">
+                <lightning:outputField fieldName="Web_Additional_Info__c" />
+            </div>
+        </div>
+        </lightning:recordViewForm>
+    </div>
+    
+</div>
+    </aura:if>
+</aura:component>

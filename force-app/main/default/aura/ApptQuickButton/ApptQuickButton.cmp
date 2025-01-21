@@ -1,0 +1,314 @@
+<aura:component controller="BIH_ApptUtility"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction"
+    access="global">
+     <!-- <aura:attribute name="ModalCreateClinic" type="boolean" default="false" /> -->
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <aura:attribute name="ModalSMSMessage" type="boolean" default="false" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    <lightning:navigation aura:id="navService" />
+    
+<!--
+    
+    <aura:attribute name="ShowModule" type="boolean" default="false" />
+    <aura:attribute name="ModalCloseCase" type="boolean" default="false" />
+    <aura:attribute name="ModalConvertCase" type="boolean" default="false" />
+    <aura:attribute name="ModalAcceptCase" type="boolean" default="false" />
+    <aura:attribute name="ModalReActivate" type="boolean" default="false" />
+    
+    <aura:attribute name="IsClosed" type="boolean" default="false" />
+    <aura:attribute name="IsCC" type="boolean" default="false" />
+    <aura:attribute name="IsPreRegis" type="boolean" default="false" />
+    <aura:attribute name="IsSup" type="boolean" default="true" />
+    <aura:attribute name="IsOwner" type="boolean" default="false" />
+    <aura:attribute name="CheckValue1" type="boolean" default="false" />
+    <aura:attribute name="CheckValue2" type="boolean" default="false" />
+    <aura:attribute name="isOwnerTypeUser" type="Boolean" default="false" />
+    <aura:attribute name="ownerType" type="String" default="" />
+    <aura:attribute name="CaseNumber" type="String" default="" />
+    <aura:attribute name="CaseOwnerName" type="String" default="" />    
+    <aura:attribute name="CurrentUserName" type="String" default="" />
+    <aura:attribute name="space" type="String" default="     " />
+    <aura:attribute name="CaseInfo" type="Object[]" />
+    <aura:attribute name="caseRecordTypeId" type="String" />
+    <aura:attribute name="CurrentUser" type="Object" />
+    <aura:attribute name="loading" type="boolean" default="false" />
+    <aura:attribute name="loading2" type="boolean" default="false" />
+    <aura:attribute name="ChildCaseMap" type="Map" />
+    <aura:attribute name="ownerMap" type="Map" />
+    <aura:attribute name="recordTypeMap" type="Map" />
+    <aura:attribute name="closedCaseMap" type="Map" />
+    <aura:attribute name="ClosedrecordTypeMap" type="Map" />
+    <aura:attribute name="Picklist" type="String[]" />
+    <aura:attribute name="caseOwnerValue" type="sObject" default="{}" />
+    <aura:attribute name="CaseQuickButtonAssignment" type="Object" />
+    -->
+    
+    
+    <!--<aura:handler name="oSaveAndGenerate" event="c:saveEvt" action="{!c.onSaveAndGenerateEvt}" />   {!c.navigateToGeneratePDF} -->
+    
+    
+    
+    
+    
+    
+    <div class="slds-m-bottom_small slds-page-header">
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col slds-size_1-of-3">
+                <aura:if isTrue="{!v.CaseQuickButtonAssignment.Validate_Case_Duplicate__c}">
+                    <c:BIH_ValidateCaseDuplicate selectedCase="{!v.recordId}" />
+                </aura:if>
+            </div>
+            <div class="slds-col slds-size_2-of-3" align="right">
+                <!--
+                <aura:if isTrue="{!!v.IsClosed &amp;&amp; v.CaseQuickButtonAssignment.Close_All__c}">
+                    <lightning:button class="slds-button slds-button__neutral uiButton__brand uiButton forceActionButton" label="Close All" onclick="{!c.showModalCloseCase}"/>
+                </aura:if>
+
+                <aura:if isTrue="{!v.CaseQuickButtonAssignment.Accept_or_Change_Owner__c &amp;&amp; !v.IsClosed}">
+                    <lightning:button class="slds-theme_neutral" label="{!($Label.c.Accept_Change_Owner_Case)}" onclick="{!c.showModalAcceptCase}"/>
+                </aura:if>
+                <aura:if isTrue="{!v.IsClosed &amp;&amp; v.CaseQuickButtonAssignment.Reactivate_Case__c &amp;&amp; (v.IsSup || v.IsOwner)}">
+                    <lightning:button class="slds-theme_neutral" label="Re-Activate" onclick="{!c.showModalReActivate}"/>
+                </aura:if>
+				-->
+                
+                <lightning:button class="slds-theme_neutral" label="SMS Message" onclick="{!c.showModalSMSMessage}"/>
+                <!--<lightning:button class="slds-theme_neutral" iconPosition="left" variant="neutral" label="Appointment Card" onclick="{!c.navigateToGeneratePDF}" iconName="utility:download" />-->
+                
+
+            </div>
+        </div>
+
+    </div>
+    
+
+    
+  <!--
+    <div class="slds-m-bottom_small slds-page-header">
+        <div class="slds-grid slds-gutters">
+            
+            <div class="slds-col slds-size_1-of-3">
+                <aura:if isTrue="{!v.CaseQuickButtonAssignment.Validate_Case_Duplicate__c}">
+                    <c:BIH_ValidateCaseDuplicate selectedCase="{!v.recordId}" />
+                </aura:if>
+            </div>
+
+            
+            <div class="slds-col slds-size_2-of-3" align="right">
+                <aura:if isTrue="{!!v.IsClosed &amp;&amp; v.CaseQuickButtonAssignment.Close_All__c}">
+                    <lightning:button class="slds-button slds-button*==neutral uiButton*==brand uiButton forceActionButton" label="Close All" onclick="{!c.showModalCloseCase}"/>
+                </aura:if>
+                
+      
+                <aura:if isTrue="{!v.CaseQuickButtonAssignment.Accept_or_Change_Owner__c &amp;&amp; !v.IsClosed}">
+                    <lightning:button class="slds-theme_neutral" label="{!($Label.c.Accept_Change_Owner_Case)}" onclick="{!c.showModalAcceptCase}"/>
+                </aura:if>
+                <aura:if isTrue="{!v.IsClosed &amp;&amp; v.CaseQuickButtonAssignment.Reactivate_Case__c &amp;&amp; (v.IsSup || v.IsOwner)}">
+                    <lightning:button class="slds-theme_neutral" label="Re-Activate" onclick="{!c.showModalReActivate}"/>
+                </aura:if>
+                
+
+                
+                <aura:if isTrue="{!v.CaseQuickButtonAssignment.SMS_Message__c &amp;&amp; (v.IsCC || v.IsPreRegis) &amp;&amp; !v.IsClosed}">
+                    <lightning:button class="slds-theme_neutral" label="SMS Message" onclick="{!c.showModalSMSMessage}"/>
+                </aura:if>
+                <aura:if isTrue="{!v.CaseQuickButtonAssignment.Convert_to_Lead__c &amp;&amp; !v.IsCC}">
+                    <lightning:button class="slds-theme_neutral" label="Convert to Lead" onclick="{!c.showModalConvertLead}"/>
+                </aura:if>
+                <aura:if isTrue="{!v.CaseQuickButtonAssignment.Generate_Invitation_Letter__c}">
+                    <lightning:button class="slds-theme_neutral" iconPosition="left" variant="neutral"
+                    label="Invitation Letter" onclick="{!c.navigateToGeneratePDF}" iconName="utility:download" />
+                </aura:if>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <aura:if isTrue="{!v.ModalCloseCase}">
+        <div style="max-width: 50rem;">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <a class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+                            onclick="{! c.hideModalCloseCase }">
+                            <lightning:icon iconName="utility:close" class="slds-icon slds-icon_small" size="small" alternativeText="close" />
+                        </a>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Close All Case</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <c:BIH_CloseAllCase aura:id="BIH_CloseAllCase"  selectedCase="{!v.recordId}" selectedRecordTypeId="{!v.caseRecordTypeId}" />
+                    </div>
+                    <footer class="slds-modal__footer slds-modal__footer_directional">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.hideModalCloseCase}">Cancel</button>
+                        <button class="slds-button slds-button_brand" onclick="{!c.closeAllCase}" >Confirm</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div> 
+    </aura:if>
+     
+    <aura:if isTrue="{!v.ModalConvertCase}">
+        <div style="max-width: 50rem;">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <a class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+                            onclick="{! c.hideModalConvertLead }">
+                            <lightning:icon iconName="utility:close" class="slds-icon slds-icon_small" size="small" alternativeText="close" />
+                        </a>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Convert to Lead</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <c:BIH_ConvertCaseToLead aura:id="BIH_ConvertCaseToLead" selectedCase="{!v.recordId}"/>
+                    </div>
+                    <footer class="slds-modal__footer slds-modal__footer_directional">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.hideModalConvertLead}">Cancel</button>
+                        <button class="slds-button slds-button_brand" onclick="{!c.convertCaseToLead}" >Confirm</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div> 
+    </aura:if>
+
+    <aura:if isTrue="{!v.ModalAcceptCase}">
+        <div style="max-width: 50rem;">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container" style="width: 80%">
+                    <header class="slds-modal__header">
+                        <a class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+                            onclick="{! c.hideModalAcceptCase }">
+                            <lightning:icon iconName="utility:close" class="slds-icon slds-icon_small" size="small" alternativeText="close" />
+                        </a>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Accept / Change Owner Case</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="padding-bottom: 150px">
+                        <aura:if isTrue="{!v.loading}">
+                                <lightning:spinner alternativeText="Loading" />
+                        </aura:if>
+                        <p>Selected:</p>
+                        <ui:inputCheckbox name="check1" value="{!v.CheckValue1}" class="myCheckbox" label="{!format($Label.c.Confirm_New_Case_Owner,v.CaseOwnerName,v.CaseNumber,v.CurrentUserName)}" aura:id="checkbox1" change="{!c.onCheck1}"/>
+                        <ui:inputCheckbox name="check2" value="{!v.CheckValue2}" class="myCheckbox" label="Change to other owners" aura:id="checkbox2" change="{!c.onCheck2}"/>
+                    
+
+                        <aura:if isTrue="{!v.CheckValue2}">
+                        <aura:iteration indexVar="idx" var="case" items="{! v.CaseInfo }">
+
+                        <div class="container-lookup-section">
+                        <div class="container-lookup">
+                        <aura:if isTrue="{!v.ownerType == 'user'}">
+                                <c:BIH_CustomLookup Required="true" objectAPIName="User" fieldAPIName="Name"
+                                    IconName="standard:people" showField="Department" selectedRecord="{!v.caseOwnerValue}"
+                                    label="Case Owner" />
+                                <aura:set attribute="else">
+                                    <c:BIH_CustomLookup Required="true" objectAPIName="Group" fieldAPIName="Name"
+                                        IconName="standard:orders" selectedRecord="{!v.caseOwnerValue}"
+                                        label="Case Owner" />
+                                </aura:set>
+                            </aura:if>
+                        </div>
+                        <div class="container-button-menu" style="padding-top: 20px">
+                            <lightning:buttonMenu value="{!v.ownerType}" aura:id="menu"
+                                        alternativeText="Show menu" onselect="{! c.handleSelect }">
+                                        <lightning:menuItem aura:id="menuItems" label="User" value="user"
+                                            checked="{!v.isOwnerTypeUser}" iconName="standard:people" />
+                                        <lightning:menuItem aura:id="menuItems" label="Queue" value="queue"
+                                            checked="{!!v.isOwnerTypeUser}" iconName="standard:orders" />
+                            </lightning:buttonMenu>
+
+                            </div>
+                        </div>
+                    </aura:iteration>
+                    <div style="width: 50%">
+                    <lightning:select aura:id="case_owner_reason" name="case_owner_reason" label="Change Owner Reason"
+                    value="{!v.CaseInfo[0].Owner_Change_Reason__c}">
+                    <option  value="" selected="">*==None*==</option>
+                    <aura:iteration items="{!v.Picklist}" var="option" aura:id="picklist">
+                        <option  value="{!option}" selected="">{!option}</option>
+                    </aura:iteration>
+                </lightning:select>
+            </div>
+                    </aura:if>
+
+                      
+                    </div>
+                    <footer class="slds-modal__footer slds-modal__footer_directional">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.hideModalAcceptCase}">Cancel</button>
+                        <button class="slds-button slds-button_brand" onclick="{!c.saveCaseOwner}" >Confirm</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div> 
+    </aura:if>
+
+    <aura:if isTrue="{!v.ModalReActivate}">
+        <div style="max-width: 50rem;">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <a class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+                            onclick="{! c.hideModalReActivate }">
+                            <lightning:icon iconName="utility:close" class="slds-icon slds-icon_small" size="small" alternativeText="close" />
+                        </a>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Re Activate</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <aura:if isTrue="{!v.loading}">
+                                <lightning:spinner alternativeText="Loading" />
+                        </aura:if>
+                        <ui:outputText value="Do you want to re-activate this case ?"/>
+                    </div>
+                    <footer class="slds-modal__footer slds-modal__footer_directional">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.hideModalReActivate}">Cancel</button>
+                        <button class="slds-button slds-button_brand" onclick="{!c.saveReActivate}" >Confirm</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div> 
+    </aura:if>
+	-->
+
+    <aura:if isTrue="{!v.ModalSMSMessage}">
+        <div style="max-width: 50rem;">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <a class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+                            onclick="{! c.hideModalSMSMessage }">
+                            <lightning:icon iconName="utility:close" class="slds-icon slds-icon_small" size="small" alternativeText="close" />
+                        </a>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Send SMS Message</h2>
+                    </header>
+                    
+               
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <c:BIH_ApptSMSMessage aura:id="BIH_ApptSMSMessage" recordId="{!v.recordId}"/>
+                    </div>
+                    
+                    
+                    <footer class="slds-modal__footer slds-modal__footer_directional">
+                        <button class="slds-button slds-button_neutral" onclick="{!c.hideModalSMSMessage}">Close</button>
+                       
+                    </footer>
+                </div>
+                
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div> 
+    </aura:if>
+
+    
+</aura:component>

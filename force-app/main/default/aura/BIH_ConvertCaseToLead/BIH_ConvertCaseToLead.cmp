@@ -1,0 +1,145 @@
+<aura:component controller="BIH_CaseUtility" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="lead" type="lead" default="{'sobjectType': 'Lead'}"/>
+    <aura:attribute name="case" type="case" default="{'sobjectType': 'Case'}"/>
+    <aura:attribute name="selectedCase" type="String"/>
+    <aura:method name="convertCase" action="{!c.convertCase}">
+    <aura:attribute name="callback" type="Function" />
+    </aura:method>
+    <aura:attribute name="lead_source" type="String[]" />
+    
+    <aura:attribute name="loading" type="Boolean" default="false" />
+    <aura:attribute name="emptyLeadInfo" type="Boolean" default="false" />
+    
+    <aura:if isTrue="{!! v.emptyLeadInfo }">
+        <div class="slds-form" role="list">
+            <aura:if isTrue="{! v.loading }">
+                <lightning:spinner alternativeText="Loading" />
+            </aura:if>
+             <div class="slds-form__row">
+                <div class="slds-size_1-of-2">
+                    <div class="slds-form__item" role="listitem">
+                        <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                            <lightning:input type="text" name="Sender Name" readonly="true" label="SenderName" value="{!v.case.Account.Name}" />
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-size_1-of-2">
+                    <div class="slds-form__item" role="listitem">
+                        <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                            <lightning:input type="text" name="Sender Email" readonly="true" label="SenderEmail" value="{!v.case.SuppliedEmail}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form__row">
+                <div class="slds-size_1-of-2">
+                    <div class="slds-form__item" role="listitem">
+                        <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                            <lightning:input type="text" name="FirstName" label="FirstName" value="{!v.lead.FirstName}" />
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-size_1-of-2">
+                    <div class="slds-form__item" role="listitem">
+                        <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                            <lightning:input type="text" required="true" name="LastName" label="LastName" value="{!v.lead.LastName}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form__row">
+                <div class="slds-size_1-of-2">
+                    <div class="slds-form__item" role="listitem">
+                        <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                            <lightning:input type="text" name="Patient Hospital Number" readonly="true" label="Patient Hospital Number" value="{!v.lead.Hospital_Number_HN__c}" />
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-size_1-of-2">
+                    <div class="slds-form__item" role="listitem">
+                        <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                            <lightning:input type="text" name="Phone" label="Phone" value="{!v.lead.Phone}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slds-form__row">
+                <div class="slds-size_1-of-2">
+                    <div class="slds-form__item" role="listitem">
+                        <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                            <lightning:input type="text" name="Email" label="Email" value="{!v.lead.Email}" />
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-size_1-of-2">
+                    <div class="slds-form__item" role="listitem">
+                        <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                         <lightning:select value="{!v.lead.LeadSource}" label="Lead Source" >       
+                            <option value="">--None--</option> 
+                            <aura:iteration items="{!v.lead_source}" var="source">
+                                    <option value="{!source}">{!source}</option>
+                            </aura:iteration> 
+                        </lightning:select> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slds-form__row">
+                <div class="slds-size_1-of-2">
+                    <div class="slds-form__item" role="listitem">
+                        <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                            <lightning:input  name="Procedure 1" label="Procedure 1" value="{!v.lead.Procedure_1__c}" />
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-size_1-of-2">
+                    <div class="slds-form__item" role="listitem">
+                        <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                            <lightning:input type="number" name="Estimated Cost 1" label="Estimated Cost 1" value="{!v.lead.Estimated_Cost1__c}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-form__row">
+                <div class="slds-size_1-of-2">
+                    <div class="slds-form__item" role="listitem">
+                        <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                            <lightning:input  name="Procedure 2" label="Procedure 2" value="{!v.lead.Procedure_2__c}" />
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-size_1-of-2">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <lightning:input type="number" name="Estimated Cost 2" label="Estimated Cost 2" value="{!v.lead.Estimated_Cost2__c}" />
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div class="slds-form__row">
+                <div class="slds-size_1-of-2">
+                    <div class="slds-form__item" role="listitem">
+                        <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                            <lightning:input  name="Procedure 3" label="Procedure 3" value="{!v.lead.Procedure_3__c}" />
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-size_1-of-2">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <lightning:input type="number" name="Estimated Cost 3" label="Estimated Cost 3" value="{!v.lead.Estimated_Cost3__c}" />
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            
+        </div>
+        <aura:set attribute="else">
+            <div>This case not found contact information. Please fulfill name or email client to case.</div>
+        </aura:set>
+    </aura:if>
+    
+</aura:component>

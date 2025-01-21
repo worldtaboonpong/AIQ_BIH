@@ -1,0 +1,76 @@
+<aura:component controller="BIH_ChildCaseDynamicCtrl" Implements="flexipage:availableForRecordHome,force:hasRecordId">
+    <!-- Aura Attribute for store single Contact[standard Object] Instance
+         And Store Index of Particular Instance -->
+         
+    <aura:attribute name="PersonInstance" type="Invitation_Letter_Person__c" />
+    <aura:attribute name="specialtyPicklist" type="String[]" />
+    <aura:attribute name="PersonType" type="String" />
+    <aura:attribute name="rowIndex" type="String" />
+
+    <!-- Register 2 Lightning Event for handle add or Delete rows on Parent Component  -->
+    <aura:registerEvent name="DeleteRowEvt" type="c:DeleteRowEvt" />
+    <aura:registerEvent name="AddRowEvt" type="c:AddNewRowEvt" />
+    <!-- <aura:registerEvent name="verifyRowEvt" type="c:VerifyRowEvt" /> -->
+
+    <!-- Table Row -->
+    <tr class="slds-text-title_caps">
+        <td>
+            {!v.rowIndex + 1}
+        </td>
+        <td>
+            <ui:inputText class="slds-input" value="{!v.PersonInstance.Person_Name__c}" />
+        </td>
+        <td>
+            <ui:inputText maxlength="13" class="slds-input" value="{!v.PersonInstance.Passport_Number__c}" />
+        </td>
+        <aura:if isTrue="{!v.PersonType == 'patient'}">
+            <td>
+                <!-- <lightning:input type="date" name="date" label="Date" value="{!v.PersonInstance.Appointment_Date__c}" /> -->
+                <!-- <ui:inputText class="slds-input" value="{!v.PersonInstance.Appointment_Date__c}" /> -->
+                <ui:inputDate  class="field" value="{!v.PersonInstance.Appointment_Date__c}" displayDatePicker="true" />
+            </td>
+            <td>
+                <ui:inputSelect aura:id="SpecialtySelect" change="{!c.onChange}">
+                    <ui:inputSelectOption text="--None--" value="{! item == '' ? true : false }" label="--None--" />
+                    <aura:iteration items="{!v.specialtyPicklist}" var="item">
+                        <ui:inputSelectOption text="{!item}" value="{! item == v.PersonInstance.Specialty__c ? true : false }" label="{!item}"  />
+                    </aura:iteration>
+                </ui:inputSelect>
+                <!-- <lightning:select name="to_letter" label="To : " value="{!v.PersonInstance.Specialty__c}">
+                    <aura:iteration items="{!v.countryPicklist}" var="c">
+                        <option text="{!c}" value="{!c}"></option>
+                    </aura:iteration>
+                </lightning:select> -->
+                <!-- <ui:inputText class="slds-input" value="{!v.PersonInstance.Specialty__c}" /> -->
+            </td>
+        </aura:if>
+        <!-- <aura:if isTrue="{!v.PersonType == 'attentdent'}">
+            <td>
+                <ui:inputText class="slds-input" value="{!v.PersonInstance.Appointment_Date__c}" />
+            </td>
+            <td>
+                <ui:inputText class="slds-input" value="{!v.PersonInstance.Specialty__c}" />
+            </td>
+        </aura:if> -->
+        <td>
+       
+            <!-- conditionally Display Add or Delete Icons
+                 if rowIndex is 0 then show Add New Row Icon else show delete Icon
+             -->
+            <aura:if isTrue="{!v.rowIndex == 0}">
+                <a onclick="{!c.AddNewRow}">
+                    <lightning:icon iconName="utility:add" class="slds-icon slds-icon_small" size="small"
+                        alternativeText="add" />
+                    <span class="slds-assistive-text">Add Icon</span>
+                </a>
+                <aura:set attribute="else">
+                    <a onclick="{!c.removeRow}">
+                        <lightning:icon variant="error" iconName="utility:delete" class="slds-icon slds-icon_small"
+                            size="small" alternativeText="icon" />
+                        <span class="slds-assistive-text">Delete Icon</span>
+                    </a>
+                </aura:set>
+            </aura:if>
+        </td>
+    </tr>
+</aura:component>

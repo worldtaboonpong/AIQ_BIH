@@ -1,0 +1,243 @@
+<apex:page controller="MultipleAppointmentCardPDFCtrl" renderAs="PDF" showHeader="false" sidebar="false" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false">
+    <head>
+        <style>
+            @page {
+                size: A4;
+            	margin: 8.5cm 0.5cm 8cm 0.5cm;
+           
+                @top-center {
+                	content: element(header);
+                }
+                @bottom-center {
+                	content: element(footer);
+                }
+            }
+            div.header {
+                display: block;
+                top: 0;
+                position: running(header);
+            }
+            div.footer {
+                display: block;
+                bottom: 0;
+            	position: running(footer);
+            }
+            body{
+                font-family: Arial Unicode MS;
+                font-size: 14px;
+                -fs-pdf-font-embed: embed;
+                -fs-pdf-font-encoding: Identity-H;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <div class="header">
+            <div>
+                <table style="width: 100%;" class="noBorder">
+                    <tbody>
+                        <tr>
+                            <td valign="top" style="text-align: center;" rowspan="2">
+                                <apex:image url="{!$Resource.LogoPDF }" style="float:left; height:100px;" />
+                            </td>
+                            <td valign="top" style="text-align: center;">
+                                <div style="width: 150px;height:35px;">HN {!cardDetails.hnNumber}</div>
+                            </td>
+                            <td valign="top" style="text-align: left;" colspan="2">
+                                <div style="height:35px;">{!cardDetails.patientName}</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td valign="top" style="text-align: center;">
+                                <img style="width: 150px;height:35px;" src="{!cardDetails.patientBarCode}"/>
+                            </td>
+                            <td valign="top" style="text-align: left;">
+                                <div style="overflow-wrap: break-word;word-break: break-all;width: 150px">
+                                    <apex:outputText value="{!IF(cardDetails.patientNationality == 'Thai', 'วันเกิด', 'DOB')}"/>
+                                    <span>
+                                        {!cardDetails.patientDob}
+                                    </span>
+                                </div>
+                            </td>
+                            <td valign="top" style="text-align: left;">
+                                <div style="overflow-wrap: break-word; word-break: break-all; width: 160px">
+                                    <apex:outputText value="{!IF(cardDetails.patientNationality == 'Thai', 'อายุ', 'Age')}"/>
+                                    {!cardDetails.patientAge}
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <BR/>
+            
+            <table style="border-collapse: collapse; width: 100%; padding:2% 0 2% 0;">
+                <thead>
+                    <tr>
+                        <td style="width: 20%;padding-bottom : 10px;">
+                        	<div style="overflow-wrap: break-word;word-break: break-all;width: 140px"><center>APPOINTMENT LIST</center></div>
+                        </td>
+                        <td colspan="2" style="font-weight:bold;padding-bottom : 10px;">
+                            <apex:outputPanel layout="block" rendered="{!cardDetails.patientNationality == 'Thai'}">
+                                <center>*** กรุณานำยาที่ท่านใช้ประจำมาด้วยทุกครั้ง ***</center>
+                            </apex:outputPanel>
+                            
+                            <apex:outputPanel layout="block" rendered="{!cardDetails.patientNationality != 'Thai'}">
+                                <center>***Please bring your regular medications with you every time.***</center>
+                            </apex:outputPanel>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="border-top:1px solid black; padding : 10px;">
+                            <apex:outputPanel layout="block" rendered="{!cardDetails.patientNationality == 'Thai'}">
+                                <center>*** กรุณามาถึงก่อนเวลานัดอย่างน้อย 15 นาทีสำหรับนัดทั่วไป<BR/>
+                                    เพื่อให้มีเวลาในการลงทะเบียนและเตรียมตัวก่อนพบแพทย์ สำหรับนัดที่ต้องการเตรียมตัวพิเศษ
+                                    กรุณาปฏิบัติตามคำแนะนำที่ได้รับจากพนักงานของเราและมาถึงตามเวลาที่กำหนดเพื่อให้มีเวลาเตรียมตัวเพียงพอก่อนรับบริการ ***</center>
+                            </apex:outputPanel>
+                            
+                            <apex:outputPanel layout="block" rendered="{!cardDetails.patientNationality != 'Thai'}">
+                                <center>*** Please arrive at least 15 minutes early for your standard appointments to allow time for registration and
+                                    preparation before seeing the doctor. For appointments requiring special preparation, please follow the specific
+                                    instructions provided by our staff and arrive accordingly to ensure you have enough time before your service. ***</center>
+                            </apex:outputPanel>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style="width: 20%;border-top:1px solid black; border-bottom: 1px solid black;padding : 10px;font-size:14pt;">
+                            <center>
+                                <apex:outputText value="{!IF(cardDetails.patientNationality == 'Thai', 'วันที่', 'Date')}" />
+                            </center>
+                        </th>
+                        <th style="width: 20%;border-top:1px solid black; border-bottom: 1px solid black;padding : 5px;font-size:14pt;">
+                            <center>
+                                <apex:outputText value="{!IF(cardDetails.patientNationality == 'Thai', 'เวลา', 'Time')}" />
+                            </center>
+                        </th>
+                        <th style="width: 60%;border-top:1px solid black; border-bottom: 1px solid black;padding : 5px;font-size:14pt;">
+                            <center>
+                                <apex:outputText value="{!IF(cardDetails.patientNationality == 'Thai', 'นัดพบ', 'Care provider / Resource')}" />
+                            </center>
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        
+        <div class="footer">
+            <apex:outputPanel layout="block" rendered="{!cardDetails.patientNationality == 'Thai'}">
+                <table style="border-collapse: collapse; border: 1px solid black; width:100%;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 60%; border: 1px solid black;">
+                                <apex:outputText value="หากต้องการเปลี่ยนแปลงนัด กรุณาติดต่อแผนกนัด โทร 0 2066 8888 "/>
+                                <br/><br/>
+                                <apex:outputText value="สำหรับแผนกต่อไปนี้กรุณาเลื่อนนัดโดยตรง"/>
+                                <br/>
+                                <apex:outputText value="- แผนก VitalLife Skin and Aesthetic Center 0 2066 8899"/>
+                                <br/>
+                                <apex:outputText value="- แผนกกายภาพบำบัด โทร 0 2011 2450"/>
+                                <br/>
+                                <apex:outputText value="- ศูนย์ศัลยกรรมตกแต่ง โทร 0 2011 3691"/>
+                                <br/>
+                                <apex:outputText value="- ศูนย์มะเร็งฮอไรซัน โทร 0 2011 2342"/>
+                            </td>
+                            <td style="width: 40%; border: 1px solid black;text-align: center;">
+                                <apex:outputText value="ตอบทุกโจทย์การพบแพทย์"/>
+                                <br/><br/>
+                                <apex:outputText value="รวดเร็ว สะดวก แม่นยำ ปลอดภัย"/>
+                                <br/>
+                                <apex:outputText value="สแกนเพื่อดาวน์โหลด บำรุงราษฎร์แอปพลิเคชัน"/>
+                                <br/>
+                                <apex:image value="{!URLFOR($Resource.BIH_QR_Code)}" width="95" height="95" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <BR/>
+                <div style="margin-left:31px;">
+                    33 สุขุมวิท ซอย 3 เขตวัฒนา กรุงเทพหานคร 10110 โทร 0 2066 8888 โทรสาร 0 2011 5100 www.bumrungrad.com
+                </div>
+            </apex:outputPanel>
+            
+            <apex:outputPanel layout="block" rendered="{!cardDetails.patientNationality != 'Thai'}">
+                <table style="border-collapse: collapse; border: 1px solid black; width:100%;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 60%; border: 1px solid black;">
+                                <apex:outputText value="If you would like to modify your appointment, please call Contact Center +66 2066 8888"/>
+                                <br/><br/>
+                                <apex:outputText value="Please direct contact for the following clinic:"/>
+                                <br/>
+                                <apex:outputText value="- VitalLife Skin and Aesthetic Center Tel. +66 20668899"/>
+                                <br/>
+                                <apex:outputText value="- Physiotherapy Center Tel.+66 2011 2450"/>
+                                <br/>
+                                <apex:outputText value="- Plastic Center Tel. +66 2011 3691"/>
+                                <br/>
+                                <apex:outputText value="- Horizon Cancer Center Tel.+66 2011 2342"/>
+                            </td>
+                            <td style="width: 40%; border: 1px solid black;text-align: center;">
+                                <apex:outputText value="Have your healthcare questions answered."/>
+                                <br/><br/>
+                                <apex:outputText value="Fast, convenient, accurate, safe"/>
+                                <br/>
+                                <apex:outputText value="Scan to download Bumrungrad Application"/>
+                                <br/>
+                                <apex:image value="{!URLFOR($Resource.BIH_QR_Code)}" width="95" height="95" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>
+                    - Please confirm your appointment with your country referral office at least 72 hours in advance.<br/>
+                    - To check our international offices, please access the Bumrungrad website.<br/>
+                    - BI Interpreter service is free of charge
+                </p>
+                <div style="margin-left:31px;">
+                    33 Sukhumvit Soi 3, Wattana, Bangkok Tel.+66 2066 8888 Fax.+66 2011 5100 www.bumrungrad.com
+                </div>
+            </apex:outputPanel>
+        </div>
+        
+        <div class="content"> 
+            <table style="border-collapse: collapse; width: 100%; padding:2% 0 2% 0;">
+                <tbody> 
+                    <apex:repeat value="{!cardDetails.appointments}" var="item" id="apptObjTable" >
+                        <tr>
+                            <td valign="top" style="width: 20%;text-align: center;">
+                                <div style="overflow-wrap: break-word;word-break: break-all;width: 145px;">
+                                    {!item.appDay}<apex:outputText rendered="{!cardDetails.patientNationality != 'Thai'}">,</apex:outputText><br/> 
+                                    {!item.appDate}
+                                </div>
+                            </td>
+                            <td valign="top" style="width: 20%;text-align: center;">
+                                <div style="overflow-wrap: break-word;word-break: break-all;width: 115px">
+                                    {!item.appTime}
+                                </div>
+                            </td>
+                            <td valign="top" style="width: 60%;text-align: left;">
+                                {!item.appResource}<br/> 
+                                {!item.appLocation} 
+                                <br/>
+                                <apex:outputText style="white-space: pre-wrap;" rendered="{!cardDetails.patientNationality == 'Thai'}">
+                                    <B>ข้อแนะนำ:</B><br/>
+                                    <apex:outputText value="{!item.appPatientLetterNotes}" escape="false" />                                    
+                                    <apex:outputText rendered="{!item.isNonFixed}"><br/>
+                                        ** นัดหมายของท่านเป็นแบบเสริมพิเศษ ช่วงเวลาที่กำหนดให้พบแพทย์อาจไม่ตรงกับเวลานัดที่ระบุไว้ข้างต้น เจ้าหน้าที่จะพยายามอำนวยความสะดวกให้ท่านเข้าพบแพทย์โดยเร็วที่สุด **
+                                    </apex:outputText><br/>
+                                </apex:outputText>
+                                <apex:outputText style="white-space: pre-wrap;" rendered="{!cardDetails.patientNationality != 'Thai'}">
+                                    <B>Instruction:</B><br/>
+                                    <apex:outputText value="{!item.appPatientLetterNotes}" escape="false" /> 
+                                    <apex:outputText rendered="{!item.isNonFixed}"><br/>
+                                        ** Your appointment category is Daily Waiting List, which may not align with the appointment time stated in the appointment letter or SMS content above. Our staff will make every effort to arrange the soonest possible session with the doctor.**
+                                    </apex:outputText><br/>
+                                </apex:outputText>  
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                </tbody>
+            </table>            
+        </div>
+    </body>
+</apex:page>

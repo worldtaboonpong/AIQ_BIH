@@ -1,0 +1,202 @@
+<apex:page controller="GeneratePDFInvitation" renderAs="pdf" showHeader="false" sidebar="false" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false">
+<head>
+
+    <style>
+        
+        @page {
+            margin: 0.5cm 1cm 0.5cm 0.5cm;
+        }
+        body{
+            font-family: 'Helvetica',sans-serif,SansSerif,Dialog !important;
+            font-size: 14px;
+             -fs-pdf-font-embed: embed;
+            -fs-pdf-font-encoding: Identity-H;
+        }
+        
+        table { 
+            border-collapse:collapse;
+            border: .02em solid black;
+            
+        }
+
+        td, th { 
+        	border: .02em solid black;
+            padding : 5px;
+        }
+        table.htmlDetailElementTable { 
+            border-collapse:unset;
+            border: none;
+            /* margin: 0.5c/m 1cm 0.5cm 0.5cm; */
+            /* padding-left:1cm; */
+        
+        }
+        table.htmlDetailElementTable p { 
+            margin: 0 auto;
+        }
+        table.htmlDetailElementTable p:first-child { 
+        }
+
+        .htmlDetailElementTable td,.htmlDetailElementTable th { 
+        	border: none;
+        }
+        .sfdc_richtext{
+            padding-left: 10%;
+        }
+        
+    </style>
+    
+    </head>
+
+<body>
+    <div>
+        <apex:image url="{!$Resource.LogoPDFLeft }" style="float:left; height:1000px" />
+    </div>
+
+    <!--Heeder Logo-->
+    <div style="position:absolute; top:0;right:0;">
+        <div style="text-align:right;font-size: 10px;padding-right: 10px;width:500px">Case No.: {!letterObj.RefCase__c }</div>
+        <apex:image url="{!$Resource.LogoPDF }" style="float:right; height:100px;" />
+    </div>
+    
+    <!--Date-->
+    <div style="padding-top:85px;">
+        <p>
+            <b>Date:</b> <span><apex:outputText value="{0, date, MMMM d','  yyyy}">
+                            <apex:param value="{!letterObj.Generate_Date__c}" />
+                        </apex:outputText></span>
+        </p>
+    </div>
+    <!--From-->
+    <div>
+        <p>
+            <b>From:</b> Bumrungrad International Hospital<br/>
+			33 Sukhumvit 3, Bangkok, 10110, Thailand
+        </p>
+    </div>
+    
+    <!--To-->
+    <div>
+        <p>
+            <b>To:</b> Royal Thai {!letterObj.LetterEmbassyType__c} in {!letterObj.LetterCountryText__c}<br/>
+			{!IF(letterObj.LetterCountryText__c=='Bangladesh', '18 and 20, Madani Avenue, Baridhara, Dhaka – 1212, Bangladesh', '')}
+        </p>
+    </div>
+    
+    
+    <!--Subject-->
+    <div>
+        <p>
+            <b>Subject:</b> <span>{!if(isCopy == true ,'[Copy] ','')}<apex:outputField value="{!letterObj.LetterSubject__c}"/></span>
+        </p>
+    </div>
+    
+    <!--Refer No-->
+    <div>
+        <p>
+            <b>Reference No:</b> HN  <span><apex:outputField value="{!letterObj.LetterRefNo__c}"/></span>
+        </p>
+		<br/>        
+        Dear&nbsp;<apex:outputField value="{!letterObj.LetterDear__c}"/><br/><br/>
+       <div style="margin-left:2cm;position:relative;">
+        <apex:outputField value="{!letterObj.Content__c}"></apex:outputField>
+       </div>
+    </div>
+    
+    
+    <!--Patient-->
+    
+    <div style="padding-left:85px;">
+        <p>
+            Patient(s)’s name:
+        </p> 
+        <table border="1">
+             <thead>
+                 <tr>
+                     <th style="width:15px">No</th>
+                     <th style="width:145px">Patient’s Name</th>
+                     <th style="width:145px">Passport Number</th>
+                     <th style="width:145px">Date of Appointment</th>
+                     <th style="width:145px"> Specialty</th>
+                     
+                 </tr>
+            </thead>
+            <tbody> 
+
+            <apex:variable var="index" value="{!1}" />
+            <apex:repeat value="{!patientObj}" var="person" id="patientObjTable" >
+                <tr>
+                    <td><apex:outputText value="{!index}"/></td>
+                    <td><div style="overflow-wrap: break-word;word-break: break-all;width:145px"><apex:outputField value="{!person.Person_Name__c}" /></div></td>
+                    <td ><div style="overflow-wrap: break-word;word-break: break-all;width:145px">{!person.Passport_Number__c}</div></td>
+                    <td><apex:outputField value="{!person.Appointment_Date__c}"/></td>
+                    <td style="overflow-wrap: break-word;word-break: break-all;"><apex:outputField value="{!person.Specialty__c}"/></td>
+                </tr>
+                <apex:variable var="index" value="{!index + 1}" />
+            </apex:repeat>
+              
+                 
+            </tbody>
+
+        </table>
+    </div>
+    <!--Attendant-->
+    <apex:outputPanel rendered="{!attendantObj.size > 0}">
+    <div style="padding-left:85px;">
+        <p>
+            Attendant(s)’s name:
+        </p>
+        <table border="1">
+             <thead>
+                 <tr>
+                     <th style="width:15px">No</th>
+                     <th style="width:300px">Attendant’s name</th>
+                     <th style="width:300px">Passport Number</th>
+                 </tr>
+            </thead>
+            <tbody> 
+               <apex:variable var="index" value="{!1}" />
+                <apex:repeat value="{!attendantObj}" var="person" id="attendantObjTable" >
+                    <tr>
+                        <td><apex:outputText value="{!index}"/></td>
+                        <td><apex:outputField value="{!person.Person_Name__c}"/></td>
+                        <td><apex:outputField value="{!person.Passport_Number__c}"/></td>
+                    </tr>
+                    <apex:variable var="index" value="{!index + 1}" />
+                </apex:repeat>
+
+            </tbody>
+        </table>
+    </div>
+    </apex:outputPanel>
+    
+    <div>
+        <p>
+            If you have any questions or comments regarding this case, please contact us at <br/>
+            Tel: 66-2-011- 5146 or Fax: 66-2-011-5159.
+        </p>
+    </div>
+
+    
+    <!--Signature-->
+    <br/>
+    <br/>
+    Sincerely yours,<br/>
+    <div style="display:block">
+        <apex:image url="{!URLFOR($Resource[img_signature])}" style="float:left; height: 35px;"  />
+    </div>
+    <br/>
+    <br/>
+    <br/>
+    (<apex:outputText value="{!name_signature}"/>)<br/>
+    <apex:outputText value="{!pos_signature}"/> <br/>
+    Bumrungrad International Hospital
+    
+    
+    <!--Footer-->
+    <div style="position:absolute; bottom:0; margin-left:90px;">
+        <apex:image url="{!$Resource.LogoPDFFooter }" style="float:right; width:500px" />
+    </div>
+
+</body>
+
+</apex:page>

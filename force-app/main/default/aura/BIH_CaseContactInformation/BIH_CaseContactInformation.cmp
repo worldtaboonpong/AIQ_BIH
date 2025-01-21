@@ -1,0 +1,294 @@
+<aura:component controller="BIH_CaseContactInformationCtrl"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,lightning:isUrlAddressable">
+    <lightning:empApi aura:id="empApi" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />
+    <ltng:require styles="{!$Resource.css}" />
+
+    <aura:attribute name="isNew" type="Boolean" default="false"/>
+    <aura:attribute name="pdvsEndpoint" type="String" />
+    <aura:attribute name="userName" type="String" />
+    <aura:attribute name="userName2" type="String" />
+    <aura:attribute name="sessionId" type="String" />
+    <aura:attribute name="clientId" type="String" />
+    <aura:attribute name="tmp" type="String" />
+    <aura:attribute name="channel" type="String" />
+
+    <aura:attribute name="subscription" type="Map" />
+    <aura:attribute name="isexpanded" type="Boolean" default="true" />
+    <aura:handler name="accountEvt" event="c:AccountEvt" action="{!c.accountEvt}" />
+    <aura:attribute name="ShowModule" type="boolean" default="false" />
+    <aura:attribute name="userObj" type="User" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="caseObj" type="Case" />
+    <aura:attribute name="caseId" type="Id" />
+    <aura:attribute name="loading" type="Boolean" default="false" />
+    <aura:attribute name="isRefresh" type="Boolean" default="true" />
+    <aura:attribute name="hnNumber" type="String" />
+    <aura:attribute name="dateOfBirth" type="String" />
+    <aura:attribute name="fullName" type="String" />
+    <aura:attribute name="gender" type="String" />
+    <aura:attribute name="accObj" type="String"/>
+    <aura:attribute name="isError" type="Boolean" default="false" />
+
+    <aura:registerEvent name="MinorEvent" type="c:MinorEvent"/>
+    
+    <ltng:require 
+    scripts="{!$Resource.jQuery}" />
+
+    <!-- <lightning:button IconName="utility:search" label="refresh" title="Verify" onclick="{! c.onTestBtn }" /> -->
+    <!-- <aura:attribute name="contact" type="Contact" default="{ 'sobjectType': 'Contact' }" /> -->
+    <!-- <force:outputField value="{!v.contact.Name}" /> -->
+    <aura:if isTrue="{! v.isError }">
+        <div class="slds-notify slds-notify_toast slds-theme_info" style="margin:4px; padding:8px;">
+            <lightning:icon iconName="utility:warning" alternativeText="Warning!" variant="warning" size="x-small"/>
+                <span style="margin:2px; padding:2px;white-space:normal;" class="slds-truncate" title="Section Title">{!v.accObj.Note__c}</span>
+        </div>
+    </aura:if>
+
+    <div class="{! 'case slds-section' + (v.isexpanded ? ' slds-is-open' : '')}">
+        
+        <h3 class="slds-section__title slds-theme_shade">
+            <button aria-controls="divContent" aria-expanded="{!v.isexpanded}" onclick="{!c.changeState}"
+                class="slds-button slds-section__title-action">
+                <lightning:icon aura:id="articleOne" iconName="utility:switch" size="xx-small"
+                    alternativeText="switch" />
+                <span class="slds-truncate" title="Section Title">Contact Information</span>
+            </button>
+        </h3>
+        <!-- {!v.caseObj.Hospital_Number_HN__c} -->
+        <div class="slds-section__content" aura:id="container" aria-hidden="{!!v.isexpanded}" id="divContent"
+            style="position:relative;">
+            
+            <aura:if isTrue="{! v.loading }">
+                <lightning:spinner alternativeText="Loading" />
+            </aura:if>
+            
+
+            <!--Line1-->
+            <div class="slds-grid slds-gutters">
+                <!--Item1-->
+                <div class="slds-col slds-size_6-of-12" style="margin-right: 1rem;">
+                    <div class="slds-form-element slds-form-element_readonly">
+                        <!-- <span class="slds-form-element__label">Sender Name</span>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__static">
+                                <lightning:formattedUrl value="{! v.caseObj.AccountId != undefined &amp;&amp; v.caseObj.AccountId != null ? '/lightning/r/Account/' + v.caseObj.AccountId + '/view' : ''}" 
+                                label="{!v.caseObj.Account.Name != undefined &amp;&amp; v.caseObj.Account.Name != null ? v.caseObj.Account.Name : '' }"
+                                    target="_parent" />
+                            </div>
+                        </div> -->
+
+                        <span class="slds-form-element__label">Full Name</span>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__static">
+                                {!v.caseObj.Full_Name__c}
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                 <!--Item1-->
+                <div class="slds-col slds-size_6-of-12" style="margin-right: 0px;padding-right: 0px!important;">
+                        
+                        <div class="slds-form-element slds-form-element_readonly">
+                            <span class="slds-form-element__label" style="width:100%;">Patient Name </span>
+
+
+                            <div class="slds-form-element__control"  >
+                                <div class="{!v.caseObj.Patient__c != undefined &amp;&amp; v.caseObj.Patient__c != null ? 'slds-form-element__static slds-form-element__static_bottom1' : 'slds-form-element__static slds-form-element__static_bottom2 ' }" style="position: relative;">
+                                <lightning:formattedUrl
+                                            value="{! v.caseObj.Patient__c != undefined &amp;&amp; v.caseObj.Patient__c != null ? '/lightning/r/Account/' + v.caseObj.Patient__c + '/view' : ''}"
+                                            label="{!v.caseObj.Patient__r.Name != undefined &amp;&amp; v.caseObj.Patient__r.Name != null ? v.caseObj.Patient__r.Name : '' }" target="_parent" />
+                                
+                                    <!-- <lightning:formattedUrl value="{! '/lightning/r/Account/' + v.caseObj.Patient__c + '/view'}"
+                                        label="{!v.caseObj.Patient__r.Name}" target="_parent" /> -->
+                                    <aura:if isTrue="{! v.caseObj.Verified_Patient__c }" >
+                                       
+                                        <aura:if isTrue="{! v.isNew }">
+                                            <lightning:button variant="brand" label="Verified" title="Verified" onclick="{! c.onSearchPDVS }" />
+                                            <aura:set attribute="else">
+                                                <lightning:button variant="brand" label="Verified" title="Verified" onclick="{! c.showModal }" />
+                                            </aura:set>
+                                        </aura:if>
+                                        <aura:set attribute="else">
+
+
+                                            <aura:if isTrue="{! v.isNew }">
+
+                                                    <lightning:button variant="destructive" label="Verify" title="Verify" onclick="{! c.onSearchPDVS }" />
+
+                                                    
+
+                                                    <!-- <lightning:input aura:id="channel" label="channel" name="channel" type="text" value="/event/Test__e"/> -->
+                                                    <!-- <lightning:button label="Subscribe" onclick="{! c.subscribe }" /> -->
+                                                    
+                                                    <aura:set attribute="else">
+
+                                                        <lightning:button variant="destructive" label="Verify" title="Verify" onclick="{! c.showModal }" />
+
+                                                    </aura:set>
+
+                                            </aura:if>
+
+
+                                        </aura:set>
+                                       
+                                     </aura:if>
+
+                             </div>
+                               <!--  <lightning:buttonIcon iconName="utility:search" variant="bare" title="Verify" onclick="{! c.showModal }"
+                                    alternativeText="Settings" /> -->
+                            </div>
+
+
+                        </div>
+                    
+                </div>
+
+
+            </div>
+
+            <!--Line2-->
+            <aura:if isTrue="{!v.userObj.User_Team__c != 'Contact Center Team'}">
+            <div class="slds-grid slds-gutters">
+                 <!--Item1-->
+                <div class="slds-col slds-size_1-of-2" style="margin-right: 1rem;">
+                    <div class="slds-form-element slds-form-element_readonly">
+                        <span class="slds-form-element__label">Gender</span>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__static">
+                            {!v.caseObj.Gender__c}
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                 <!--Item1-->
+                <div class="slds-col slds-size_1-of-2" style="margin-right: 1rem;">
+                    <div class="slds-form-element slds-form-element_readonly">
+                        <span class="slds-form-element__label">Hospital Number (HN)</span>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__static">
+                                {!v.caseObj.Hospital_Number_HN__c}
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <!--Line3-->
+            <div class="slds-grid slds-gutters">
+                <!--Item1-->
+                <div class="slds-col slds-size_1-of-2" style="margin-right: 1rem;">
+                    <div class="slds-form-element slds-form-element_readonly">
+                        <span class="slds-form-element__label">Nationality</span>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__static">
+                               {!v.caseObj.Nationality__c}
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <!--Item1-->
+                <div class="slds-col slds-size_1-of-2" style="margin-right: 1rem;">
+                    <div id="dobContact" class="slds-form-element slds-form-element_readonly">
+                        <lightning:input readonly="true" aura:id="dob" 
+                        type="date" name="accdob" dateStyle="medium" 
+                        label="Date of Birth" value="{!v.caseObj.Date_of_Birth__c}" 
+                        class="noIconCalendar"/>
+                    </div>
+                    
+                </div>
+            </div>
+         </aura:if>
+
+            <!--Contact Center Section-->
+            <aura:if isTrue="{!v.userObj.User_Team__c == 'Contact Center Team'}">
+                <div class="slds-grid slds-gutters">
+                    <!--Item1-->
+                <div class="slds-col slds-size_1-of-2" style="margin-right: 1rem;">
+                    <div class="slds-form-element slds-form-element_readonly">
+                        <span class="slds-form-element__label">Email</span>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__static">
+                            {!v.caseObj.Patient_Email__c}
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                    <!--Item1-->
+                <div class="slds-col slds-size_1-of-2" style="margin-right: 1rem;">
+                    <div class="slds-form-element slds-form-element_readonly">
+                        <span class="slds-form-element__label">Hospital Number (HN)</span>
+                        <div class="slds-form-element__control">
+                            <div class="slds-form-element__static">
+                                {!v.caseObj.Hospital_Number_HN__c}
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                </div>
+
+                <!--Line3-->
+                <div class="slds-grid slds-gutters">
+                    <!--Item1-->
+                    <div class="slds-col slds-size_1-of-2" style="margin-right: 1rem;">
+                        <div class="slds-form-element slds-form-element_readonly">
+                            <span class="slds-form-element__label">Contact Number</span>
+                            <div class="slds-form-element__control">
+                                <div class="slds-form-element__static">
+                                    {!v.caseObj.Phone__c}
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <!--Item1-->
+                    <div class="slds-col slds-size_1-of-2" style="margin-right: 1rem;">
+                        <div id="dobContact" class="slds-form-element slds-form-element_readonly">
+                            <lightning:input readonly="true" aura:id="dob" 
+                            type="date" name="accdob" dateStyle="medium" 
+                            label="Date of Birth" value="{!v.caseObj.Date_of_Birth__c}" 
+                            class="noIconCalendar"/>
+                        </div>
+                        
+                    </div>
+                </div>
+            </aura:if>
+        </div>
+    </div>
+
+    <aura:if isTrue="{!v.ShowModule}">
+        <div style="max-width: 50rem;">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <a class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+                            onclick="{! c.hideModal }">
+                            <lightning:icon iconName="utility:close" class="slds-icon slds-icon_small" size="small"
+                                alternativeText="close" />
+                        </a>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Search Patient
+                        </h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <c:BIH_VerifyPatient isFirstTime="true" hnNumber="{!v.hnNumber}"
+                            dateOfBirth="{!v.dateOfBirth}" fullName="{!v.fullName}"
+                            gender="{!v.gender}" recordId="{!v.recordId}" />
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+</aura:component>

@@ -1,0 +1,71 @@
+.THIS {
+    background-color: white;
+    padding: 1rem;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.10);
+    border: 1px solid rgb(221, 219, 218);
+    border-radius: 4px;
+    position: relative;
+}
+.THIS .slds-theme_shade{
+    margin: 1.25rem 0 0rem 0;
+}
+.THIS .slds-modal__container{
+    width: 100% !important;
+    max-width: 75rem !important;
+}
+.THIS .slds-modal__content{
+    min-height: 400px;
+    position: relative;
+}
+.THIS .slds-modal__close {
+    width: 2rem;
+    height: 2rem;
+    position: absolute;
+    top: .5rem !important;
+    right: .5rem !important;
+}
+.THIS .btn-100-width{
+    width:100%;
+}
+/* .THIS {
+    margin-top: 2rem;
+    text-align: center;
+} */
+.THIS .container-btn-group{
+    display: flex;
+    position: sticky;
+    bottom: 2.5rem;
+    left: 0;
+    width: 100%;
+    height: 4rem;
+    background: rgb(255, 255, 255,.85);
+    z-index: 2;
+    padding: 1rem .25rem;
+    justify-content:center;
+}
+.THIS .slds-spinner_container{
+    z-index: 3 !important;
+}
+.THIS .slds-spinner.slds-spinner_medium{
+    position: fixed;
+}
+.THIS #campaign_spinner .slds-spinner{
+    position: absolute;
+}
+.THIS textarea#campaign_detail{
+    height: 75px;
+}
+.THIS .slds-input[readonly]{
+    border-bottom: 1px solid rgb(221, 219, 218);
+    border-radius: 0;
+}
+.THIS lightning-formatted-date-time{
+    margin: auto 0px;
+}
+.THIS .slds-box.editor.slds-text-longform{
+    max-height: 500px;
+    overflow: auto;
+}
+.THIS lightning-datetimepicker lightning-timepicker,.THIS lightning-datetimepicker lightning-datepicker {
+    width: 50%;
+}

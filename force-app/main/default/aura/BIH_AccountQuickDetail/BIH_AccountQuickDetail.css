@@ -1,0 +1,99 @@
+.THIS .slds-card {
+    background: #6dcbb8 !important;
+    padding: .75rem 1rem !important;
+    color: white;
+    height: 100%;
+    font-size: .7rem;
+
+}
+.THIS .slds-card__header:after {
+    background: #00675e;
+    content: '';
+    height: 2px;
+    left: 0;
+    margin-top: 1.25rem;
+    margin-left: 1rem;
+    position: absolute;
+    width: 60px;
+}
+.THIS .card-detail-note{
+    max-height: 75px;
+    overflow: auto;
+    font-size: .8rem;
+}
+.THIS .card-header-note:after{
+    margin-top: 1.8rem;
+}
+.THIS .slds-card .slds-card__body{
+    margin-bottom: 0px !important;
+}
+.THIS .slds-media__figure .slds-icon_container {
+    background-color: rgb(80, 165, 159) !important;
+}
+.THIS .slds-badge_inverse {
+    background-color: #af976d !important;
+    color: rgb(255, 255, 255) !important;
+}
+.THIS .line-case .slds-icon_container .slds-icon.slds-icon_large{
+    width: 4rem;
+    height: 4rem;
+}
+.THIS .line-case:after{
+    background: #00675e;
+    content: '';
+    height: 6.5rem;
+    top: 0;
+    left: 50%;
+    margin-top: 1rem;
+    position: absolute;
+    width: 3px;
+}
+.THIS .slds-icon-standard-note .slds-icon_container{
+    background-color: #00675e !important;
+}
+.THIS .line-case .slds-icon_container{
+    background-color: transparent !important;
+}
+.THIS .slds-card__header-link.slds-truncate:hover,
+.THIS .slds-card__header-link.slds-truncate:focus,
+.THIS .slds-card__header-link.slds-truncate:active{
+    color: unset;
+    text-decoration: unset;
+}
+.THIS .slds-card__header-title{
+    font-size: .75rem !important;
+}
+/* more 769 (more iPad)*/
+@media only screen and (min-width: 769px) {
+  .THIS .fill-available{
+        height: 100%;
+    }   
+}
+
+/*iPad*/
+@media only screen and (max-width: 768px )and (min-width: 480px) {
+    .THIS .fill-available{
+        height: 100%;
+    }  
+    .THIS .line-case:after{
+        margin-top: 1rem;
+        margin-left: 0.25rem;
+    } 
+}
+/*Mobile*/
+@media only screen and (max-width: 480px) {
+    .THIS .fill-available{
+        height: 100%;
+    }  
+    .THIS .line-case:after{
+        height: 5.5rem;
+        margin-left: 0.25rem;
+    } 
+    .THIS .slds-icon-custom-custom86.slds-icon_container .slds-icon.slds-icon_large{
+        width: 5rem;
+        height: 5rem;
+    }
+}
+.THIS .slds-modal_prompt .slds-modal__container{
+    width:25%;
+}

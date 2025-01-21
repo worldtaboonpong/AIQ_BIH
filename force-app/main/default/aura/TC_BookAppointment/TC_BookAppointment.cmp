@@ -1,0 +1,348 @@
+<aura:component controller="TC_BookAppointmentCtrl" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global">
+    <aura:attribute name="guid" type="string"/>
+    <aura:attribute name="hospitals" type="Object"/>
+    <aura:attribute name="selHospital" type="string" default="BH"/>
+    <aura:attribute name="locations" type="Object"/>
+    <aura:attribute name="selLocation" type="string"/>
+    <aura:attribute name="specialties" type="Object"/>
+    <aura:attribute name="selSpecialty" type="string"/>
+    <aura:attribute name="subSpecialties" type="Object"/>
+    <aura:attribute name="selSubSpecialty" type="string"/>
+    <aura:attribute name="resources" type="Object"/>
+    <aura:attribute name="selResource" type="string"/>
+    <aura:attribute name="selDate" type="string"/>
+    <aura:attribute name="startTimes" type="Object"/>
+    <aura:attribute name="selStartTime" type="string"/>
+    <aura:attribute name="endTimes" type="Object"/>
+    <aura:attribute name="selEndTime" type="string"/>
+    <aura:attribute name="isResources" type="boolean" default="false"/>
+    <aura:attribute name="availResources" type="List" default="[]"/>
+    <aura:attribute name="selScheduleListId" type="String"/>
+    <aura:attribute name="selScheduleDoctor" type="String"/>
+    <!--aura:attribute name="scheduleTimes" type="List" default="[]"/-->
+    <aura:attribute name="selScheduleTime" type="String"/>
+    <aura:attribute name="appointmentRec" type="Appointment__c"/>
+    <aura:attribute name="doctorSessions" type="List" default="[]"/>
+    <aura:attribute name="isOverBook" type="boolean" default="false"/>
+    
+    <!--aura:attribute name="sessionTimeInterval" type="String"/>
+    <aura:attribute name="sessionDescription" type="String"/-->
+    <aura:attribute name="relatedCases" type="List" default="[]"/>
+    <aura:attribute name="activeSections" type="List" default="[]" />
+    <aura:attribute name="sessionServices" type="List" default="[]"/>
+    <aura:attribute name="isIntRequired" type="boolean" default="false"/>
+    <aura:attribute name="isReset" type="boolean" default="true"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="change" value="{!v.selSpecialty}" action="{!c.doSpecialtyChange}"/>
+    <aura:handler name="change" value="{!v.selSubSpecialty}" action="{!c.doSubSpecialtyChange}"/>
+    <aura:attribute name="spinner" type="boolean" default="FALSE"/>
+    
+    <!--aura:handler name="searchableCmpEvent" event="c:TC_SearchablePicklistEvent" action="{!c.handleSearchblePicklistEvt}"/-->
+    
+    <aura:handler name="cmpEvent" event="c:TC_SearchAndSelectPicklistEvent" action="{!c.handleComponentEvent}"/>
+    
+    <aura:attribute name="bookingStep" type="String" default="findSlot" />
+    
+     <!--loading spinner start-->
+    <aura:if isTrue="{!v.spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading...</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+    <!-- Loading spinner end-->   
+    
+    <lightning:card title="Appointment Booking">
+        <div class="slds-readonly-path slds-p-around_small narrow-div-std">
+            <lightning:progressIndicator type="path" variant="base" currentStep="{!v.bookingStep}">
+                <lightning:progressStep label="Schedule Grid (Search)" value="findSlot" />
+                <lightning:progressStep label="Review and Book" value="bookSlot" />
+            </lightning:progressIndicator>
+        </div>
+        
+        <div class="slds-p-around_small slds-p-top_x-small">
+            <div class="{!if(v.bookingStep == 'findSlot', 'slds-show narrow-div', 'slds-hide')}">
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem size="6" padding="around-small">
+                        <lightning:select value="{!v.selHospital}" label="Hospital" onchange="{!c.doInit}">
+                            <aura:iteration items="{!v.hospitals}" var="item">
+                                <option text="{!item.label}" value="{!item.value}" selected="{!item.value == v.selHospital}"/>
+                            </aura:iteration>
+                        </lightning:select>
+                    </lightning:layoutItem>
+                    
+                    <lightning:layoutItem size="6" padding="around-small">
+                        <lightning:select value="{!v.selLocation}" label="Location" onchange="{!c.doLocationChange}">
+                            <option value="">-- None --</option>
+                            <aura:iteration items="{!v.locations}" var="item">
+                                <option text="{!item.label}" value="{!item.value}" selected="{!item.value == v.selLocation}"/>
+                            </aura:iteration>
+                        </lightning:select>
+                    </lightning:layoutItem>
+                    
+                    <lightning:layoutItem size="6" padding="around-small">
+                        <!--lightning:select value="{!v.selSpecialty}" label="Specialty" onchange="{!c.doSpecialtyChange}">
+                            <aura:iteration items="{!v.specialties}" var="item">
+                                <option text="{!item.label}" value="{!item.value}" selected="{!item.value == v.selSpecialty}"/>
+                            </aura:iteration>
+                        </lightning:select-->
+                        <aura:if isTrue="{!v.isReset}">
+                            <c:TC_SearchAndSelectPicklist fieldId="selSpecialtyId" label="Specialty"
+                                                          options="{!v.specialties}"/>
+                        </aura:if>
+                    </lightning:layoutItem>
+                    
+                    <lightning:layoutItem size="6" padding="around-small">
+                        <!--lightning:select value="{!v.selSubSpecialty}" label="Sub Specialty" onchange="{!c.doSubSpecialtyChange}">
+                            <aura:iteration items="{!v.subSpecialties}" var="item">
+                                <option text="{!item.label}" value="{!item.value}" selected="{!item.value == v.selSubSpecialty}"/>
+                            </aura:iteration>
+                        </lightning:select-->
+                        <aura:if isTrue="{!v.isReset}">
+                            <c:TC_SearchAndSelectPicklist fieldId="selSubSpecialtyId" label="Sub Specialty"
+                                                          options="{!v.subSpecialties}"/>
+                        </aura:if>
+                    </lightning:layoutItem>
+                    
+                    <lightning:layoutItem size="6" padding="around-small">
+                        <!--lightning:select value="{!v.selResource}" label="Resource">
+                            <aura:iteration items="{!v.resources}" var="item">
+                                <option text="{!item.label}" value="{!item.value}"/>
+                            </aura:iteration>
+                        </lightning:select-->
+                        <aura:if isTrue="{!v.isReset}">
+                            <c:TC_SearchAndSelectPicklist fieldId="resourceId" label="Resource"
+                                                          options="{!v.resources}"/>
+                        </aura:if>
+                    </lightning:layoutItem>
+                    
+                    <lightning:layoutItem size="6" padding="around-small">
+                        <lightning:input type="date" name="dateInput" label="Date" 
+                                         dateStyle="short" value="{!v.selDate}"/>
+                    </lightning:layoutItem>
+                    
+                    <lightning:layoutItem size="6" padding="around-small">
+                        <lightning:select value="{!v.selStartTime}" label="Start Time">
+                            <option value="">-- None --</option>
+                            <aura:iteration items="{!v.startTimes}" var="val">
+                                <option value="{!val}">{!val}</option>
+                            </aura:iteration>
+                        </lightning:select>
+                    </lightning:layoutItem>
+                    
+                    <lightning:layoutItem size="6" padding="around-small">
+                        <lightning:select value="{!v.selEndTime}" label="End Time">
+                            <option value="">-- None --</option>
+                            <aura:iteration items="{!v.endTimes}" var="val">
+                                <option value="{!val}">{!val}</option>
+                            </aura:iteration>
+                        </lightning:select>
+                    </lightning:layoutItem>
+                </lightning:layout>
+                
+                <center>
+                    <lightning:button label="Reset" title="Reset" onclick="{!c.doReset}"/>
+                    <lightning:button variant="brand" label="Find" title="Find" onclick="{!c.doFindDoctorAndSchedules}"/>
+                </center>
+                
+                <aura:if isTrue="{!v.isResources}">
+                    <lightning:accordion aura:id="accordionId" activeSectionName="{! v.activeSections }" onsectiontoggle="{!c.doFindDoctorTimeSlot}">
+                        <aura:iteration items="{!v.availResources}" var="item">
+                            <lightning:accordionSection name="{!item.docSlotKey}" label="{!item.doctorName}">
+                                <p>
+                                    <lightning:layout multipleRows="true">
+                                        <lightning:layoutItem size="12" padding="around-small">
+                                            <h3 class="slds-section__title slds-theme_shade">
+                                                <span class="slds-truncate">{!v.selScheduleDoctor}</span>
+                                            </h3> 
+                                        </lightning:layoutItem>
+                                        <aura:iteration items="{!v.doctorSessions}" var="docSessItem">
+                                            <lightning:layoutItem size="12" padding="around-small">
+                                                <B>Session:</B>&nbsp; {!docSessItem.sessionSlot}<BR/>
+                                                <P style="color: cornflowerblue;"><B>Session Description:</B>&nbsp; {!docSessItem.sessionDesc}<BR/></P>
+                                                
+                                                <h3 class="slds-section__title slds-theme_shade">
+                                                    <span class="slds-truncate">Preferred Time</span>
+                                                </h3>
+                                                <lightning:layout multipleRows="true">
+                                                    <aura:if isTrue="{!docSessItem.timeSlots.length > 0}">
+                                                        <aura:iteration items="{!docSessItem.timeSlots}" var="slot">
+                                                            <lightning:layoutItem size="1" padding="around-small">
+                                                                <aura:if isTrue="{!slot.status == 'Avaliable'}">
+                                                                    <span title="{!slot.patientDetails}" onclick="{!c.doSelectSlot}" id="{!item.docSlotKey+'#'+slot.slotId+'#'+slot.startTime}" class="custom-cursor slds-badge slds-badge_lightest">
+                                                                        {!slot.startTime}
+                                                                    </span>
+                                                                </aura:if>
+                                                                <aura:if isTrue="{!slot.status != 'Avaliable'}">
+                                                                    <aura:if isTrue="{!slot.overbookStatus == 'Avaliable'}">
+                                                                        <span title="{!slot.patientDetails}" onclick="{!c.doSelectSlot}" id="{!item.docSlotKey+'#'+slot.slotId+'#'+slot.startTime}" class="custom-cursor slds-badge slds-theme_warning">
+                                                                            {!slot.startTime}
+                                                                        </span>
+                                                                    </aura:if>
+                                                                    
+                                                                    <aura:if isTrue="{!slot.overbookStatus != 'Avaliable'}">
+                                                                        <aura:if isTrue="{!slot.clinicalBlocked == 'Y'}">
+                                                                            <span class="slds-badge custom-theme_clinicalblocked" title="{!slot.clinicalBlockedDetail}">
+                                                                                {!slot.startTime}
+                                                                            </span>
+                                                                        </aura:if>
+                                                                        
+                                                                        <aura:if isTrue="{!slot.clinicalBlocked != 'Y'}">
+                                                                            <span class="slds-badge slds-badge_inverse" title="{!slot.patientDetails}">
+                                                                                {!slot.startTime}
+                                                                            </span>
+                                                                        </aura:if>
+                                                                    </aura:if>
+                                                                </aura:if>
+                                                            </lightning:layoutItem>
+                                                        </aura:iteration>                                                    
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!docSessItem.timeSlots.length == 0}">
+                                                        <BR/><BR/>
+                                                        <center>No Available Slot</center>
+                                                    </aura:if>
+                                                </lightning:layout>
+                                            </lightning:layoutItem>
+                                        </aura:iteration>
+                                        <aura:if isTrue="{!v.doctorSessions.length == 0}">
+                                            <lightning:layoutItem size="12" padding="around-small">
+                                                No Available Session
+                                            </lightning:layoutItem>
+                                        </aura:if> 
+                                    </lightning:layout>
+                                </p>
+                            </lightning:accordionSection>
+                        </aura:iteration>
+                    </lightning:accordion>
+                    
+                    <aura:if isTrue="{!v.availResources.length > 0}">
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="12" padding="around-small">
+                                <span class="slds-badge slds-badge_inverse">Not Available</span>&nbsp;
+                                <span class="slds-badge slds-badge_lightest">Available</span>&nbsp;
+                                <span class="slds-badge slds-theme_success">Selected</span>&nbsp;
+                                <!-- Can Overbook -->
+            					<span class="slds-badge slds-theme_warning">Can Overbook</span>&nbsp;
+            					<!-- Blocked by Clinic -->
+            					<span class="slds-badge custom-theme_clinicalblocked">Blocked by Clinic</span>
+                                 
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                        
+                        <center>
+                            <lightning:button variant="brand" label="Review" title="Review" onclick="{!c.doReview}"/>
+                        </center>
+                    </aura:if>
+                    
+                    <aura:if isTrue="{!v.availResources.length == 0}">
+                        <BR/><BR/>
+                        <center>No Available Schedule</center>
+                    </aura:if>
+                </aura:if>
+            </div>
+            
+            <div class="{!if(v.bookingStep == 'bookSlot', 'slds-show narrow-div', 'slds-hide')}">
+                <lightning:recordEditForm aura:id="appointmentId" objectApiName="Appointment__c">
+                    <div class="slds-grid">
+                        <div class="slds-form_horizontal slds-col slds-size_1-of-2">
+                            <lightning:select value="{!v.appointmentRec.Case__c}" label="Related Case">
+                                <aura:iteration items="{!v.relatedCases}" var="val">
+                                    <option value="{!val.Id}" selected="{!val.Id == v.appointmentRec.Case__c}">
+                                        {!val.CaseNumber + ' - ' + val.Team_Name__c + ' - ' + val.Subject}
+                                    </option>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2"></div>
+                    </div>
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:inputField fieldName="Hospital__c" value="{!v.appointmentRec.Hospital__c}" disabled="true"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:inputField fieldName="Location__c" value="{!v.appointmentRec.Location__c}" disabled="true"/>
+                        </div>
+                    </div>
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:inputField fieldName="Doctor__c" value="{!v.appointmentRec.Doctor__c}" disabled="true"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:inputField fieldName="Specialty__c" value="{!v.appointmentRec.Specialty__c}" disabled="true"/>
+                        </div>
+                    </div>
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:inputField fieldName="Sub_Specialty__c" value="{!v.appointmentRec.Sub_Specialty__c}" disabled="true"/>
+                        </div>
+                        <div class="slds-form_horizontal slds-col slds-size_1-of-2">
+                            <lightning:select value="{!v.appointmentRec.Service__c}" label="Service" onchange="{!c.doServiceChange}">
+                                <option value="">-- None --</option>
+                                <aura:iteration items="{!v.sessionServices}" var="val">
+                                    <option value="{!val.serviceDesc}" selected="{!val.serviceDesc == v.appointmentRec.Service__c}">
+                                        {!val.serviceDesc}
+                                    </option>
+                                </aura:iteration>
+                            </lightning:select>
+                            
+                            <!--lightning:inputField fieldName="Service__c" value="{!v.appointmentRec.Service__c}" disabled="true"/-->
+                        </div>
+                    </div>
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:inputField fieldName="Slot_Length__c" value="{!v.appointmentRec.Slot_Length__c}" disabled="true"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:inputField fieldName="Appointment_Date__c" value="{!v.appointmentRec.Appointment_Date__c}" disabled="true"/>
+                        </div>
+                    </div>
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:inputField fieldName="Appointment_Time__c" value="{!v.appointmentRec.Appointment_Time__c}" disabled="true"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:inputField fieldName="End_Time__c" value="{!v.appointmentRec.End_Time__c}" disabled="true"/>
+                        </div>
+                    </div>
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:inputField fieldName="Non_fixed_Time__c" value="{!v.appointmentRec.Non_fixed_Time__c}"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <aura:if isTrue="{!v.isOverBook}">
+                                <lightning:inputField fieldName="Overbook_Reason__c" value="{!v.appointmentRec.Overbook_Reason__c}" required="true" />
+                            </aura:if>
+                        </div>
+                    </div>
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-2">
+                            <!--lightning:inputField fieldName="Interpreter_Required__c" value="{!v.appointmentRec.Interpreter_Required__c}"/-->
+                            <lightning:input type="checkbox" label="Interpreter Required" name="interpreterRequired" 
+                                             checked="{!v.appointmentRec.Interpreter_Required__c}" onchange="{!c.doIntRequiredChange}"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:inputField fieldName="Interpreter__c" value="{!v.appointmentRec.Interpreter__c}" 
+                                                  disabled="{!not(v.appointmentRec.Interpreter_Required__c)}"/>
+                        </div>
+                    </div>
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:inputField fieldName="Notes__c" value="{!v.appointmentRec.Notes__c}"/>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:inputField fieldName="Patient_Letter_Notes__c" value="{!v.appointmentRec.Patient_Letter_Notes__c}"/>
+                        </div>
+                    </div>
+                    <center>
+                        <lightning:button label="Back" title="Back" onclick="{!c.doBackSelectSlot}"/>
+                        <lightning:button variant="brand" label="Book" title="Book" onclick="{!c.doBook}"/>
+                    </center>
+                </lightning:recordEditForm>
+            </div>
+        </div>
+    </lightning:card>
+</aura:component>

@@ -1,0 +1,39 @@
+.THIS.slds-section.slds-is-open .slds-section__content{
+    transition:all 0.4s ease-in-out;
+    height:auto;
+    overflow: hidden;
+}
+.THIS.slds-section .slds-section__content{
+    transition:height 0.4s ease-in-out;
+    height:0px;
+    overflow: hidden; 
+}
+.THIS .case-for-view .slds-gutters .slds-col {
+    padding-left: .75rem !important;
+    padding-right: 2rem !important;
+}
+.THIS .case-for-view .slds-grid.slds-gutters {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+}
+.THIS.slds-section .slds-icon-utility-switch.slds-icon_container{
+    transform: rotate(-90deg) !important;
+    margin-right: 8px  !important;
+    transition: transform .4s ease-in-out;
+}
+.THIS.slds-section.slds-is-open .slds-icon-utility-switch.slds-icon_container{
+    transform: rotate(0deg) !important;
+    margin-right: 8px  !important;
+    transition: transform .4s ease-in-out;
+}
+.THIS .case-for-view .slds-col.slds-size_1-of-2:nth-child(even){
+    margin-left: 1rem;
+}
+.THIS .slds-input[readonly] {
+    border-bottom: 1px solid rgb(221, 219, 218);
+    border-radius: 0;
+}
+.THIS .slds-form-element__static{
+    border-bottom: 1px solid rgb(221, 219, 218);
+    border-radius: 0;
+}

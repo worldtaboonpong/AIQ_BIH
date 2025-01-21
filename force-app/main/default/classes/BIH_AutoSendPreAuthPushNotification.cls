@@ -1,0 +1,143 @@
+public class BIH_AutoSendPreAuthPushNotification {
+    
+    
+    @InvocableMethod(label='preauth send push notification'  description='for auto send push notification' category='case')
+    public static List<string> sendPushNotification(List<string> caseid){
+        try {
+            for(string tmpString : caseid){
+                //List<string> tmpcaseid = new List<string>();
+                //tmpcaseid.add(tmpString);
+                calloutSendPushNotification(tmpString);
+            }
+        } catch (Exception e) {
+            System.debug(e.getMessage());
+            throw new AuraHandledException(e.getMessage());
+        }
+        
+        return caseid;
+    }   
+    
+    public class PushNotificationMessageRequest{
+		@AuraEnabled
+		public String hn {get;set;}
+		@AuraEnabled
+		public String title {get;set;}
+		@AuraEnabled
+		public String body {get;set;}
+		@AuraEnabled
+		public String deeplinkUrl {get;set;}
+        @AuraEnabled
+		public String actionUrl {get;set;}
+        @AuraEnabled
+		public String mediaUrl {get;set;}
+        @AuraEnabled
+		public String notificationType {get;set;}
+	}
+
+    @future(callout=true)
+    public static void calloutSendPushNotification(string caseid) {
+        
+        string messages = '';
+        string contactNumber = '';
+        string patientnationality = '';
+        List<case> caseObj = [SELECT Id,Patient_Local_Name__c,Full_Name__c,Phone__c,Procedure_1__c,
+                              Last_Sent_Date__c,SMS_Sent__c,Hospital_Number_HN__c,Appointment_Date__c,Sent_First_Email_to_Insurance_Customer__c,Send_Email_to_Insurance_Customer__c FROM CASE WHERE id =:caseid];
+        string patientname = caseObj[0].Full_Name__c;
+        string patientThainame = caseObj[0].Patient_Local_Name__c;
+        string prod = caseObj[0].Procedure_1__c;
+        string hn =  caseObj[0].Hospital_Number_HN__c;
+        DateTime dt =  Date.valueOf(caseObj[0].Appointment_Date__c);
+        String strDatetime  = dt.format('dd-MM-yyyy');
+        string title = 'Dear'+' '+patientname;
+        string titleThai = 'เรียน คุณ '+' '+patientThainame;
+        string notitype = 'notice';
+ 
+        
+        string pushnotiEngOpen =  'We would like to inform you that we have submitted your pre-approval for treatment on '+' '+strDatetime+' '+'to your insurance company for coverage consideration. The insurance company may take 3 to 7 business days to respond. As soon as we receive their response, we shall inform you.'+'\n'+'\n'+ 'Best regards,'+'\n'+'\n'+ 'Pre-authorization, Bumrungrad International Hospital ';       
+        string pushnotiEng3days = 'We would like to update you that your insurance company is reviewing your case for pre-approval coverage. The hospital will continue to follow up your case and will update you as soon as possible on any development.'+'\n'+'\n'+ ' Thank you for your patience.'+'\n'+'\n'+ ' Best regards, Pre-authorization, Bumrungrad International Hospital ';
+        string pushnotiEngFinal = 'Please be informed that the insurance company has responded about your pre-approval request. Please refer to your email for coverage information or contact us at 02-0112289 for more information. For appointment arrangement, please contact 02-066-8888.'+'\n'+'\n'+ ' Best regards,'+'\n'+'\n'+ ' Pre-authorization, Bumrungrad International Hospital ';
+        string pushnotiThaiOpen = 'ทางแผนกตรวจสอบสิทธิ์ก่อนการทำหัตถการของโรงพยาบาลฯ ได้ทำการแจ้งเคสของท่านไปยังบริษัทประกันเพื่อทำการพิจารณาความคุ้มครองสำหรับนัดหมายวันที่ '+' '+strDatetime+' '+' แล้ว ซึ่งบริษัทประกันอาจใช้ระยะเวลา 3 ถึง 7 วัน ในการพิจารณาและตอบกลับ โดยทางโรงพยาบาลจะทำการติดตามผลการพิจารณา และแจ้งให้ท่านทราบเป็นลำดับถัดไป '+'\n'+'\n'+'ขอแสดงความนับถือ'+'\n'+'\n'+ 'แผนกตรวจสอบสิทธิ์ก่อนการทำหัตถการ โรงพยาบาลบำรุงราษฎร์อินเตอร์เนชั่นแนล'; 
+        string pushnotiThai3days = 'โรงพยาบาลบำรุงราษฎร์ อินเตอร์เนชั่นเนล ขอแจ้งความคืบหน้าให้ท่านทราบว่า บริษัทประกันยังคงอยู่ในขั้นตอนพิจารณาความคุ้มครองของท่าน ทางโรงพยาบาล ยังคงทำการติดตามผล และแจ้งให้ท่านทราบเป็นลำดับถัดไป '+'\n'+'\n'+'ขอแสดงความนับถือ '+'\n'+ 'แผนกตรวจสอบสิทธิ์ก่อนการทำหัตถการ โรงพยาบาลบำรุงราษฎร์ อินเตอร์เนชั่นแนล';
+        string pushnotiThaiFinal = 'โรงพยาบาลบำรุงราษฎร์ อินเตอร์เนชั่นแนล ขอเรียนให้ท่านทราบว่าบริษัทประกันฯ ได้ตอบกลับเกี่ยวกับคำขออนุมัติของท่านเป็นที่เรียบร้อยแล้ว '+'\n'+ 'ท่านสามารถตรวจสอบข้อมูลจากอีเมลของท่าน หรือติดต่อแผนกตรวจสอบสิทธิ์ก่อนการทำหัตถการที่ 02-011-2289 สำหรับข้อมูลเพิ่มเติม '+'\n'+ 'สำหรับการนัดหมายกรุณาติดต่อ 1378 '+'\n'+ 'ขอแสดงความนับถือ '+'\n'+ 'แผนกตรวจสอบสิทธิ์ก่อนการทำหัตถการ, โรงพยาบาลบำรุงราฎร์ อินเตอร์เนชั่นแนล';
+        
+        
+        
+        if(caseObj.size() > 0){
+            contactNumber = caseObj[0].Hospital_Number_HN__c != ''? caseObj[0].Hospital_Number_HN__c : caseObj[0].Hospital_Number_HN__c;
+            if(caseObj[0].Patient_Local_Name__c != ' ' && caseObj[0].Patient_Local_Name__c != null){
+                messages = pushnotiThaiOpen;
+                title = titleThai;
+            }else if(caseObj[0].Full_Name__c != ' '&& caseObj[0].Full_Name__c != null){
+                messages = pushnotiEngOpen;
+            }
+            else{
+                messages = pushnotiEngOpen+' \n'+'\n'+pushnotiThaiOpen;
+            }
+        }
+        
+		PushNotificationMessageRequest body = new PushNotificationMessageRequest();
+		System.debug('Case Object:' + caseObj[0]);
+		Http http = new Http();
+        HttpRequest req = new HttpRequest();
+        SMS_Log__c logs = new SMS_Log__c();
+
+		logs.Case__c = caseObj[0].Id;
+        body.notificationType = notitype;
+		body.hn = hn;
+        body.title = title;
+        body.body = messages;
+        body.actionUrl = null;
+        body.mediaUrl = null;
+        body.deeplinkUrl = 'https://www.bumrungrad.com/en/notification/all';
+        
+
+        req.setMethod('POST');
+		logs.SMS_Message__c = messages;
+		req.setBody(JSON.serialize(body));
+        System.debug('setBody : '+JSON.serialize(body));
+
+        String endpoint ='https://bihtest.azure-api.net/customer/test/notifications/send-via-hn';
+        String subscriptionKey = '2aa66c5ead5645e484c2769e9a24e5ef';
+        
+
+        req.setHeader('Ocp-Apim-Subscription-Key',BIH_Constants.SUBSCRIPTION_PUSH_NOTI_KEY);
+		System.debug('SUBSCRIPTION_KEY : '+BIH_Constants.SUBSCRIPTION_PUSH_NOTI_KEY);
+		req.setHeader('Content-Type', 'application/json');
+		req.setTimeout(Integer.ValueOf(BIH_Constants.SET_TIMEOUT_SERVICE));
+        System.debug('setTimeout : '+Integer.ValueOf(BIH_Constants.SET_TIMEOUT_SERVICE));
+		
+        System.debug('endpoint : '+BIH_Constants.END_POINT_PUSH_NOTI);
+		req.setEndpoint(BIH_Constants.END_POINT_PUSH_NOTI);//app config end point
+		System.debug(BIH_Constants.END_POINT_PUSH_NOTI);
+		logs.SMS_Request__c = req.getBody();
+        HttpResponse res = http.send(req);
+		logs.SMS_Response__c = res.getBody();
+		System.debug(res.getBody());
+		String strResponse = '';
+		if(res.getStatusCode() == 200 || res.getStatusCode() == 206){
+			String sCode = string.valueof(res.getStatusCode());
+			strResponse += 'SUCCESS|';
+			strResponse += sCode + '|';
+			strResponse += res.getBody();
+            
+            // สร้าง record ใน Task
+            Task TaskLog = new Task();
+            TaskLog.WhatId = caseObj[0].Id; 
+            TaskLog.subject = 'Push Notification First Time';
+            TaskLog.Description = messages; 
+            insert TaskLog; 
+		}else{
+			String sCode = string.valueof(res.getStatusCode());
+			strResponse += 'ERROR|';
+			strResponse += sCode + '|';
+			strResponse += res.getBody();
+            System.debug('******************* error test 1');
+            System.debug('sCode : '+sCode);
+            System.debug('StatusCode : '+res.getStatusCode());
+            System.debug('strResponse : '+strResponse);
+		}
+
+
+	}
+
+}

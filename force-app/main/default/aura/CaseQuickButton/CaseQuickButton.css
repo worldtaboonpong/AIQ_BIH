@@ -1,0 +1,39 @@
+.THIS .slds-modal__container{
+    width: 100% !important;
+    max-width: 60rem !important;
+}
+.THIS .slds-modal__close {
+    width: 2rem;
+    height: 2rem;
+    position: absolute;
+    top: .5rem !important;
+    right: .5rem !important;
+}
+.THIS .slds-modal__content{
+    position: relative;
+}
+.THIS .myCheckbox{
+    display: inline-block;
+    float: left;
+    padding: 4px;
+}
+.THIS .container-lookup-section{
+    display: flex;
+}
+.THIS .container-lookup{
+    width: 50%;
+}
+
+.THIS .cCaseQuickButton .container-button-menu {
+    padding-top: 20px;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+.THIS .container-button-menu button{
+    /* width: auto; */
+    margin-left: 5px; 
+    /* height: 100%; */
+}
+.THIS .uiInput.uiInputCheckbox.uiInput--default.uiInput--checkbox span {
+    margin-left: 7px;
+}

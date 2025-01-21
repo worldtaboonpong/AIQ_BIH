@@ -1,0 +1,406 @@
+<aura:component controller="BIH_GeneralWebInformationCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,lightning:isUrlAddressable" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="caseObj" type="Case"  />
+    <aura:attribute name="isexpanded" type="Boolean" default="true" />
+    <aura:attribute name="isView" type="Boolean" default="true" />
+     <aura:attribute name="loading" type="Boolean" default="false" />
+
+
+    <aura:if isTrue="{!v.caseObj.Web_Subject__c  == $Label.c.Change_Appointment || 
+                    v.caseObj.Web_Subject__c  == $Label.c.Cancel_Appointment ||
+                    v.caseObj.Web_Subject__c  == $Label.c.Medication_Request ||
+                    v.caseObj.Web_Subject__c  == $Label.c.Accommodation ||
+                    v.caseObj.Web_Subject__c  == $Label.c.Health_Wellness_Checkups  ||
+                    v.caseObj.Web_Subject__c  == $Label.c.Referral_Program ||
+                    v.caseObj.Web_Subject__c  == $Label.c.Second_Opinion_Service ||
+                    v.caseObj.Web_Subject__c  == $Label.c.Airport_transfer ||
+                    v.caseObj.Web_Subject__c  == $Label.c.Consult_Online ||
+                    v.caseObj.Web_Subject__c  == $Label.c.Request_Medical_Records ||
+                    v.caseObj.Web_Subject__c  == $Label.c.Book_an_Appointment ||
+                    v.caseObj.Web_Subject__c  == $Label.c.Visa_Invitation_Letter }">
+
+
+<div class="{! 'case slds-section' + (v.isexpanded ? ' slds-is-open' : '')}">
+    <h3 class="slds-section__title slds-theme_shade">
+        <button aria-controls="divContent" aria-expanded="{!v.isexpanded}" onclick="{!c.changeState}"
+            class="slds-button slds-section__title-action">
+            <lightning:icon aura:id="articleOne" iconName="utility:switch" size="xx-small" alternativeText="switch" />
+            <span class="slds-truncate" title="Section Title">Web to Case Information</span>
+        </button>
+    </h3>
+
+    <aura:if isTrue="{! v.loading }">
+        <lightning:spinner alternativeText="Loading" />
+    </aura:if>
+    
+
+    <div class="slds-section__content" aura:id="container" aria-hidden="{!!v.isexpanded}" id="divContent" style="position:relative;">
+        <lightning:recordViewForm recordId="{!v.caseObj.Id}" objectApiName="Case">
+
+        <div style="padding:0 0.80rem;">
+            <div class="slds-grid slds-gutters">
+               
+                <!--1. Change_Appointment--> 
+                <aura:if isTrue="{! v.caseObj.Web_Subject__c == $Label.c.Change_Appointment}">
+                    <div class="slds-col slds-size_1-of-2">
+                        <!-- <lightning:outputField fieldName="Full_Name__c" /> -->
+                        <label class="slds-form-element__label">Current Appointment Date</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{! v.caseObj.Current_Appointment_Date__c }" year="numeric" month="short"
+                                day="numeric"/>
+                        </div>
+                        <label class="slds-form-element__label">Current Appointment Time</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{!v.caseObj.Current_Appointment_Time__c}"  minute="2-digit"  hour="2-digit" hour12="false" />
+                        </div>
+                        
+                        <!-- <lightning:outputField fieldName="Current_Appointment_Date__c" /> -->
+                        <lightning:outputField fieldName="Selected_Doctor__c" />
+                        <!-- <lightning:outputField fieldName="Web_Additional_Info__c" /> -->
+
+
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <!-- <lightning:outputField fieldName="Hospital_Number_HN__c" /> -->
+                        <!-- <lightning:outputField fieldName="New_Appointment_Date__c" /> -->
+                        <label class="slds-form-element__label">New Appointment Date</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{! v.caseObj.New_Appointment_Date__c }" year="numeric" month="short"
+                                day="numeric" />
+                        </div>
+                        <lightning:outputField fieldName="Web_Patient_Email__c" />
+                       
+                    </div>
+                    
+                </aura:if>
+ 
+                <!--2. Cancel_Appointment--> 
+                <aura:if isTrue="{! v.caseObj.Web_Subject__c  == $Label.c.Cancel_Appointment }">
+                    <div class="slds-col slds-size_1-of-2">
+                        <!-- <lightning:outputField fieldName="Full_Name__c" /> -->
+                        <lightning:outputField fieldName="Web_Patient_Email__c" />
+                        <label class="slds-form-element__label">Appointment Date</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{! v.caseObj.Appointment_Date__c }" year="numeric" month="short"
+                                day="numeric" />
+                        </div>
+                        <label class="slds-form-element__label">Appointment Time</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{!v.caseObj.Appointment_Time__c}"  minute="2-digit"  hour="2-digit" hour12="false" />
+                        </div>
+                        <!-- <lightning:outputField fieldName="Hospital_Number_HN__c" /> -->
+                        <!-- <lightning:outputField fieldName="Web_Additional_Info__c" /> -->
+
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <!-- <lightning:outputField fieldName="Date_of_Birth__c" /> -->
+                        <!--lightning:outputField fieldName="Web_Reason__c" />
+                        <label class="slds-form-element__label">Appointment Time</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{!v.caseObj.Appointment_Time__c}"  minute="2-digit"  hour="2-digit" hour12="false" />
+                        </div-->
+                        <!-- <lightning:outputField fieldName="Appointment_Date__c" /> -->
+                        <!-- <lightning:outputField fieldName="Patient_Email__c" /> -->
+                        <!-- <lightning:outputField fieldName="Web_Additional_Info__c" /> -->
+                    </div> 
+                </aura:if>
+
+                <!--3. Medication_Request--> 
+                <aura:if isTrue="{! v.caseObj.Web_Subject__c  == $Label.c.Medication_Request  }">
+                    <div class="slds-col slds-size_1-of-2">
+                        <!-- <lightning:outputField fieldName="Full_Name__c" /> -->
+                        <lightning:outputField fieldName="Doctor_Name__c" />
+                        <lightning:outputField fieldName="Quantity__c" />
+                        <lightning:outputField fieldName="Address__c" />
+                        <lightning:outputField fieldName="Web_Country__c" />
+                        
+                        <!-- <lightning:outputField fieldName="Web_Additional_Info__c" /> -->
+
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <!-- <lightning:outputField fieldName="Hospital_Number_HN__c" /> -->
+                        <lightning:outputField fieldName="Medication_Name__c" />
+                        <lightning:outputField fieldName="Receive_Medication_By__c" />
+                    	<lightning:outputField fieldName="Web_Phone__c" />
+                        <lightning:outputField fieldName="Web_Patient_Email__c" />
+                        
+                    </div>
+                </aura:if>
+
+                <!--4. Accommodation-->
+                <aura:if isTrue="{! v.caseObj.Web_Subject__c  == $Label.c.Accommodation }">
+                     <div class="slds-col slds-size_1-of-2">
+                        <!-- <lightning:outputField fieldName="Full_Name__c" /> -->
+                        <lightning:outputField fieldName="Hotel__c" />
+                        <label class="slds-form-element__label">Check in Date</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{! v.caseObj.Check_In_Date__c }" year="numeric" month="short"
+                                day="numeric" />
+                        </div>
+                        <label class="slds-form-element__label">Check out Date</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{! v.caseObj.Check_Out_Date__c }" year="numeric" month="short"
+                                day="numeric" />
+                        </div>
+                        <!-- <lightning:outputField fieldName="Check_In_Date__c" /> -->
+                        <!-- <lightning:outputField fieldName="Check_Out_Date__c" /> -->
+                        <lightning:outputField fieldName="Web_Reason__c" />
+                        <!-- <lightning:outputField fieldName="Web_Additional_Info__c" /> -->
+
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="Web_Patient_Email__c" />
+                        <lightning:outputField fieldName="Quantity__c" />
+                        <!-- <lightning:input name="check_in_time" readonly="true" type="time" value="{!v.caseObj.Check_In_Time__c}" label="Check In Time" />
+                        <lightning:input name="check_out_time" readonly="true" type="time" value="{!v.caseObj.Check_Out_Time__c}" label="Check Out Time" /> -->
+                        <label class="slds-form-element__label">Check In Time</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{!v.caseObj.Check_In_Time__c}" minute="2-digit" hour="2-digit"
+                                hour12="false" />
+                        </div>
+                        <label class="slds-form-element__label">Check Out Time</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{!v.caseObj.Check_Out_Time__c}" minute="2-digit" hour="2-digit"
+                                hour12="false" />
+                        </div>
+                        <!-- <lightning:outputField fieldName="Web_Additional_Info__c" /> -->
+                        <!-- <lightning:outputField fieldName="Check_In_Time__c" /> 
+                        <lightning:outputField fieldName="Check_Out_Time__c" /> -->
+                    </div>
+                </aura:if> 
+
+                <!--5. Health_Wellness_Checkups-->
+                <aura:if isTrue="{! v.caseObj.Web_Subject__c  == $Label.c.Health_Wellness_Checkups }">
+                     <div class="slds-col slds-size_1-of-2">
+                        <!-- <lightning:outputField fieldName="Full_Name__c" /> -->
+                        <!-- <lightning:outputField fieldName="Date_of_Birth__c" /> -->
+                        <!-- <lightning:outputField fieldName="Nationality__c" /> -->
+                        <lightning:outputField fieldName="Web_Patient_Email__c" />
+                        <!-- <lightning:outputField fieldName="Appointment_Date__c" /> -->
+                        <label class="slds-form-element__label">Preferred Date</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{!v.caseObj.Appointment_Date__c}"  year="numeric" month="short"
+                                day="numeric"  />
+                        </div>
+                         <lightning:outputField fieldName="Health_Checkup_Package__c" />
+                        
+                        <!-- <lightning:outputField fieldName="Web_Additional_Info__c" /> -->
+
+                        <!-- <lightning:outputField fieldName="SuppliedEmail" /> -->
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <!-- <lightning:outputField fieldName="Hospital_Number_HN__c" /> -->
+                        <lightning:outputField fieldName="Gender__c" />
+                        <!-- <lightning:outputField fieldName="Country_of_Residence__c" /> -->
+                        <!-- <lightning:input name="appointment_time" readonly="true" type="time" value="{!v.caseObj.Appointment_Time__c}"
+                            label="Appointment Time" />
+                             -->
+                        <label class="slds-form-element__label">Appointment Time</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{!v.caseObj.Appointment_Time__c}"  minute="2-digit"  hour="2-digit" hour12="false" />
+                        </div>
+                        <lightning:outputField fieldName="Add_On_Packages__c" />
+                        <!-- {!v.caseObj.Appointment_Time__c} -->
+                        <!-- <lightning:formattedTime value="{!v.caseObj.Appointment_Time__c}" /> -->
+                            <!-- <lightning:formattedDateTime value="{!v.caseObj.Appointment_Time__c}" hour="2-digit"
+                                minute="2-digit" hour12="false" /> -->
+                        <!-- <lightning:formattedTime value="{!v.caseObj.Appointment_Time__c}" /> -->
+                        
+                        
+
+                        <!-- <lightning:outputField fieldName="Appointment_Time__c" /> -->
+                    </div>
+                </aura:if> 
+
+                <!--6. Referral_Program-->
+                <aura:if isTrue="{! v.caseObj.Web_Subject__c  == $Label.c.Referral_Program }">
+                     <div class="slds-col slds-size_1-of-2">
+                        <!-- <lightning:outputField fieldName="Full_Name__c" /> -->
+                        <lightning:outputField fieldName="Referral_Type__c" />
+                        <lightning:outputField fieldName="Web_Reason__c" />
+                        <!-- <lightning:outputField fieldName="Web_Additional_Info__c" /> -->
+
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="Web_Patient_Email__c" />
+                        <lightning:outputField fieldName="Web_Phone__c" />
+                    </div>
+                </aura:if> 
+
+                <!--7. Second_Opinion_Service-->
+                <aura:if isTrue="{! v.caseObj.Web_Subject__c  == $Label.c.Second_Opinion_Service }">
+                     <div class="slds-col slds-size_1-of-2">
+                        <!-- <lightning:outputField fieldName="Full_Name__c" /> -->
+                        <lightning:outputField fieldName="Web_Patient_Email__c" />
+
+                        <!-- <lightning:outputField fieldName="Web_Country_of_Residence__c" /> -->
+                        <lightning:outputField fieldName="Medical_Condition__c" />
+                        <!-- <lightning:outputField fieldName="Web_Additional_Info__c" /> -->
+
+                        <!-- <lightning:outputField fieldName="Web_Nationality__c" /> -->
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="Gender__c" />
+                        <!-- <lightning:outputField fieldName="Date_of_Birth__c" /> -->
+                        <!-- <lightning:outputField fieldName="Nationality__c" /> -->
+
+                    </div>
+                </aura:if> 
+
+                <!--8. Airport_transfer-->
+                <aura:if isTrue="{! v.caseObj.Web_Subject__c  == $Label.c.Airport_transfer }">
+                     <div class="slds-col slds-size_1-of-2">
+                        <!-- <lightning:outputField fieldName="Full_Name__c" /> -->
+                        <lightning:outputField fieldName="Web_Patient_Email__c" />
+                        <label class="slds-form-element__label">Travelers</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                        {! v.caseObj.Quantity__c }
+                        </div>
+                        <label class="slds-form-element__label">Arrival Date</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{!v.caseObj.Arrival_Date__c}" year="numeric" month="short" day="numeric" />
+                        </div>
+                        <label class="slds-form-element__label">Arrival Time</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{!v.caseObj.Web_Arrival_Time__c}"  minute="2-digit"  hour="2-digit" hour12="false" />
+                        </div>
+                         <lightning:outputField fieldName="VIP_Services__c" />
+                        <!-- <lightning:outputField fieldName="Arrival_Date__c" /> -->
+                        
+                        
+                        <!-- <lightning:outputField fieldName="Web_Additional_Info__c" /> -->
+
+
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <!-- <lightning:outputField fieldName="Hospital_Number_HN__c" /> -->
+                        <!-- <lightning:outputField fieldName="Web_Arrival_Time__c" />
+                        <lightning:input name="arrival_time" readonly="true" type="time" value="{!v.caseObj.Web_Arrival_Time__c}"
+                            label="Arrival Time" /> -->
+
+                        <!-- <lightning:formattedTime value="{!v.caseObj.Web_Arrival_Time__c}" /> -->
+ 						<lightning:outputField fieldName="Airline__c" />
+                        <lightning:outputField fieldName="Flight_Number__c" />
+                        <lightning:outputField fieldName="Airport__c" />
+                        <lightning:outputField fieldName="Drop_Off_Location__c" />
+                        
+                    </div>
+                </aura:if> 
+
+                <!--9. Consult_Online-->
+                <aura:if isTrue="{! v.caseObj.Web_Subject__c  == $Label.c.Consult_Online }">
+                     <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="IsVisited__c" />
+                        <lightning:outputField fieldName="Web_Reason__c" />
+                        <lightning:outputField fieldName="Specialty__c" />
+                        <!-- <lightning:outputField fieldName="Full_Name__c" /> -->
+                        <!-- <lightning:outputField fieldName="Patient_Email__c" /> -->
+                       
+                        <!-- <lightning:outputField fieldName="Web_Additional_Info__c" /> -->
+
+                        <!-- <lightning:outputField fieldName="Medical_Condition__c" /> -->
+                        
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <!-- <lightning:outputField fieldName="Hospital_Number_HN__c" /> -->
+                        
+                        <!-- <lightning:outputField fieldName="Date_of_Birth__c" /> -->
+                        <lightning:outputField fieldName="Gender__c" />
+                        <lightning:outputField fieldName="Web_Patient_Email__c" />
+                        <lightning:outputField fieldName="Web_Phone__c" />
+                        
+                        <!-- <lightning:outputField fieldName="Treatment_of_Interest__c" /> -->
+                    </div>
+                </aura:if> 
+
+                <!--10. Request_Medical_Records-->
+                <aura:if isTrue="{! v.caseObj.Web_Subject__c  == $Label.c.Request_Medical_Records }">
+                     <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="Request_Medical_For__c" />
+                        <lightning:outputField fieldName="Reason_For_The_Request__c" />
+                        <lightning:outputField fieldName="Relationship_to_Patient__c" />
+                        
+                        <!-- <lightning:outputField fieldName="Full_Name__c" /> -->
+                        <!-- <lightning:outputField fieldName="Hospital_Number_HN__c" /> -->
+                        <!-- <lightning:outputField fieldName="Web_Additional_Info__c" /> -->
+                        <!-- <lightning:outputField fieldName="Patient_Email__c" /> -->
+
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="Web_Patient_Email__c" />
+                        
+
+                        <!-- <lightning:outputField fieldName="Date_of_Birth__c" /> -->
+                    </div>
+                </aura:if> 
+
+                <!--11. Book_an_Appointment-->
+                <aura:if isTrue="{! v.caseObj.Web_Subject__c  == $Label.c.Book_an_Appointment }">
+                     <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="IsVisited__c" /> 
+                        <!-- <lightning:outputField fieldName="Appointment_Date__c" /> -->
+                        <label class="slds-form-element__label">Appointment Date</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{!v.caseObj.Appointment_Date__c}" year="numeric" month="short" day="numeric" />
+                        </div>
+                        <lightning:outputField fieldName="Appointment_Time_Period__c" />
+                        <lightning:outputField fieldName="Extra_Services__c" />
+                        <lightning:outputField fieldName="HaveInsurance__c" />
+                        <!-- <lightning:outputField fieldName="Date_of_Birth__c" /> -->
+                        <!-- <lightning:outputField fieldName="Web_Additional_Info__c" /> -->
+
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        
+                        <!-- <lightning:outputField fieldName="Hospital_Number_HN__c" /> -->
+                        <lightning:outputField fieldName="Medical_Condition__c" />
+                        <lightning:outputField fieldName="Specialty__c" />
+                        <lightning:outputField fieldName="Doctor_Name__c" />
+                        <lightning:outputField fieldName="Gender__c" />
+                        <lightning:outputField fieldName="Web_Patient_Email__c" />
+                        <lightning:outputField fieldName="Web_Phone__c" />
+                        <!-- <lightning:outputField fieldName="Full_Name__c" /> -->
+                        
+                    </div>
+                </aura:if> 
+
+
+                <!--12. Visa_Invitation_Letter-->
+                <aura:if isTrue="{! v.caseObj.Web_Subject__c  == $Label.c.Visa_Invitation_Letter }">
+                     <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="Passport_Name__c" />
+                        <lightning:outputField fieldName="Passport_Number__c" />
+                        
+                        <label class="slds-form-element__label">Appointment Date</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{!v.caseObj.Appointment_Date__c}" year="numeric" month="short" day="numeric" />
+                        </div>
+                        <lightning:outputField fieldName="Web_Patient_Email__c" />
+                        <!-- <lightning:outputField fieldName="Appointment_Date__c" /> -->
+                        <!-- <lightning:outputField fieldName="Web_Additional_Info__c" /> -->
+
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <!-- <lightning:outputField fieldName="Hospital_Number_HN__c" /> -->
+                        <lightning:outputField fieldName="Specialty__c" />
+                        <lightning:outputField fieldName="Attendant_Name__c" />
+                        <lightning:outputField fieldName="Attendant_Passport_Number__c" />
+                        
+                    </div>
+                </aura:if> 
+                    <!-- <div class="slds-col slds-size_1-of-2">
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                    </div> -->
+                
+            </div>
+            <div class="slds-grid slds-wrap">
+                <lightning:outputField fieldName="Web_Additional_Info__c" />
+            </div>
+        </div>
+        </lightning:recordViewForm>
+    </div>
+    
+</div>
+    </aura:if>
+</aura:component>

@@ -1,0 +1,40 @@
+<aura:component access="GLOBAL">
+    <aura:attribute name="recordId" type="String" access="GLOBAL"/>
+    <lightning:recordViewForm recordId="{!v.recordId}" objectApiName="Case">
+        <div style="padding:0 1.25rem;">
+            <div class="slds-grid slds-gutters" style="padding:0 .75rem;">
+    
+                <div class="slds-col slds-size_1-of-2" style="margin-right: 1rem;">
+                    <label class="slds-form-element__label" style="padding: 0 .25rem;" for="AddressState">Sender
+                        Name</label>
+                    <lightning:outputField fieldName="AccountId" variant="label-hidden" />
+                    <lightning:outputField fieldName="Sender_HN__c" />
+                    <lightning:outputField fieldName="SuppliedEmail" />
+                    <lightning:outputField fieldName="Sender_Phone__c" />
+    
+    
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_10-of-12">
+                            <!-- <label class="slds-form-element__label" style="padding: 0 .25rem;" for="AddressState">Client Name</label> -->
+                            <lightning:outputField fieldName="Patient__c" />
+                        </div>
+                        <div class="slds-col slds-size_2-of-12">
+                            <div style="height:100%;display: flex;align-items: center;justify-content: center;">
+                                <lightning:button IconName="utility:search" label="Verify" title="Verify"
+                                    onclick="{! c.showModal }" />
+                            </div>
+                        </div>
+                    </div>
+                    <lightning:outputField fieldName="Hospital_Number_HN__c" />
+                    <lightning:outputField fieldName="Patient_Email__c" />
+                    <lightning:outputField fieldName="Phone__c" />
+                    <lightning:outputField fieldName="Full_Name__c" />
+                    <lightning:outputField fieldName="Date_of_Birth__c" />
+                </div>
+    
+            </div>
+        </div>
+    </lightning:recordViewForm>
+</aura:component>

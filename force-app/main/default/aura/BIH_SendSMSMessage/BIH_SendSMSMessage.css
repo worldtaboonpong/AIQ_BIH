@@ -1,0 +1,8 @@
+.THIS .myCheckBox1 {
+    /* margin-left: 7px; */
+    float: left;
+    display: inline-block;
+}
+.THIS .slds-textarea {
+    height:100px !important;
+}

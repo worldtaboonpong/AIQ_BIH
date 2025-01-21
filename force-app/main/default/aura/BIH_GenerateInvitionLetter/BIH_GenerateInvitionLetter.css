@@ -1,0 +1,37 @@
+.THIS .slds-spinner.slds-spinner_medium{
+   position: fixed;
+}
+.THIS textarea{
+    min-height: 100px;
+}
+.THIS .slds-form-element.slds-form-element_horizontal .slds-form-element__control.slds-grow{
+    padding-left: 10%;
+}
+.THIS .slds-form-element.slds-form-element_horizontal .slds-size_1-of-2 .slds-form-element__control{
+    padding-left: 20%;
+}
+.THIS .slds-rich-text-editor{
+    margin-left: 10%;
+}
+.THIS .container-button{
+    display: flex;
+    position: sticky;
+    bottom: 2.5rem;
+    left: 0;
+    width: 100%;
+    height: 4rem;
+    background: rgb(255, 255, 255,.85);
+    z-index: 2;
+    padding: 1rem .25rem;
+    justify-content:center;
+}
+.THIS.container-content{
+    background: rgb(255, 255, 255);
+    padding: .75rem 1rem;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.10);
+    border: 1px solid rgb(221, 219, 218);
+    border-radius: .25rem;
+}
+.THIS .slds-spinner_container{
+    z-index: 3 !important;
+}

@@ -1,0 +1,124 @@
+<aura:component controller="BIH_AirportTransferInformationCtrl"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,lightning:isUrlAddressable"
+    access="global">
+    <aura:handler name="init"  value="{!this}" action="{!c.init}" />
+    <aura:attribute name="caseObj" type="Case" />
+    <aura:handler event="force:refreshView" action="{!c.init}" />
+    <aura:attribute name="isexpanded" type="Boolean" default="true" />
+    <aura:attribute name="isView" type="Boolean" default="true" />
+    <aura:attribute name="loading" type="Boolean" default="false" />
+    <aura:attribute name="checkInTime" type="Time" />
+    <aura:attribute name="checkOutTime" type="Time" />
+
+    <div>
+        <aura:if isTrue="{! v.loading }">
+            <lightning:spinner alternativeText="Loading" />
+        </aura:if>
+
+    <div class="{! 'case slds-section' + (v.isexpanded ? ' slds-is-open' : '')}">
+        <h3 class="slds-section__title slds-theme_shade">
+            <button aria-controls="divContent" aria-expanded="{!v.isexpanded}" onclick="{!c.changeState}"
+                class="slds-button slds-section__title-action">
+                <lightning:icon aura:id="articleOne" iconName="utility:switch" size="xx-small" alternativeText="switch" />
+                <span class="slds-truncate" title="Airport Transfer Info">Airport Transfer Info</span>
+            </button>
+        </h3>
+        <div class="slds-section__content" aura:id="container" aria-hidden="{!!v.isexpanded}" id="divContent"
+            style="position:relative;">
+            <!-- <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_1-of-2">
+                    
+                </div>
+            </div> -->
+
+            <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:input name="request_by" readonly="true" label="Request By" value="{!v.caseObj.Request_By__c}" />
+                        <lightning:input name="other_request_by" readonly="true" label="Other Request By" value="{!v.caseObj.Other_Request_By__c}" />
+                        <lightning:input name="case_arr_dep" readonly="true" label="Case (Arr/Dep)" value="{!v.caseObj.Case_arr_dep__c}" />
+
+                        <lightning:input type="date" name="arrivaldate" readonly="true" label="Arrival Date" value="{!v.caseObj.Arrival_Date__c}"/>
+
+                        <lightning:input name="numbers_of_patients" readonly="true" label="No. of Patients" value="{!v.caseObj.Number_Of_Patient__c}" />
+                        <lightning:input name="from" readonly="true" label="From" value="{!v.caseObj.From__c}" />
+
+                        <lightning:input aura:id="from_other-hotel" readonly="true" name="from_other-hotel" label="From Other Hotel" value="{!v.caseObj.From_Other_Hotel__c}" />
+
+                        <lightning:input type="date" readonly="true" name="checkindate" label="Check In Date" value="{!v.caseObj.Check_In_Date__c}"/>
+                        <lightning:input name="check_out_time" readonly="true" type="time" value="{!v.checkOutTime}" label="Check Out Time" />
+
+                        <lightning:input aura:id="vehicle_type" readonly="true" name="vehicle_type" label="Vehicle Type" value="{!v.caseObj.Vehicle_Type__c}" />
+
+                        <lightning:input name="aot_number" readonly="true" label="AOT Number (No./month)" value="{!v.caseObj.AOT_NO__c}" />
+                        <lightning:input type="number" readonly="true" name="limousine_price" label="Limousine Price" value="{!v.caseObj.AOT_Limousine_Price__c}" />
+                        <lightning:input name="queue_card" readonly="true" label="Queue Card" value="{!v.caseObj.Queue_Card__c}" />
+
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:input name="gate" readonly="true" label="Gate" value="{!v.caseObj.Gate__c}" />
+                        <lightning:input name="flight_number" readonly="true" label="Flight Number" value="{!v.caseObj.Flight_Number__c}" />
+                        <lightning:input readonly="true" aura:id="other_flight" name="other_flight" label="Other Flight" value="{!v.caseObj.Other_Flight__c}" />
+                        <lightning:input name="arrival_time" readonly="true" label="Arrival Time" value="{!v.caseObj.Arrival_Time__c}" />
+                        <lightning:input name="numbers_of_Relatives" readonly="true" label="No. of Relatives" value="{!v.caseObj.Number_Of_Relative__c}" />
+                        <lightning:input name="to" readonly="true" label="To" value="{!v.caseObj.To__c}" />
+
+
+                        <lightning:input aura:id="to_other-hotel" readonly="true"  name="to_other-hotel" label="To Other Hotel" value="{!v.caseObj.To_Other_Hotel__c}" />
+                        <!--blank-->
+                        <lightning:input  readonly="true" type="Time" name="checkintime" label="Check In Time" value="{!v.checkInTime}"/>
+
+                        <lightning:input name="limousine_no" label="Limousine Voucher No. (Van NO.)" readonly="true"  value="{!v.caseObj.Limousine_NO__c}" />
+
+                        <lightning:input name="method_of_payment" readonly="true"  label="Method Of Payment" value="{!v.caseObj.Method_Of_Payment__c}" />
+                        <lightning:input name="segment" label="Segment" readonly="true"  value="{!v.caseObj.Segment__c}" />
+                        <lightning:input name="cost_center" readonly="true" label="Cost Center" value="{!v.caseObj.Cost_Center__c}" />
+                        
+                    </div>
+            
+                </div>
+
+            
+        </div>
+    </div>
+
+    
+    <div class="{! 'case slds-section' + (v.isexpanded ? ' slds-is-open' : '')}">
+        <h3 class="slds-section__title slds-theme_shade">
+            <button aria-controls="divContent" aria-expanded="{!v.isexpanded}" onclick="{!c.changeState}"
+                class="slds-button slds-section__title-action">
+                <lightning:icon aura:id="articleOne" iconName="utility:switch" size="xx-small" alternativeText="switch" />
+                <span class="slds-truncate" title="Airport Service Info">Airport Service Info</span>
+            </button>
+        </h3>
+
+        <div aria-hidden="false" class="slds-section__content">
+
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:input name="airport_rep_name " readonly="true" label="Airport Rep's Name " value="{!v.caseObj.Airport_Rep_Name__c}" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:input type="number" readonly="true" name="other_service_charge" label="Other Service Charge" value="{!v.caseObj.Other_Service_Charge__c}" />
+                    </div>
+                </div>
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:input name="registration " readonly="true" label="Registration " value="{!v.caseObj.Registration__c}" />
+                        <lightning:input name="hotel " readonly="true" label="Hotel (Airport)" value="{!v.caseObj.Hotel_Airport__c}" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:input name="appointment " readonly="true" label="Appointment " value="{!v.caseObj.Airport_Appointment__c}" />
+                        <lightning:input name="ro " readonly="true" label="RO " value="{!v.caseObj.RO__c}" />
+                    </div>
+                </div>
+            </div>
+            <div aria-hidden="false" class="slds-section__content">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_1-of-1">
+                        <lightning:input aura:id="note" readonly="true" name="note" label="Note" value="{!v.caseObj.Note__c}" />
+                    </div>
+                </div>
+            </div>         
+        </div>
+    </div>
+</aura:component>

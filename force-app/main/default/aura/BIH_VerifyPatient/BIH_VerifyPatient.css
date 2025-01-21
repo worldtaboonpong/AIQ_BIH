@@ -1,0 +1,27 @@
+.THIS.slds-gutters .slds-col {
+    padding-right: .75rem !important;
+    padding-left: .75rem !important;
+}
+.THIS td[data-label*="-hidden"],.THIS th[aria-label*="-hidden"]{
+    display: none;
+}
+.THIS .table-verify thead th{
+    width: 20% !important; 
+}
+.THIS .table-verify thead th .slds-cell-fixed.slds-has-button-menu{
+    width: 20% !important; 
+}
+.THIS .table-verify lightning-primitive-icon .slds-button__icon{
+    display: none;
+}
+.THIS .slds-table_header-fixed_container.slds-scrollable_x{
+    overflow-x: hidden;
+}
+.THIS .slds-button_brand{
+    padding-left: .5rem;
+    padding-right: .5rem;
+}
+.THIS .slds-button_neutral{
+    padding-left: .5rem;
+    padding-right: .5rem;
+}

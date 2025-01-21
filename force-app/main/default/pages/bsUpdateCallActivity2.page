@@ -1,0 +1,144 @@
+<apex:page sidebar="false" showHeader="false" docType="html-5.0">
+
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"/>
+    <apex:includeScript value="/support/console/34.0/integration.js"/>
+    <apex:includeScript value="/soap/ajax/34.0/connection.js"/>
+    <apex:includeScript value="{!URLFOR($Resource.cnx__CnxSfdcResources,'js/ConnectsIntegrationAPI.min.js')}"/>
+
+    <script>
+     
+       $(function (){
+                console.log('##plugins initialize');
+                ConnectsIntegrationAPI.onActivitySave = function (event) {
+                     try {
+                          console.log('##plugins onActivitySave' + event);
+                          if (event.created) {
+                               sforce.connection.sessionId = '{!$Api.Session_ID}';
+                               var task = sforce.connection.retrieve("Description", "Task", [event.recordId])[0];
+                               task.Description = "Comment added comment in onActivityCreate event handler: Call from " + 
+                               event.item.Sender + " to " + event.item.Destination + " on " + event.item.QueueName;
+                               sforce.connection.update([task]);
+                          }
+                     } catch (ex) {
+                          console.log('##plugins error ' + ex);
+                          ConnectsIntegrationAPI.showError("USER","Update problem",
+                          "Could not update activity record, exception: " + ex);
+                     }
+                };
+          });
+    
+     
+        var bhAgentId = "";
+        var bhAgentExtension = "";
+
+        $(function (){
+            console.log('##plugins initialize');
+        });
+        
+        function BHGetAgentData() {
+            var currentCtiData = ConnectsIntegrationAPI.getCtiData();
+            if (currentCtiData == null) {
+                console.log('##plugins initialize CTIdata is null');
+                return;
+            }
+            bhAgentId = currentCtiData.Agent;
+            bhAgentExtension = currentCtiData.Extension;
+            console.log('##plugins agentId=' + bhAgentId + ' agentExtension=' + bhAgentExtension);
+        }
+      
+        function BHMakeCall() {
+            
+            const phoneNumber = $('#BHPhoneNumber').val();
+            $('#BHPhoneNumber').val('');
+            if (phoneNumber == ''){
+              alert('Phone number is empty');
+            }
+            
+            if (bhAgentId == ''){
+                BHGetAgentData();
+            }
+
+            BHFinesseMakeCall(phoneNumber, false);
+        }
+
+        function BHFinesseMakeCall(phoneNumber, retry) {
+            var dialogValue = "<Dialog>" +
+                "<requestedAction>MAKE_CALL</requestedAction>" + 
+                "<fromAddress>" + bhAgentExtension + "</fromAddress>" + 
+                "<toAddress>" + phoneNumber + "</toAddress>" +
+                "</Dialog>";
+
+            var makeCallUrl = 'https://vm1finpubf01p1.bumrungrad.org:443/finesse/api/User/'+ bhAgentId +'/Dialogs';
+            if (retry) {
+                makeCallUrl = 'https://vm2finsubf01p1.bumrungrad.org:443/finesse/api/User/'+ bhAgentId +'/Dialogs';
+            }
+
+            $.ajax({
+                url: makeCallUrl,
+                type: "POST",
+                data: dialogValue,
+                contentType: "application/xml",
+                headers:{
+                    "Authorization": "Basic " + btoa(bhAgentId + ":" + bhAgentId)
+                },
+                success: function (data) {
+                    console.log('##plugins make call success');
+                },
+                error: function (err) {
+                    console.log('##plugins make call error' + err);
+                    if (!retry) {
+                        BHFinesseMakeCall(phoneNumber, true);
+                    }
+                }
+            });
+        }
+               
+        function BHPostCallSurvey() {
+            var workItemType = ConnectsIntegrationAPI.WORKITEM.TYPE.VOICE;
+            var firstWorkItemData = ConnectsIntegrationAPI.getFirstWorkItem(workItemType);
+            
+            var transferNumber = "3005";
+            if (firstWorkItemData) {
+                console.log('##plugins firstWorkItemData' + JSON.stringify(firstWorkItemData));
+                
+                if (firstWorkItemData.ConnectedTimeStamp > 0) {
+                    if (firstWorkItemData.PerVar1 != null) {
+                        var language = firstWorkItemData.PerVar1.substring(0, 2);
+                        if (language == "EN") transferNumber = "3006";
+                        if (language == "JP") transferNumber = "3008";
+                    }
+                    
+                    ConnectsIntegrationAPI.blindTransferCall(firstWorkItemData.Id, transferNumber, function (response) {
+                        if (!response.success) {
+                            ConnectsIntegrationAPI.showError("USER","blindTransferCall failed ", response.error);
+                        }
+                    });
+                }
+            }
+        }
+        
+        function BHAgentPerformance() {
+                
+           var currentCtiData = ConnectsIntegrationAPI.getCtiData();
+           if (currentCtiData == null) {
+               console.log('##plugins currentCtiData is null');
+               return;
+           }
+           
+            var agentId = currentCtiData.Agent;
+            var url = "http://vm1awhdsd01p1.bumrungrad.org/AgentPerformance/agentperformance.html?agent_id="+agentId;
+            console.log('##plugins agent perofmrance ' + JSON.stringify(url));
+                           
+            var win = window.open(url, '_blank');
+            win.focus();
+        }
+   
+        
+    </script>
+     <apex:form >
+        <input type="text" id="BHPhoneNumber" />
+        <apex:commandButton value="Make Call" onClick="BHMakeCall();return false;"/>
+        <apex:commandButton value="Survey Call" onClick="BHPostCallSurvey();return false;"/>
+        <apex:commandButton value="My Performance" onClick="BHAgentPerformance();return false;"/>
+    </apex:form>
+</apex:page>

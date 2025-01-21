@@ -1,0 +1,199 @@
+<aura:component controller="BIH_EditCategories" implements="force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global" >
+   
+     <lightning:empApi aura:id="empApi" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />   
+    <aura:attribute name="accountId" type="String" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="recordTypeId" type="String" />
+    <aura:attribute name="additionalParams" type="String" default=""/>
+    <aura:attribute name="parentId" type="String"/>
+    <aura:attribute name="caseObj" type="Case" default="{ 'sobjectType': 'Case'}" />
+    <aura:attribute name="patientObj" type="Account" default="{ 'sobjectType': 'Account'}" />
+    <aura:attribute name="senderObj" type="Account" default="{ 'sobjectType': 'Account'}" />
+    <aura:attribute name="OwnerObj" type="Account" default="{ 'sobjectType': 'Account'}" />
+    <aura:attribute name="UserObj" type="User" default="{ 'sobjectType': 'User'}" />
+    <aura:attribute name="doctorObj" type="Doctor__c" default="{ 'sobjectType': 'Doctor__c'}" />
+    <aura:attribute name="ownerType" type="String" default="user" />
+    <aura:attribute name="PickList" type="Map" default="{}" />
+    <aura:attribute name="PayorTypePickList" type="String[]" />
+    <aura:attribute name="priorityPickList" type="String[]" />
+    <aura:attribute name="case_originPickList" type="String[]" />
+    <aura:attribute name="channelPickList" type="String[]" />
+    <aura:attribute name="pending_teamPickList" type="String[]" />
+    <aura:attribute name="pending_reasonPickList" type="String[]" />
+    <aura:attribute name="statusPickList" type="String[]" />
+    
+    <aura:attribute name="close_case_teamPickList" type="String[]" />
+    <aura:attribute name="specialty_DoctorPickList" type="String[]" />
+    <aura:attribute name="lead_sourcePickList" type="String[]" />
+    <aura:attribute name="isRequiredEscalateDate" type="boolean" default="false" />
+    <aura:attribute name="isErrorEscalateDate" type="boolean" default="false" />
+    
+    <aura:attribute name="isNew" type="Boolean" default="false"/>
+    <aura:attribute name="pdvsEndpoint" type="String" />
+    <aura:attribute name="userName" type="String" />
+    <aura:attribute name="sessionId" type="String" />
+    <aura:attribute name="clientId" type="String" />
+    
+    <!-- <aura:attribute name="ServiceDetail" type="String" /> -->
+    
+    <aura:attribute name="MapCaseCateLVL_1" type="Map" default="{}" />
+    <aura:attribute name="CaseCateLVL_1" type="String[]" />
+    <aura:attribute name="MapCaseCateLVL_2" type="Map" default="{}" />
+    <aura:attribute name="CaseCateLVL_2" type="String[]" />
+    <aura:attribute name="MapCaseCateLVL_3" type="Map" default="{}" />
+    <aura:attribute name="CaseCateLVL_3" type="String[]" />
+    <aura:attribute name="MapDoctorAll" type="Map" default="{}" />
+    <aura:attribute name="MapSLA" type="Map" />
+    <aura:attribute name="MapDynamicGroup" type="Map" />
+    <aura:attribute name="MapServiceDetailEN" type="Map" />
+    <aura:attribute name="MapServiceDetailTH" type="Map" />
+    <aura:attribute name="MapScriptEN" type="Map" />
+    <aura:attribute name="MapScriptTH" type="Map" />
+    <aura:attribute name="FlightMap" type="Map" />
+    <aura:attribute name="buildingMap" type="Map" />
+    <aura:attribute name="keyBuilding" type="String[]" />
+    <aura:attribute name="PaymentMap" type="Map" />
+    <aura:attribute name="ArriveTimeList" type="String[]" />
+    <aura:attribute name="departmentList" type="String[]" />
+    <aura:attribute name="SegmentList" type="String[]" />
+    <aura:attribute name="checkInTime" type="Time" />
+    <aura:attribute name="checkOutTime" type="Time" />
+    <aura:attribute name="numberDynamicGroup" type="String" default="0" />
+    
+    <aura:attribute name="MapQuickCase" type="Map" />
+    <aura:attribute name="KeyQuickCase" type="String" />
+    
+    <aura:attribute name="MapQuickCase1" type="Map" />
+    <aura:attribute name="KeyQuickCase1" type="String" />
+    
+    <aura:attribute name="MapQuickCase2" type="Map" />
+    <aura:attribute name="KeyQuickCase2" type="String" />
+    
+    <aura:attribute name="CaseCateLVL_2_disableField" type="boolean" default="true" />
+    <aura:attribute name="CaseCateLVL_3_disableField" type="boolean" default="true" />
+    <aura:attribute name="close_case_reason_disableField" type="boolean" default="true" />
+    <aura:attribute name="pending_team_reason_disableField" type="boolean" default="true" />
+    <aura:attribute name="THTemplate" type="boolean" default="false" />
+    
+    <aura:attribute name="caseOwnerValue" type="sObject" default="" />
+    <!-- <aura:attribute name="patientHNValue" type="sObject" default="{}" /> -->
+    <aura:attribute name="patientNameValue" type="sObject" default="{}" />
+    <aura:attribute name="doctorNameValue" type="sObject" default="null" />
+    
+    
+    <aura:attribute name="personReasonNameValue" type="sObject" default="{}" />
+    <aura:attribute name="defaultRepOptions" type="List" default="[]" />
+    
+    <!-- <aura:attribute name="senderHNValue" type="sObject" default="{}" /> -->
+    <aura:attribute name="senderNameValue" type="sObject" default="{}" />
+    <aura:attribute name="isOwnerTypeUser" type="Boolean" default="true" />
+    <!-- <aura:attribute name="hasDoctor" type="Boolean" default="false" /> -->
+    <!-- <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}" /> -->
+    <aura:attribute name="loading" type="Boolean" default="false" />
+    <aura:attribute name="isAirportTransferRecordType" type="Boolean" default="false" />
+    <aura:attribute name="isClinicRecordType" type="Boolean" default="false" />
+    
+    <aura:attribute name="isContactCenter" type="Boolean" default="false" />
+    <aura:attribute name="isRequiredSenderEmail" type="Boolean" default="true" />
+    
+    <aura:attribute name="OfferCampaginPickList" type="String[]" />
+    <aura:attribute name="NonOfferCampaginPickList" type="String[]" />
+    <aura:attribute name="isShowCampaignDetail" type="Boolean" default="false"  />
+    <aura:attribute name="isCampaignLoading" type="Boolean" default="false"  />
+    <aura:attribute name="campaignMasterObj" type="Case_Campaign_Master__c" />
+    <aura:attribute name="remainCampaign" type="Integer" default="0" />
+    <aura:attribute name="interestPickList" type="String[]" default="" />
+    <aura:attribute name="isResetCate" type="Boolean" default="true"  />
+    
+    <aura:attribute name="validSaveBtn" type="Boolean" default="true"  />
+    
+    <aura:attribute name="userTeam" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+    
+    <aura:if isTrue="{!!v.loading }">
+        <aura:set attribute="else">
+            <lightning:spinner alternativeText="Loading" />
+        </aura:set>
+    </aura:if>
+    <div aura:id="individualTeamSection" class="slds-grid slds-grid_vertical slds-hide">
+
+    <div class="slds-grid slds-grid_vertical">
+         <div class="slds-col">
+            <lightning:select aura:id="quick_case" variant="label-hidden" label="Quick Case" value="{!v.caseObj.Quick_Case__c}"
+                              onchange="{! c.onChangeQuickCase }">
+                <option value="" selected="">--Appointment--</option>
+                <aura:iteration items="{!v.KeyQuickCase}" var="option">
+                    <option value="{!option}" selected="">{!option}</option>
+                </aura:iteration>
+            </lightning:select>
+        </div>
+    </div>
+    
+    <div class="slds-grid slds-grid_vertical">
+         <div class="slds-col">
+            <lightning:select aura:id="quick_case" variant="label-hidden" label="Quick Case" value="{!v.caseObj.Quick_Case__c}"
+                              onchange="{! c.onChangeQuickCase1 }">
+                <option value="" selected="">--General Information--</option>
+                <aura:iteration items="{!v.KeyQuickCase1}" var="option">
+                    <option value="{!option}" selected="">{!option}</option>
+                </aura:iteration>
+            </lightning:select>
+        </div>
+
+
+    </div>
+        <div class="slds-grid slds-grid_vertical">
+         <div class="slds-col">
+            <lightning:select aura:id="quick_case" variant="label-hidden" label="Quick Case" value="{!v.caseObj.Quick_Case__c}"
+                              onchange="{! c.onChangeQuickCase2 }">
+                <option value="" selected="">--Telemedicine--</option>
+                <aura:iteration items="{!v.KeyQuickCase2}" var="option">
+                    <option value="{!option}" selected="">{!option}</option>
+                </aura:iteration>
+            </lightning:select>
+        </div>
+
+
+        <hr/>
+    </div> 
+	</div>
+    
+    <div class="slds-grid slds-grid_vertical">
+        <div class="slds-col ">
+            <lightning:select aura:id="case_category_lvl_1" required="true" label="Case Category Level1"
+                              value="{!v.caseObj.Case_Category_Level1__c}" onchange="{! c.onChangeCatelvl1 }">
+                <option value="" selected="">--None--</option>
+                <aura:iteration items="{!v.CaseCateLVL_1}" var="option">
+                    <option value="{!option.value}" selected="">{!option.label}</option>
+                </aura:iteration>
+            </lightning:select>
+        </div>
+        <div class="slds-col ">
+            <lightning:select  name="case_category_lvl_2" required="true"  label="Case Category Level2"
+                              aura:id="case_category_lvl_2" value="{!v.caseObj.Case_Category_Level2__c}" onchange="{! c.onChangeCatelvl2 }">
+                <option value="" selected="">--None--</option>
+                <aura:iteration items="{!v.CaseCateLVL_2}" var="option">
+                    <option value="{!option.value}" selected="">{!option.label}</option>
+                </aura:iteration>
+            </lightning:select>
+        </div>
+        <div class="slds-col ">
+            <lightning:select aura:id="case_category_lvl_3" required="false" name="case_category_lvl_3" label="Case Category Level3"
+                              value="{!v.caseObj.Case_Category_Level3__c}" onchange="{! c.onChangeCatelvl3 }">
+                <option value="" selected="">--None--</option>
+                <aura:iteration items="{!v.CaseCateLVL_3}" var="option">
+                    <option value="{!option.value}" selected="">{!option.label}</option>
+                </aura:iteration>
+            </lightning:select>
+        </div>
+    </div>
+    <lightning:input readonly="true" name="sla" label="SLA (min.)" value="{!v.caseObj.SLA__c}" />
+    <br/>
+    <div class="mybtn">
+        <lightning:button variant="brand" label="Save" title="Save" onclick="{!c.onSave}"  disabled="{!v.validSaveBtn}"/>
+		    <lightning:button variant="destructive" label="Cancel" title="Cancel" onclick="{!c.doCancel}"/>        
+    </div>
+</aura:component>

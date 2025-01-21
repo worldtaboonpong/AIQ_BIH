@@ -1,0 +1,31 @@
+/* .THIS .slds-required{
+    display:none;
+}
+
+.THIS .slds-button {
+    float: right;
+}
+
+.THIS .slds-show{
+    float: left;
+} */
+.THIS .cBIH_CustomLookup.slds-lookup abbr{
+    display: none;
+}
+.THIS .cBIH_CustomLookup.slds-lookup label.slds-form-element__label{
+    display: none;
+}
+.THIS .container-lookup-section{
+    display: flex;
+}
+.THIS .container-lookup{
+    width: 100%;
+}
+.THIS .cBIH_ValidateCaseDuplicate .container-button-menu {
+    margin-left: 5px;
+}
+.THIS .container-button-menu button{
+    /* width: 100%; */
+    margin-left: 5px;
+    /* height: 100%; */
+}

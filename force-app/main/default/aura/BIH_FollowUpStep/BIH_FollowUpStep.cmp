@@ -1,0 +1,79 @@
+<aura:component controller="BIH_FollowUpStepCtrl"
+    implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride,lightning:isUrlAddressable,lightning:hasPageReference"
+    access="global">
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="now" type="String" default="" />
+    <aura:attribute name="recordId" type="String" default="" />
+    <aura:attribute name="picklistValues1" type="String[]" />
+    <aura:attribute name="picklistValues2" type="String[]" />
+    <aura:attribute name="picklistStepStatus" type="Object[]" />
+    <aura:attribute name="owner" type="object"/>
+    <aura:attribute name="remark" type="String" default=""/>
+    <aura:attribute name="contact" type="String" default=""/>
+    <aura:attribute name="recordTypeId" type="String" default=""/>
+    <aura:attribute name="Step" type="String" default=""/>
+    <aura:attribute name="Phone_SMS_Email__c" type="String" default=""/>
+    <aura:attribute name="StepStatus" type="String" default=""/>
+    <aura:attribute name="loading" type="boolean" default="false"/>
+    <aura:attribute name="disable" type="boolean" default="true"/>
+    <aura:attribute name="validate" type="boolean" default="true"/>
+    <aura:attribute name="picklistMap" type="Map"/> 
+    <div aura:id="editDialog" role="dialog" tabindex="-1" aria-labelledby="header43" class="slds-form">
+        <div class="slds-modal__container">
+                <aura:if isTrue="{! v.loading }">
+                        <lightning:spinner alternativeText="Loading" />
+                </aura:if>
+                <div class="slds-modal__header">
+                    <h2 class="slds-text-heading--medium">New Follow Up Step</h2>
+            </div>
+            <lightning:recordEditForm aura:id="recordViewForm" objectApiName="Follow_Up_Step__c">
+
+            <div class="slds-modal__content slds-p-around--medium slds-grid slds-wrap ">
+                <div class="slds-size--1-of-1 slds-p-horizontal_x-small">
+                    <h3 class="slds-section__title slds-theme_shade">
+                        <span class="slds-truncate slds-p-horizontal_small" title="Section Title">Information</span>
+                    </h3>
+                </div>
+                    <div class="slds-size--1-of-2 slds-p-horizontal_x-small">
+                            
+                    <!-- <lightning:inputField aura:id="Step__c" fieldName="Step__c" value="{!v.Step}" onchange="{!c.onChange}"/> -->
+                    <!-- <lightning:inputField aura:id="Step_Status__c" fieldName="Step_Status__c" disabled="{!v.disable}"/> -->
+                    <lightning:select aura:id="Step__c" label="Step" disabled="true"
+                            value="{!v.Step}" onchange="{! c.onChange }">
+                            <option value="" selected="">--None--</option>
+                            <aura:iteration items="{!v.picklistValues1}" var="option">
+                                <option value="{!option.value}" selected="">{!option}</option>
+                            </aura:iteration>
+                        </lightning:select>
+                    <lightning:select Name="Step_Status__c" aura:id="Step_Status__c" label="Step Status" required="true"
+                            value="{!v.StepStatus}">
+                            <option value="" selected="">--None--</option>
+                            <aura:iteration items="{!v.picklistStepStatus}" var="option">
+                                <option value="{!option.value}" selected="">{!option.label}</option>
+                            </aura:iteration>
+                        </lightning:select>
+                    <lightning:input Name="Phone_SMS_Email__c" aura:id="Phone_SMS_Email__c" label="Phone/SMS/Email" value="{!v.Phone_SMS_Email__c}" required="true"/>
+                    <lightning:inputField Name="Contact_Date__c" aura:id="Contact_Date__c" fieldName="Contact_Date__c"/>
+                    
+                </div>
+                <div class="slds-size--1-of-2 slds-p-horizontal_x-small">
+                    <lightning:inputField aura:id="Case__c" fieldName="Case__c" value="{!v.recordId}" disabled="true" />
+                    <lightning:inputField aura:id="OwnerId" fieldName="OwnerId" />
+                </div>
+                
+                <div class="slds-size--1-of-1 slds-p-horizontal_x-small">
+                    <lightning:inputField aura:id="Remark__c" fieldName="Remark__c" />
+                </div>
+            </div>
+            </lightning:recordEditForm>
+            
+            <div class="slds-modal__footer slds-modal__footer_directional">                
+                    <lightning:button variant="neutral" label="Cancel" onclick="{!c.Cancel}" />
+                    <lightning:button variant="brand" label="Save" onclick="{!c.saveRecord}" />
+                </div>
+        </div>
+
+        
+    </div>
+</aura:component>

@@ -1,0 +1,17 @@
+.THIS .slds-readonly-path {
+    pointer-events: none;
+}
+
+.THIS .custom-cursor {
+    cursor: pointer;
+}
+
+.THIS .narrow-div{
+    margin-left: 2%;
+    margin-right: 2%;
+}
+
+.THIS .custom-theme_clinicalblocked {
+    background-color:#2F82FF; 
+    color: white;
+}

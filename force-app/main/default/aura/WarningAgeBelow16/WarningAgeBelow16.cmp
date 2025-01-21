@@ -1,0 +1,12 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId">
+    <aura:attribute name="caseRecord" type="Case" />
+    <aura:attribute name="showWarning" type="Boolean" default="false" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    
+    <aura:if isTrue="{!v.showWarning}">
+        <div style="color: red;">
+            Warning: The patient's age is 16 years or younger.
+        </div>
+    </aura:if>
+</aura:component>

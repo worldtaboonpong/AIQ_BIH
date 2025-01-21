@@ -1,0 +1,62 @@
+<aura:component controller="TC_CancelAppointmentCtrl" implements="force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global">
+    <aura:attribute name="recordId" type="string"/>
+    <aura:attribute name="appointment" type="Appointment__c" default="{
+                                                                      'sObjectType':'Appointment__c', 
+                                                                      'Reason_for_Cancellation__c':null,
+                                                                      'Free_Text_Reason_for_Cancellation__c':'',
+                                                                      'Discontinue_Orders__c':true
+                                                                      }"/>
+    
+    <aura:html tag="style">
+        .cuf-content,
+        .slds-modal__content {
+        padding: 0 !important;
+        }
+        
+        #wrapper-body,
+        .baseDefault,
+        .forceChatterPublisherPresentationPanel,
+        .container,
+        .cuf-content {
+        height: 100%;
+        }
+        
+        .quick-actions-panel > .slds-modal__content {
+        min-height: 300px !important;
+        }
+        
+        .outer-wrapper {
+        height: 100%;
+        max-height: 800px !important;
+        display: flex;
+        flex-direction: column;
+        }
+        
+        .funding-content {
+        flex: 1;
+        }
+        
+        .slds-modal__container {
+        width: 60% !important;
+        max-width: 60% !important;
+        }
+    </aura:html>
+    
+    <div class="outer-wrapper">
+        <div class="slds-modal__header funding-header">
+            <h1 class="slds-modal__title slds-hyphenate">Cancel Appointment</h1>
+        </div>
+        <div class="slds-modal__content slds-p-around_medium funding-content">
+            <lightning:recordEditForm aura:id="appointmentFormId" objectApiName="Appointment__c" density="comfy">
+                <lightning:inputField fieldName="Reason_for_Cancellation__c" value="{!v.appointment.Reason_for_Cancellation__c}" required="true" />
+                <lightning:inputField fieldName="Free_Text_Reason_for_Cancellation__c" value="{!v.appointment.Free_Text_Reason_for_Cancellation__c}"/>
+                <!--lightning:inputField fieldName="Discontinue_Orders__c" value="{!v.appointment.Discontinue_Orders__c}" onchange="{!c.doDisOrders}"/-->
+                <lightning:input type="checkbox" label="Discontinue Orders" name="discontinueOrders" checked="{!v.appointment.Discontinue_Orders__c}"/>
+            </lightning:recordEditForm>
+        </div>
+        <div class="slds-modal__footer funding-footer">
+            <lightning:button variant="brand" label="Cancel" onclick="{!c.doCancel}"/>
+            <lightning:button variant="brand" label="Ok" onclick="{!c.doOk}"/>
+        </div>
+    </div>
+</aura:component>

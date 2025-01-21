@@ -1,0 +1,8 @@
+<aura:component controller="ProxyRedirectFollowUpStepCtrl" implements="force:hasSObjectName,lightning:isUrlAddressable,lightning:actionOverride,force:hasRecordId"
+    access="global">
+    <lightning:workspaceAPI aura:id="workspace"/>
+    <aura:handler name="init" value="{!this}" action="{!c.onInit}" />
+    <aura:attribute name="caseObj" type="Case" default="" />
+    <!-- <aura:attribute name="recordId" type="String"/> -->
+    <lightning:navigation aura:id="followupService"/>
+</aura:component>

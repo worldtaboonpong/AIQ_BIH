@@ -1,0 +1,678 @@
+<apex:page controller="BIH_DoctorScheduleCtrl" title="Doctor Schedule" lightningStyleSheets="true" standardStylesheets="false"
+    sidebar="false">
+    <style>
+        .google-visualization-tooltip {
+            opacity: 1 !important;
+            /* max-width: 200px !important; */
+            width: auto!important;
+            height: auto!important;
+        }
+
+        .google-visualization-tooltip hr {
+            margin: 5px 0 !important;
+        }
+
+        .google-visualization-tooltip[clone] {
+            opacity: 1 !important;
+        }
+
+        html body.sfdcBody {
+            padding: 0px;
+        }
+
+        .slds-scope.gantt-chart {
+            padding: 1rem;
+        }
+
+        .card-doctor-info {
+            position: sticky;
+            top: 1rem;
+            margin: 1rem 0;
+            /* z-index: 100000; */
+            /* width: 40%; */
+        }
+        .hide-spinner{
+            display: none;
+        }
+        .slds-form-element__help.hide-error{
+            display: none;
+        }
+        #ToastMessage{
+           visibility: hidden;
+        }
+        #ToastMessage.show{
+             visibility: visible;
+            -webkit-animation: fadein 0.5s, fadeout 0.5s 3.5s;
+            animation: fadein 0.5s, fadeout 0.5s 3.5s;
+            z-index: 1000000;
+        }
+        @keyframes fadein {
+            from {
+                opacity:0;
+            }
+            to {
+                opacity:1;
+            }
+        }
+        @-webkit-keyframes fadein { /* Safari and Chrome */
+            from {
+                opacity:0;
+            }
+            to {
+                opacity:1;
+            }
+        }
+        @-webkit-keyframes fadeout {
+            from { opacity: 1;} 
+            to {opacity: 0;}
+        }
+
+        @keyframes fadeout {
+            from { opacity: 1;}
+            to { opacity: 0;}
+        }
+        /* #ToastMessage{
+            -webkit-animation: fadeinout 1s linear forwards;
+            animation: fadeinout 1s linear forwards;
+        }
+        @-webkit-keyframes fadeinout {
+            0%,100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes fadeinout {
+            0%,100% { opacity: 0; }
+            50% { opacity: 1; }
+        } */
+    </style>
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" lang="en">
+
+    <head>
+        <apex:slds />
+        <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
+    </head>
+
+    <body style="background-color:white;border-radius:5px">
+        <input id="currentpage" type="hidden" value=""></input>
+        <input id="sizeObj" type="hidden" value=""></input>
+        <!-- TOAST-->
+        <div class="demo-only" style="position: absolute;left:50%" id="ToastMessage">
+            <div class="slds-notify_container slds-is-relative" style="left:-50%;">
+                <div class="slds-notify slds-notify_toast slds-theme_error" role="status">
+                    <span class="slds-assistive-text">error</span>
+                    <span class="slds-icon_container slds-icon-utility-error slds-m-right_small slds-no-flex slds-align-top" title="Description of icon when needed">
+                        <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                            <use xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#error"></use>
+                        </svg>
+                    </span>
+                    <div class="slds-notify__content">
+                        <h2 class="slds-text-heading_small ">Cannot Connect with TrakCare. Please try again. </h2>
+                            <!-- <a href="javascript:void(0);">another lead</a> has the same name. -->
+                    </div>
+                    <div class="slds-notify__close">
+                        <button class="slds-button slds-button_icon slds-button_icon-inverse" title="Close">
+                            <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                                <use xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+                            </svg>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- TOAST-->
+
+        <div class="slds-scope gantt-chart">
+            <h3 class="slds-section__title">
+                <button aria-controls="expando-unique-id" aria-expanded="true" class="slds-button slds-section__title-action">
+                    <span class="slds-truncate" title="Section Title">Doctor Schedule</span>
+                </button>
+            </h3>
+            <!-- <apex:form> -->
+            <!-- <apex:selectList value="{!SpecialtyPickList}" multiselect="false" size="1">
+                    
+                </apex:selectList> -->
+            <!-- </apex:form> -->
+            <div class="slds-grid slds-gutters ">
+                <div class="slds-col slds-size_1-of-4">
+                    <div class="card-doctor-info">
+
+                        <article class="slds-card">
+                            <div class="slds-card__header slds-grid">
+                                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                    <div class="slds-media__figure">
+                                        <span class="slds-icon_container slds-icon-standard-account" title="account">
+                                            <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                                <use xlink:href="/apexpages/slds/latest/assets/icons/standard-sprite/svg/symbols.svg#account"></use>
+                                            </svg>
+                                            <span class="slds-assistive-text">account</span>
+                                        </span>
+                                    </div>
+                                    <div class="slds-media__body">
+                                        <h2 class="slds-card__header-title">
+                                            <!-- <a href="javascript:void(0);" class="slds-card__header-link slds-truncate" title="Accounts"> -->
+                                            <span>Search By Filter</span>
+                                            <!-- </a> -->
+                                        </h2>
+                                    </div>
+                                </header>
+                            </div>
+                            <div class="slds-card__body slds-card__body_inner">
+                                <div class="slds-grid slds-grid_vertical">
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <div class="slds-form-element">
+                                            <abbr class="slds-required" title="required">* </abbr><label class="slds-form-element__label" for="specialty_01">Specialty</label>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-select_container">
+                                                    <select class="slds-select" id="specialty_01">
+                                                        <option value="none">--None--</option>
+                                                        <apex:repeat value="{!SpecialtyPickList }" var="key">
+                                                            <option value="{!key.value}"> {!key.label}</option>
+                                                        </apex:repeat>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="slds-form-element__help hide-error" id="specialty_01-error">This field is required</div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <div class="slds-form-element">
+                                            <label class="slds-form-element__label" for="specialty_02">Sub Specialty</label>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-select_container">
+                                                    <select class="slds-select" id="specialty_02">
+                                                        <option value="none">--None--</option>
+                                                        <apex:repeat value="{!Specialty2PickList }" var="key">
+                                                            <option value="{!key.value}"> {!key.label}</option>
+                                                        </apex:repeat>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="slds-form-element__help hide-error" id="specialty_02-error">This field is required</div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <div class="slds-form-element">
+                                            <abbr class="slds-required" title="required">* </abbr><label class="slds-form-element__label" for="text-input-id-1">Date</label>
+                                            <div class="slds-form-element__control">
+                                                <input id="date-input" type="date" value="{!dTString}" class="slds-input"></input>
+                                            </div>
+                                            <div class="slds-form-element__help hide-error" id="date-input-error">This field is incorrect format date</div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <button style=" margin: 1rem 0 .25rem 0;" class="slds-button slds-button_brand slds-button_stretch" type="submit" id="submit"
+                                            onclick="onSearch()">Search</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+
+                        <!---->
+                        <div class="" style=" margin-top: 1rem; ">
+                            <div class="slds-page-header slds-page-header_record-home">
+                                <div class="slds-page-header__row">
+                                    <div class="slds-page-header__col-title">
+                                        <div class="slds-media">
+                                            <div class="slds-media__figure">
+                                                <span class="slds-icon_container slds-icon-standard-opportunity">
+
+                                                    <svg class="slds-icon slds-page-header__icon" aria-hidden="true">
+                                                        <!-- <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#opportunity"></use> -->
+                                                        <use xlink:href="/apexpages/slds/latest/assets/icons/standard-sprite/svg/symbols.svg#event"></use>
+                                                    </svg>
+                                                </span>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <div class="slds-page-header__name">
+                                                    <div class="slds-page-header__name-title">
+                                                        <h1>
+                                                            <span>Date</span>
+                                                            <span class="slds-page-header__title slds-truncate" id="date_doctor">
+                                                                <apex:outputText value="{0,date,dd' 'MMM' 'yyyy}">
+                                                                    <apex:param value="{!dT}" />
+                                                                </apex:outputText>
+                                                            </span>
+                                                        </h1>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-page-header__row slds-page-header__row_gutters">
+                                    <div class="slds-page-header__col-details">
+                                        <ul class=" slds-page-header__detail-row " style="display:block">
+                                            <div class="slds-grid slds-grid_vertical">
+                                                <div class="slds-col slds-size_1-of-1">
+                                                    <div class="slds-form-element slds-form-element_readonly">
+                                                        <span class="slds-form-element__label">Doctor Name</span>
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-form-element__static" id="doctor_name"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-1">
+                                                    <div class="slds-form-element slds-form-element_readonly">
+                                                        <span class="slds-form-element__label">MD Code</span>
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-form-element__static" id="md_code"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="slds-grid slds-grid_vertical">
+                                                <div class="slds-col slds-size_1-of-1">
+                                                    <div class="slds-form-element slds-form-element_readonly">
+                                                        <span class="slds-form-element__label">Specialty</span>
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-form-element__static" id="specialty_1"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-1">
+                                                    <div class="slds-form-element slds-form-element_readonly">
+                                                        <span class="slds-form-element__label">Sub Specialty</span>
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-form-element__static" id="specialty_2"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="slds-grid slds-grid_vertical">
+                                                <div class="slds-col slds-size_1-of-1">
+                                                    <div class="slds-form-element">
+                                                        <span class="slds-form-element__label">Doctor Note</span>
+                                                        <div class="slds-form-element__control slds-border_bottom">
+                                                            <div class="slds-form-element__static" id="doctor_note"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ul>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="slds-col slds-size_3-of-4" style="position:relative;">
+                <div class="spinner hide-spinner" id="spinner">
+                    <div class="slds-spinner_container">
+                        <div role="status" class="slds-spinner slds-spinner_medium">
+                            <span class="slds-assistive-text">Loading</span>
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                        </div>
+                    </div>
+                </div>
+                    <div style="margin: 1rem 0;text-align: center;">
+
+                        <button class="slds-button slds-button_outline-brand" title="Back" onclick="onPreviousPage()" style="width: 8rem;float: left">
+                            <svg class="slds-button__icon button__icon_left" aria-hidden="true">
+                                <use xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#back"></use>
+                            </svg>
+                            
+                            <span class="slds-assistive-text">Back</span>
+                             Previous
+                        </button>
+                        <select class="slds-select" id="select_page" onchange="onChangePage(this)" style="line-height: 1;vertical-align: middle;width:5rem;">
+                            <!-- <option value="1">1</option> -->
+                            <!-- <option value="2">2</option>
+                            <option value="3">3</option> -->
+                        </select>
+                        <button class="slds-button slds-button_outline-brand" title="Next" onclick="onNextPage()" style="width: 8rem;float: right">
+                             Next
+                            <svg class="slds-button__icon button__icon_right" aria-hidden="true">
+                                <use xlink:href="/apexpages/slds/latest/assets/icons/utility-sprite/svg/symbols.svg#forward"></use>
+                            </svg>
+                            <span class="slds-assistive-text">Next</span>
+                        </button>
+
+                    </div>
+
+                    <div id="chart_div" style=" margin-top: 1rem; "></div>
+                    </div>
+            </div>
+        </div>
+
+
+
+        <!-- <div style=" margin-top: 1rem; ">
+                 Date :
+                <apex:outputText value="{0,date,dd' 'MMM' 'yyyy}">
+                    <apex:param value="{!dT}" />
+                </apex:outputText>
+               </div> -->
+
+
+
+
+    </body>
+
+    </html>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var doctorList;
+        });
+
+        function generateChart(DataFromRemoteAtion) {
+            var data_tmp = DataFromRemoteAtion.timeslotList;
+            doctorList = DataFromRemoteAtion.doctorList;
+
+            google.charts.load('current', { 'packages': ['timeline'] });
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+                var data = google.visualization.arrayToDataTable([
+                    [{ label: 'Doctor Name', type: 'string' },
+                    { type: 'string', id: 'MDCODE' },
+                    { type: 'string', role: 'tooltip', 'p': { 'html': true } },
+                    { type: 'string', role: 'style' },
+                    { type: 'string', role: 'style' },
+                    { label: 'Start Date', type: 'datetime' },
+                    { label: 'End Date', type: 'datetime' },],
+                    /*  ======= for mock =======*/
+                    //  ['Achirawin Jirakamolchaisiri (Dr.)', 'Medicine','test',null, '#cbb69d', new Date(2018, 3, 29, 3), new Date(2018, 3, 29, 4),],
+                    //  ['Achirawin Jirakamolchaisiri (Dr.)', 'Gastroenterology & Hepatology', 'test', null, '#fff', new Date(2018, 3, 29, 4, 15), new Date(2018, 3, 29, 4, 30),],
+                    //  ['Achirawin Jirakamolchaisiri (Dr.)', 'Gastroenterology & Hepatology', 'test', null, '#cbb69d', new Date(2018, 3, 29, 5, 15), new Date(2018, 3, 29, 6, 30),],
+                    //  ['Achirawin Jirakamolchaisiri (Dr.)', 'Gastroenterology', 'test', null, new Date(2018, 3, 29,20, 15), new Date(2018, 3, 29,21, 30),],
+                    //  ['Scott Lane (Dr.)', 'Medicine', 'test', null, new Date(2018, 3, 29, 4), new Date(2018, 3, 29, 4,30),],
+                    //  ['Scott Lane (Dr.)', 'Gastroenterology', 'test', null, new Date(2018, 3, 29, 4, 45), new Date(2018, 3, 29, 5, 0),],
+                    //  ['Scott Lane (Dr.)', 'Gastroenterology & Hepatology', 'test', null, new Date(2018, 3, 29, 6, 15), new Date(2018, 3, 29, 6, 30),],
+                    //  ['Scott Lane (Dr.)', 'OB/GYN (Men)', 'test', null, new Date(2018, 3, 29, 14, 15), new Date(2018, 3, 29, 14, 30),],
+                    //  ['Ake Hansasuta (Dr.)', 'OB/GYN (Women)', 'test', null, new Date(2018, 3, 29, 9, 15), new Date(2018, 3, 29, 9, 30),],
+                    //  ['Ake Hansasuta (Dr.)', 'Orthopaedics (Bone)', 'test', null, new Date(2018, 3, 29, 10, 15), new Date(2018, 3, 29, 10, 30),],
+                    //  ['Ake Hansasuta (Dr.)', 'OB/GYN (Women)', 'test', null, new Date(2018, 3, 29, 11, 15), new Date(2018, 3, 29, 13, 30),],
+                    //  ['Ponglada Subhannachart(Dr.)', 'Radiology', 'test', null, new Date(2018, 3, 29, 0, 15), new Date(2018, 3, 29, 0, 30),],
+                    //  ['Ponglada Subhannachart(Dr.)', 'Radiology', 'test', null, new Date(2018, 3, 29, 3, 15), new Date(2018, 3, 29, 4, 30),],
+                    //  ['Ponglada Subhannachart(Dr.)', 'Radiology', 'test', null, new Date(2018, 3, 29, 20, 15), new Date(2018, 3, 29, 20, 30),],
+                    //  ['Ponglada Subhannachart(Dr.)', 'Radiology', 'test', null, new Date(2018, 3, 29, 21, 15), new Date(2018, 3, 29, 22, 30),],
+                    //  ['Ponglada Subhannachart(Dr.)', 'Orthopaedics (Bone)', 'test', null, new Date(2018, 3, 29, 23, 15), new Date(2018, 3, 29, 23, 30),],
+                    //  ['Ponglada test)', 'Orthopaedics (Bone)', 'test', null, new Date(2018, 3, 29, 23, 15), new Date(2018, 3, 29, 23, 15),],
+                    /*  ======= for mock =======*/
+                ]);
+                var datainput = $('#date-input').val();
+                var showdate = new Date(datainput);
+                var count = 1;
+                data_tmp.forEach(element => {
+                    var color;
+                    if (count % 2 == 0) {
+                        color = '#6FA798';
+                    } else {
+                        color = '#468B78';
+                    }
+                    if (element.length > 1) {
+
+                        //   console.log('ele date : ' + element[2]);
+                        //  console.log('ele date : '+new Date(element[2]));
+                        var start_date = element[2].split("T")[0];
+                        var start_time = element[2].split("T")[1];
+                        var end_date = element[3].split("T")[0];
+                        var end_time = element[3].split("T")[1];
+                        var tmrDate =  new Date(showdate.getFullYear(), showdate.getMonth(), showdate.getDate()+1);
+                        var fullstartDate = new Date(start_date.split("-")[0], start_date.split("-")[1] - 1, start_date.split("-")[2], start_time.split(":")[0], start_time.split(":")[1] - 1, start_time.split(":")[2]);
+                        var fullendDate = new Date(end_date.split("-")[0], end_date.split("-")[1] - 1, end_date.split("-")[2], end_time.split(":")[0], end_time.split(":")[1] - 1, end_time.split(":")[2]);
+                        if(fullstartDate< tmrDate){
+                            data.addRow([element[0], element[6], createCustomHTMLContent(element[1], start_date, start_time, end_date, end_time, element[4], element[5], element[6]), null, color,fullstartDate, fullendDate]);
+                            count++;
+                        }
+                    } else {
+                        data.addRow([element[0], '', '', null, 'opacity: 0;', new Date(showdate.getFullYear(), showdate.getMonth(), showdate.getDate(),5,0,0), new Date(showdate.getFullYear(), showdate.getMonth(), showdate.getDate(),5,0,0)]);
+                    }
+
+                });
+                var heightChart = Object.keys(doctorList).length * 41 + 70;
+                var options = {
+                    height: heightChart,
+                    hAxis: {
+                        format: 'HH:mm',
+                        minValue: new Date(showdate.getFullYear(), showdate.getMonth(), showdate.getDate(), 5, 0, 0),
+                        maxValue: new Date(showdate.getFullYear(), showdate.getMonth(), (showdate.getDate() + 1), 0, 0, 0),
+                    },
+                    timeline: { colorByRowLabel: true, showBarLabels: false },
+                    tooltip: {
+                        isHtml: true
+                    },
+                };
+
+                var chart = new google.visualization.Timeline(document.getElementById('chart_div'));
+                /*==== this event for click the time slot action ====*/
+                google.visualization.events.addListener(chart, 'select', function (e) {
+                    //get doctor information
+                    var selection = chart.getSelection();
+                    if (selection.length > 0) {
+                        var tmpmd = data.getValue(selection[0].row, 1);
+                        var docObj = doctorList[tmpmd];
+                        $('#date_doctor').html(showdate.toShortFormat());
+                        $('#doctor_name').html(docObj.Doctor_First_Name__c + ' ' + docObj.Doctor_Last_Name__c);
+                        $('#md_code').html(tmpmd);
+                        $('#specialty_1').html(docObj.Specialty__c);
+                        $('#specialty_2').html(docObj.Specialty2__c);
+                        if (docObj.Doctor_Private_Note__c != undefined && docObj.Doctor_Private_Note__c != '' && docObj.Doctor_Private_Note__c != null) {
+                            $('#doctor_note').html(docObj.Doctor_Private_Note__c);
+                        }else{
+                            $('#doctor_note').html('');
+                        }
+
+                    }
+
+
+                    //the built-in tooltip
+                    var tooltip = document.querySelector('.google-visualization-tooltip:not([clone])');
+                    //remove previous clone when there is any
+                    //  console.log(chart.ttclone);
+                    if (chart.ttclone) {
+                        chart.ttclone.parentNode.removeChild(chart.ttclone)
+                    }
+                    //create a clone of the built-in tooltip
+                    chart.ttclone = tooltip.cloneNode(true);
+                    //create a custom attribute to be able to distinguish
+                    //built-in tooltip and clone
+                    chart.ttclone.setAttribute('clone', true);
+                    //inject clone into document
+                    tooltip.parentNode.insertBefore(chart.ttclone, chart.tooltip);
+                });
+                chart.draw(data, options);
+                google.visualization.events.addListener(chart, 'ready', afterDraw);
+                chart.draw(data, options);
+                
+            }
+
+             /*==== this function for custom tooptip ====*/
+            function createCustomHTMLContent(code, startDate, startTime, endDate, endTime, locationCode, locationName, mdcode) {
+
+               
+                var tmpStartDate = new Date(startDate.split("-")[0], startDate.split("-")[1] - 1, startDate.split("-")[2], startTime.split(":")[0], startTime.split(":")[1] - 1, startTime.split(":")[2]);
+                var tmpEndDate = new Date(endDate.split("-")[0], endDate.split("-")[1] - 1, endDate.split("-")[2], endTime.split(":")[0], endTime.split(":")[1] - 1, endTime.split(":")[2]);
+                var duration = (tmpEndDate.getTime() - tmpStartDate.getTime()) / 1000;
+                var hours = parseInt(duration / 3600) % 24;
+                var minutes = parseInt(duration / 60) % 60;
+                var seconds = duration % 60;
+                var content = '<div style="padding:5px 5px 5px 5px;">' +
+                    '<b>Code :</b> ' + code + '</br>' +
+                    '<b>Location Code :</b> ' + locationCode + '</br>' +
+                    '<b>Location Name :</b> ' + locationName + '</br>' +
+                    '<hr></hr>' +
+                    '<b>Start Date :</b> ' + tmpStartDate.toShortFormat() + ' ' + pad_with_zeroes(2, tmpStartDate.getHours()) + ':' + pad_with_zeroes(2, tmpStartDate.getMinutes()) + '</br>' +
+                    '<b>End Date :</b> ' + tmpEndDate.toShortFormat() + ' ' + pad_with_zeroes(2, tmpEndDate.getHours()) + ':' + pad_with_zeroes(2, tmpEndDate.getMinutes()) + '</br>' +
+                    '<b>Duration :</b> ' + (hours == 0 ? '' : hours + ' hours ') + minutes + ' minutes ' + (seconds == 0 ? '' : seconds + ' seconds ') + '</br>';
+
+                return content;
+            } 
+            
+
+            /*==== this function for transform time label to top position ====*/
+            function afterDraw() {
+                var g = document.getElementById("chart_div").getElementsByTagName("svg")[0].getElementsByTagName("g");
+                for(var i =0; i< g.length;i++){
+                    if(document.getElementById("chart_div").getElementsByTagName("svg")[0].getElementsByTagName("g")[i].getElementsByTagName("text").length > 16){
+                        g = document.getElementById("chart_div").getElementsByTagName("svg")[0].getElementsByTagName("g")[i];
+                        document.getElementById("chart_div").getElementsByTagName("svg")[0].parentNode.style.top = '40px';
+                        document.getElementById("chart_div").getElementsByTagName("svg")[0].style.overflow = 'visible';
+                        var height = Number(g.getElementsByTagName("text")[0].getAttribute('y')) + 15;
+                        g.setAttribute('transform', 'translate(0,-' + height + ')');
+                        g = null;
+                        break;
+                    }
+                }
+                
+            };
+
+        }
+        function onNextPage() {
+            var pageNo = $('#currentpage').val();
+            var sizeObj = $('#sizeObj').val();
+            var tmpPageNo = (+pageNo + 1);
+            var tmpSizePage = Math.ceil(sizeObj / 2);
+            if(tmpPageNo < (+tmpSizePage+1)){
+                getSearchDoctorSchedule(tmpPageNo, sizeObj);
+            }
+        }
+        function onChangePage(v){
+            var sizeObj = $('#sizeObj').val();
+            getSearchDoctorSchedule(v.value, sizeObj);
+        }
+        function onPreviousPage() {
+            var pageNo = $('#currentpage').val();
+            var sizeObj = $('#sizeObj').val();
+            var tmpPageNo = (+pageNo -1);
+            if(pageNo > 1){ 
+                getSearchDoctorSchedule( tmpPageNo, sizeObj);
+            }
+        }
+        function onSearch() {
+            var validation = true;
+            if($("#specialty_01").val() == 'none'){
+                $("#specialty_01").parent().parent().parent().addClass('slds-has-error');
+                $("#specialty_01-error").removeClass('hide-error');
+                validation = false;
+            }else{
+                $("#specialty_01").parent().parent().parent().removeClass('slds-has-error');
+                $("#specialty_01-error").addClass('hide-error');
+            }
+
+            // if ($("#specialty_02").val() == 'none') {
+            //     $("#specialty_02").parent().parent().parent().addClass('slds-has-error');
+            //     $("#specialty_02-error").removeClass('hide-error');
+            //     validation = false;
+            // }else{
+            //     $("#specialty_02").parent().parent().parent().removeClass('slds-has-error');
+            //     $("#specialty_02-error").addClass('hide-error');
+            // }
+
+            if ($("#date-input").val() =='') {
+                $("#date-input").parent().parent().addClass('slds-has-error');
+                $("#date-input-error").removeClass('hide-error');
+                validation = false;
+            }else{
+                $("#date-input").parent().parent().removeClass('slds-has-error');
+                $("#date-input-error").addClass('hide-error');
+            }
+            console.log('validation : ' + validation);
+            if(validation == true){
+                getSearchDoctorSchedule(1,null);
+            }
+            
+        }
+    
+        function getSearchDoctorSchedule(pageNo, sizeObj) {
+            console.log(' : getSearchDoctorSchedule : ');
+            $('#submit').attr('Disabled','');
+            $('#spinner').removeClass('hide-spinner');
+            var startdate = $('#date-input').val();
+            var specialty = $('#specialty_01').val();
+            var specialty2 = $('#specialty_02').val();
+            if(specialty2 == 'none'){
+                specialty2 = '';
+            }
+            Visualforce.remoting.Manager.invokeAction(
+                //Invoking controller action getcon
+                '{!$RemoteAction.BIH_DoctorScheduleCtrl.getListDoctorBySearching}',
+                specialty, specialty2, startdate, pageNo, sizeObj,
+                function (result, event) {
+                    //We can access the records through the parameter result
+                    //event.status determines if there is error or not 
+                    console.log('event.status : '+event.status);
+                    // console.log('sumit is : ' + $('#submit').attr("disabled"));
+                    if (event.status) {
+                        var offsetperpage = 15;
+                        var tmpoption ='';
+                         $('#spinner').addClass('hide-spinner');
+                        
+                        if ($('#submit').attr("disabled") == 'disabled') {
+                            $('#submit').removeAttr("disabled");
+                        }
+                        $('#sizeObj').val(result.sizeOfObj);
+                        $('#currentpage').val(result.currentPage);
+
+                        
+                        for(var i =0; i < Math.ceil(result.sizeOfObj / offsetperpage);i++ ){
+                            tmpoption += '<option value="'+(+i+1)+'"> ' + (+i + 1) +'</option> ';
+                        }
+                        console.log('tmpoption : '+ tmpoption);
+                        
+                        $('#select_page').html(tmpoption);
+                        $('#select_page').val(result.currentPage);
+
+                        generateChart(result);
+                        // return result;
+                    }else{
+                        toastLaunch();
+                        var x = document.getElementById("ToastMessage");
+                        x.className = "show";
+                        setTimeout(function () { x.className = x.className.replace("show", ""); }, 4000);
+                         $('#spinner').addClass('hide-spinner');
+                        if ($('#submit').attr("Disabled") == 'disabled') {
+                            $('#submit').removeAttr("disabled");
+                        }
+                        // console.log(result);
+                    }
+
+                },
+                { escape: true }
+            );
+        }
+        function toastLaunch() {
+            var element = document.getElementById("ToastMessage");
+            element.classList.toggle("slds-hidden");
+        }
+        Date.prototype.addHours = function (h) {
+            this.setTime(this.getTime() + (h * 60 * 60 * 1000));
+            // console.log(this);
+
+            return this;
+        }
+
+        Date.prototype.toShortFormat = function () {
+
+            var month_names = ["Jan", "Feb", "Mar",
+                "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep",
+                "Oct", "Nov", "Dec"];
+
+            var day = this.getDate();
+            var month_index = this.getMonth();
+            var year = this.getFullYear();
+
+            return "" + day + " " + month_names[month_index] + " " + year;
+        }
+        function pad_with_zeroes(length, str) {
+
+            var my_string = '' + str;
+            while (my_string.length < length) {
+                my_string = '0' + my_string;
+            }
+
+            return my_string;
+
+        }
+    </script>
+
+</apex:page>

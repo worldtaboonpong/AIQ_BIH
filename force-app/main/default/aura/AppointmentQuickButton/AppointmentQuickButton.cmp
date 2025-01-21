@@ -1,0 +1,7 @@
+<aura:component controller="AppointmentQuickCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    <lightning:navigation aura:id="navService" />
+    
+    <lightning:button class="slds-theme_neutral" iconPosition="left" variant="neutral" label="Appointment Card" onclick="{!c.navigateToGeneratePDF}" iconName="utility:download" />
+</aura:component>

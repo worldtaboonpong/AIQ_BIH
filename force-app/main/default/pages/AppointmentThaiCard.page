@@ -1,0 +1,231 @@
+<apex:page controller="AppointmentCardPDF" renderAs="pdf" showHeader="false" sidebar="false" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false">
+    <head>
+        
+        <style>
+            
+            @page {
+            margin: 0.5cm 1cm 0.5cm 1cm;
+            @bottom-center{
+            content : element(footer);
+            }
+            }
+            div.footer{
+            position : running(footer);
+            }
+            body{
+            font-family: Arial Unicode MS;
+            font-size: 14px;
+            -fs-pdf-font-embed: embed;
+            -fs-pdf-font-encoding: Identity-H;
+            }
+            table { 
+            border-collapse:collapse;
+            border: .02em solid black;
+            
+            }
+            
+            td, th { 
+            border: .02em solid black;
+            padding : 5px;
+            }
+            table.htmlDetailElementTable { 
+            border-collapse:unset;
+            border: none;
+            /* margin: 0.5c/m 1cm 0.5cm 0.5cm; */
+            /* padding-left:1cm; */
+            
+            }
+            table.htmlDetailElementTable p { 
+            margin: 0 auto;
+            }
+            table.htmlDetailElementTable p:first-child { 
+            }
+            
+            .htmlDetailElementTable td,.htmlDetailElementTable th { 
+            border: none;
+            }
+            .sfdc_richtext{
+            padding-left: 10%;
+            }
+            .noBorder {
+            border:none !important;
+            }
+            .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            text-align: center;
+            /* Other header styles */
+            }
+            .footer1 {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            }
+            .content {
+            padding-top: 180px; /* Adjust to match the header's height */
+            padding-bottom: 0px; /* Adjust to match the footer's height */
+            /* Other content styles */
+            }
+            .no-page-break {
+            page-break-inside: avoid;
+            }
+            .long-text {
+            white-space: normal; /* or 'pre-wrap' if you want to preserve line breaks */
+            overflow: hidden; /* or 'auto' if you want to add a scrollbar for long content */
+            max-height: 200px; /* Adjust as needed */
+            }
+            .page-break {
+            page-break-after: always;
+            }
+            .table-wrapper {
+            page-break-inside: avoid;
+            }
+            .page-break-after {
+            page-break-after: always;
+            }
+            
+            
+            
+        </style>
+        
+    </head>
+    
+    <body>
+        <apex:variable value="{!0}" var="checklastPage" />
+        <apex:repeat value="{!mapPageWrapper}" var="page" >
+            <apex:variable value="{!checklastPage+1}" var="checklastPage" />
+            <!--Heeder Logo-->
+            <div class="header">
+                
+                <div style="position:absolute; top:0;left:0;">
+                    
+                    <apex:image url="{!$Resource.LogoPDF }" style="float:left; height:100px;" />
+                </div>
+                
+                <!--Date-->
+                <div style="padding-top:100px;">
+                    <table style="width: 100%;" class="noBorder">
+                        <tbody>
+                            <tr>
+                                <td class="noBorder" valign="top" style="text-align: center;"><div style="overflow-wrap: break-word;word-break: break-all;width: 160px"><center>APPOINTMENT LIST</center></div></td>
+                                <td class="noBorder" valign="top" style="text-align: center;"><div style="overflow-wrap: break-word;word-break: break-all;width: 160px">HN {!Hospital_Number_HN}</div></td>
+                                <td class="noBorder" valign="top" style="text-align: left;"><div style="overflow-wrap: break-word;word-break: break-all;width: 160px">{!Salutation} {!Name}</div></td>
+                                <td class="noBorder" valign="top" style="text-align: center;"><div style="overflow-wrap: break-word;word-break: break-all;width: 160px"></div></td>
+                            </tr>
+                            <tr>
+                                <td class="noBorder"><div style="overflow-wrap: break-word;word-break: break-all;width: 160px"></div></td>
+                                <td class="noBorder" valign="top" style="text-align: center;"><div style="overflow-wrap: break-word;word-break: break-all;width: 160px"> <img style = "width: 100px;height:30px;" src="{!Barcode}"/></div></td>
+                                <td class="noBorder" valign="top" style="text-align: left;"><div style="overflow-wrap: break-word;word-break: break-all;width: 160px">DOB <span><apex:outputText value="{0, date,d MMM  yyyy}">
+                                    <apex:param value="{!DOB}" />
+                                    </apex:outputText></span>
+                                    
+                                    </div>
+                                </td>
+                                <td class="noBorder" valign="top" style="text-align: left;"><div style="overflow-wrap: break-word;word-break: break-all;width: 160px">Age {!Age}</div></td>
+                                
+                            </tr>
+                            
+                            
+                        </tbody>
+                    </table>
+                    
+                </div>
+                
+            </div>
+            
+            <div class="content">  
+                
+                
+                <hr />
+                <table style="width: 100%;padding:2% 0 2% 0; border-top:2px solid black; border-bottom: 2px solid black;">
+                    <thead class="fixed-header">
+                        <tr>
+                            <th class="noBorder" style="width: 20%;"><center>Date</center></th>
+                            <th class="noBorder" style="width: 20%;"><center>Time</center></th>
+                            <th class="noBorder" style="width: 60%;"><center>Care provider / Resource</center></th>
+                        </tr>
+                    </thead>                     
+                    <hr/>
+                    <tbody> 
+                        <apex:repeat value="{!mapPageWrapper[page].lineitems}" var="item" id="apptObjTable" >
+                            <tr>
+                                <td  class="noBorder" valign="top" style="text-align: center;">
+                                    <div style="overflow-wrap: break-word;word-break: break-all;width: 145px;">{!item.datestr}</div>
+                                </td>
+                                <td class="noBorder" valign="top" style="text-align: center;">
+                                    <div style="overflow-wrap: break-word;word-break: break-all;width: 115px">
+                                        {!item.timestr}</div>
+                                </td>
+                                <td class="noBorder" valign="top" style="text-align: left;">
+                                    {!item.care1}<br/> 
+                                    {!item.care2} 
+                                <br/><apex:outputText rendered="{!NOT(ISBLANK(item.care3))}">
+                                        <B>Instruction:</B><br/>
+                                        {!item.care3}
+                                  </apex:outputText>
+                                </td>
+                                
+                            </tr>
+                        </apex:repeat>
+                    </tbody>
+                    
+                </table>
+                
+                
+            </div>
+                
+            
+            
+            <br/> <br/> <br/> 
+            
+            <div class="footer1">
+                <div style="margin-left:120px;">
+                    <p>
+                        *** Please bring all of your current medication to every doctor's appointment ***
+                    </p>
+                </div>
+                <div >
+                    <table>
+                        
+                        <tbody>
+                            <tr>
+                                <td style="width: 100%;bottom:0; ">If you would like to modify your appointment, please call Contact Center +66 2066 8888<br/>Please direct contact for the following clinic:&nbsp;<table style="width: 100%;">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width: 60%; border: solid rgb(255, 255, 255);" class="fr-cell-fixed ">- Skin and Aesthetic Center Tel. +66 2011 4286 , +66 2011 4291&nbsp;<br/>- Plastic Center Tel. +66 2011 3691</td>
+                                            <td style="width: 40%; border: solid rgb(255, 255, 255);">- Physiotherapy Center Tel.+66 2011 2450<br/>- Horizon Cancer Center Tel.+66 2011 2342</td>
+                                        </tr>
+                                        
+                                    </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div >
+                    <p>
+                        - Please confirm your appointment with your country referral office at least 72 hours in advance.<br/>
+                        - To check our international offices, please access to Bumrungrad website<br/>
+                        - BI Interpreter service is free of charge
+                        
+                    </p>
+                    
+                </div>
+                
+                <div style="margin-left:60px;" >
+                    33 Sukhumvit Soi 3, Wattana, Bangkok Tel.+66 2066 8888 Fax.+66 2011 5100 www.bumrungrad.com
+                </div>
+                
+                
+                
+            </div>
+            <apex:outputPanel rendered="{!pageSize != checklastPage}">
+                <div style="page-break-after: always"></div>
+            </apex:outputPanel>
+        </apex:repeat>
+    </body>
+    
+
+</apex:page>

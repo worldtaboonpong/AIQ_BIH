@@ -1,0 +1,23 @@
+<template>
+    <lightning-card title="Doctor Search">
+      <lightning-input label="Start Date and Time" type="datetime-local" value={startDateTime} onchange={handleStartDateChange}></lightning-input>
+      <lightning-input label="End Date and Time" type="datetime-local" value={endDateTime} onchange={handleEndDateChange}></lightning-input>
+      <lightning-combobox 
+        label="Specialty" 
+        options={specialtyOptions} 
+        value={selectedSpecialty} 
+        onchange={handleSpecialtyChange}
+      ></lightning-combobox>
+      <lightning-button label="Search" onclick={handleSearch}></lightning-button>
+      
+      <template if:true={doctors.length}>
+        <lightning-checkbox-group 
+          name="doctorSelect" 
+          label="Select Doctors" 
+          options={doctorOptions} 
+          value={selectedDoctors} 
+          onchange={handleDoctorSelect}
+        ></lightning-checkbox-group>
+      </template>
+    </lightning-card>
+  </template>

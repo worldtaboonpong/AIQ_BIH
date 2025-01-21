@@ -1,0 +1,26 @@
+.THIS.slds-spinner_container{
+    z-index: 2 !important;
+}
+.THIS .slds-card{
+    background: rgb(255, 255, 255) !important;
+    border: 1px solid rgb(221, 219, 218) !important;
+    border-radius: .25rem !important;
+    background-clip: padding-box !important;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.10) !important;
+    padding: 1rem 1rem 0 1rem !important;
+    margin: 5px;
+}
+.THIS .slds-list_stacked .slds-size_1-of-4{
+    margin-bottom: .75rem;
+}
+.THIS .slds-text-color_weak, .THIS .slds-text-color--weak {
+    color: rgb(152, 152, 152);
+    font-weight: 700;
+}
+.THIS table lightning-primitive-icon{
+    display:none;
+}
+.THIS lightning-primitive-cell-wrapper .slds-truncate{
+    white-space: normal;
+    hyphens: auto;
+}

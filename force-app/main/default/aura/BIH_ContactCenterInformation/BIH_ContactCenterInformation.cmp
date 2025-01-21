@@ -1,0 +1,212 @@
+<aura:component controller="BIH_ContactCenterInformationCtrl"
+ implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init"  value="{!this}" action="{!c.init}" />
+    <aura:attribute name="ContactcaseObj" type="Case" />
+    <aura:attribute name="timeEscalate" type="String"/>
+    <aura:attribute name="isexpanded1" type="Boolean" default="true" />
+    <aura:attribute name="isexpanded2" type="Boolean" default="true" />
+    <aura:attribute name="isexpanded3" type="Boolean" default="true" />
+    <aura:attribute name="isexpanded4" type="Boolean" default="true" />
+    <aura:attribute name="isexpanded5" type="Boolean" default="true" />
+    <aura:attribute name="loading" type="Boolean" default="false" />
+
+    <div class="{! 'case slds-section' + (v.isexpanded1 ? ' slds-is-open' : '')}">
+        <h3 class="slds-section__title slds-theme_shade">
+            <button aria-controls="divContent1" aria-expanded="{!v.isexpanded1}" onclick="{!c.changeState1}"
+                class="slds-button slds-section__title-action">
+                <lightning:icon aura:id="articleOne" iconName="utility:switch" size="xx-small" alternativeText="switch" />
+                <span class="slds-truncate" title="Contact Center Info">Contact Center Information</span>
+            </button>
+        </h3>
+        <!-- <aura:if isTrue="{! v.loading }">
+            <lightning:spinner alternativeText="Loading" />
+        </aura:if> -->
+        <div aria-hidden="{!!v.isexpanded1}" class="slds-section__content" id="divContent1" aura:id="container1" style="position:relative;">
+            <lightning:recordViewForm recordId="{!v.ContactcaseObj.Id}" objectApiName="Case">
+            <div style="padding:0 0.80rem;">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="Status" />
+                        <lightning:outputField fieldName="Close_Case_Reason__c" />
+                        <lightning:outputField fieldName="Priority" />
+                        <lightning:outputField fieldName="Caller_Name__c" />
+                        <lightning:outputField fieldName="Contact_Number__c" />
+                        <lightning:outputField fieldName="Case_Category_Level1__c" />
+                        <lightning:outputField fieldName="Case_Category_Level2__c" />
+                        <lightning:outputField fieldName="Case_Category_Level3__c" />
+                        <lightning:outputField fieldName="Service_Detail__c" />
+                        <lightning:outputField fieldName="Case_Solution__c" />
+                        
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="OwnerId" />
+                        <lightning:outputField fieldName="Origin" />
+                        <lightning:outputField fieldName="Contact_Center_Channel__c" />
+                        <lightning:outputField fieldName="Channel__c" />
+                        <lightning:outputField fieldName="Escalate_to__c" />
+                        <!-- <lightning:outputField fieldName="Escalate_Date__c" /> -->
+                        <label class="slds-form-element__label">Escalate Date</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{!v.ContactcaseObj.Escalate_Date__c}" year="numeric" month="short" day="numeric" />
+                        </div>
+                    
+                    </div>
+                </div>
+            </div>
+        </lightning:recordViewForm>
+        </div>
+    </div>
+
+    <div  class="{! 'case slds-section' + (v.isexpanded2 ? ' slds-is-open' : '')}">
+        <h3 class="slds-section__title slds-theme_shade">
+            <button aria-controls="divContent2" aria-expanded="{!v.isexpanded2}" onclick="{!c.changeState2}"
+                class="slds-button slds-section__title-action">
+                <lightning:icon aura:id="articleOne" iconName="utility:switch" size="xx-small" alternativeText="switch" />
+                <span class="slds-truncate" title="Contact center Additional Infomation">Contact Center Additional Infomation</span>
+            </button>
+        </h3>
+
+        <div class="slds-section__content" aura:id="container2" aria-hidden="{!!v.isexpanded2}" id="divContent2" style="position:relative;">
+            <lightning:recordViewForm recordId="{!v.ContactcaseObj.Id}" objectApiName="Case">
+            <div style="padding:0 0.80rem;">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="Building__c" />
+                        <lightning:outputField fieldName="Doctor__c" />
+                        <lightning:outputField fieldName="Patient_s_Room_Department__c" />
+                        <lightning:outputField fieldName="IV_Team_Name__c" />
+                        <lightning:outputField fieldName="Symptoms_Diseases__c" />
+                        <lightning:outputField fieldName="Contact_Center_Source__c" />
+                        <lightning:outputField fieldName="Contact_Center_Attendee__c" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="Department__c" />
+                        <lightning:outputField fieldName="Specialty_Doctor__c" />
+                        <lightning:outputField fieldName="Interpreter_Language__c" />
+                        <lightning:outputField fieldName="Type_of_SMS__c" />
+                        <lightning:outputField fieldName="Medical_Procedure__c" />
+                        <lightning:outputField fieldName="Contact_Center_Other_Source__c" />
+                        <lightning:outputField fieldName="Contact_Center_Follower__c" />
+                    </div>
+                </div>
+            </div>
+        </lightning:recordViewForm>
+        </div>
+    </div>
+
+    <div class="{! 'case slds-section' + (v.isexpanded3 ? ' slds-is-open' : '')}">
+        <h3 class="slds-section__title slds-theme_shade">
+            <button aria-controls="divContent3" aria-expanded="{!v.isexpanded3}" onclick="{!c.changeState3}"
+                class="slds-button slds-section__title-action">
+                <lightning:icon aura:id="articleOne" iconName="utility:switch" size="xx-small" alternativeText="switch" />           
+                <span class="slds-truncate" title="Appointment Date Infomation">Appointment Date Infomation</span>
+            </button>
+        </h3>
+        <div class="slds-section__content" aura:id="container3" aria-hidden="{!!v.isexpanded3}" id="divContent3" style="position:relative;">
+            <lightning:recordViewForm recordId="{!v.ContactcaseObj.Id}" objectApiName="Case">
+            
+            <div style="padding:0 0.80rem;">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_1-of-2">
+                        <!-- <lightning:outputField fieldName="Postpone_Date__c" /> -->
+                        <label class="slds-form-element__label">Appointment/Postpone Date</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{!v.ContactcaseObj.Postpone_Date__c}" year="numeric" month="short" day="numeric" />
+                        </div>
+                        <lightning:outputField fieldName="Not_App_Reason__c" />
+                        <!-- <lightning:outputField fieldName="App_Date__c" /> -->
+                        <label class="slds-form-element__label">App Date</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{!v.ContactcaseObj.App_Date__c}" year="numeric" month="short" day="numeric" />
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning:outputField fieldName="App_Date_Liaison__c" />
+                        <lightning:outputField fieldName="App_Time_Status__c" />
+                        <lightning:input label="App Time" readonly="true" value="{! v.ContactcaseObj.App_Time_Format__c }" />
+                        <!-- <lightning:outputField fieldName="App_Time__c" /> -->
+                        <!-- <label class="slds-form-element__label">App Time</label>
+                        <div class="slds-form-element__static div-time slds-form-element_stacked">
+                            <lightning:formattedDateTime value="{!v.caseObj.App_Time__c}"  minute="2-digit"  hour="2-digit" hour12="false" />
+                        </div> -->
+
+                        
+                    </div>
+                </div>
+            </div>
+        </lightning:recordViewForm>
+        </div>
+    </div>
+
+
+        <div class="{! 'case slds-section' + (v.isexpanded4 ? ' slds-is-open' : '')}">
+            <h3 class="slds-section__title slds-theme_shade">
+                <button aria-controls="divContent4" aria-expanded="{!v.isexpanded4}" onclick="{!c.changeState4}"
+                    class="slds-button slds-section__title-action">
+                    <lightning:icon aura:id="articleOne" iconName="utility:switch" size="xx-small" alternativeText="switch" />           
+                    <span class="slds-truncate" title="Appointment Date Infomation">Additional Fields</span>
+                </button>
+            </h3>
+            <div class="slds-section__content" aura:id="container4" aria-hidden="{!!v.isexpanded4}" id="divContent4" style="position:relative;">
+                <lightning:recordViewForm recordId="{!v.ContactcaseObj.Id}" objectApiName="Case">
+                
+                <div style="padding:0 0.80rem;">
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:outputField fieldName="Add_field_Info_1__c" />
+                            <lightning:outputField fieldName="Add_field_Info_2__c" />
+                            <lightning:outputField fieldName="Add_field_Info_3__c" />
+                            <lightning:outputField fieldName="Add_field_Info_4__c" />
+                            <lightning:outputField fieldName="Add_field_Info_5__c" />
+                            <lightning:outputField fieldName="Add_field_Info_6__c" />
+                            <lightning:outputField fieldName="Add_field_Info_7__c" />
+                            
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning:outputField fieldName="Add_field_Info_8__c" />
+                            <lightning:outputField fieldName="Add_field_Info_9__c" />
+                            <lightning:outputField fieldName="Add_field_Info_10__c" />
+                            <lightning:outputField fieldName="Add_field_Info_11__c" />
+                            <lightning:outputField fieldName="Add_field_Info_12__c" />
+                            <lightning:outputField fieldName="Add_field_Info_13__c" />
+
+                            <!-- <lightning:outputField fieldName="App_Time__c" /> -->
+                            <!-- <label class="slds-form-element__label">App Time</label>
+                            <div class="slds-form-element__static div-time slds-form-element_stacked">
+                                <lightning:formattedDateTime value="{!v.caseObj.App_Time__c}"  minute="2-digit"  hour="2-digit" hour12="false" />
+                            </div> -->
+    
+                            
+                        </div>
+                    </div>
+                </div>
+            </lightning:recordViewForm>
+            </div>
+        </div>
+
+            <div class="{! 'case slds-section' + (v.isexpanded5 ? ' slds-is-open' : '')}">
+                <h3 class="slds-section__title slds-theme_shade">
+                    <button aria-controls="divContent5" aria-expanded="{!v.isexpanded5}" onclick="{!c.changeState5}"
+                        class="slds-button slds-section__title-action">
+                        <lightning:icon aura:id="articleOne" iconName="utility:switch" size="xx-small" alternativeText="switch" />           
+                        <span class="slds-truncate" title="Appointment Date Infomation">Campaign Infomation</span>
+                    </button>
+                </h3>
+                <div class="slds-section__content" aura:id="container5" aria-hidden="{!!v.isexpanded5}" id="divContent5" style="position:relative;">
+                    <lightning:recordViewForm recordId="{!v.ContactcaseObj.Id}" objectApiName="Case">
+                    
+                    <div style="padding:0 0.80rem;">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning:outputField fieldName="Campaign_Master__c" />
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                <lightning:outputField fieldName="Campaign_Interest_Type__c" />
+                            </div>
+                        </div>
+                    </div>
+                </lightning:recordViewForm>
+                </div>
+    </div>
+
+</aura:component>

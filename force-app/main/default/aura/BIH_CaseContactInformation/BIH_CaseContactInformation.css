@@ -1,0 +1,72 @@
+.THIS lightning-output-field.slds-form-element{
+    border-bottom: 1px solid rgb(221, 219, 218);
+}
+.THIS.slds-section.slds-is-open .slds-section__content{
+    transition:all 0.4s ease-in-out;
+    height:auto;
+    overflow: hidden;
+}
+.THIS.slds-section .slds-section__content{
+    transition:height 0.4s ease-in-out;
+    height:0px;
+    overflow: hidden; 
+}
+.THIS .slds-gutters .slds-col {
+    padding-left: .75rem !important;
+    padding-right: 2rem !important;
+}
+.THIS.slds-section .slds-icon-utility-switch.slds-icon_container{
+    transform: rotate(-90deg) !important;
+    margin-right: 8px  !important;
+    transition: transform .4s ease-in-out;
+}
+.THIS.slds-section.slds-is-open .slds-icon-utility-switch.slds-icon_container{
+    transform: rotate(0deg) !important;
+    margin-right: 8px  !important;
+    transition: transform .4s ease-in-out;
+}
+.THIS .slds-modal__container{
+    width: 100% !important;
+    max-width: 75rem !important;
+}
+.THIS .slds-modal__close {
+    width: 2rem;
+    height: 2rem;
+    position: absolute;
+    top: .5rem !important;
+    right: .5rem !important;
+}
+.THIS .slds-modal__content{
+    min-height: 400px;
+    position: relative;
+}
+.THIS #divContent .slds-form-element__control button.slds-button{
+    position: absolute;
+    right: 35px;
+    margin-top: -5px;
+}
+.THIS #divContent .slds-form-element__control button svg.slds-button__icon{
+    background-color: #24685d;
+    width: 1.3rem;
+    height: 1.3rem;
+    fill: white;
+    border: 3px solid #24685d;
+    border-radius: 3px;
+}
+.THIS .slds-form-element__static_bottom1{
+    padding-bottom:10px;
+
+}
+.THIS .slds-form-element__static_bottom2{
+    padding-bottom:25px;
+
+}
+
+.THIS #dobContact .slds-button_icon-bare{
+    display: none; 
+    visibility: hidden;
+}
+.THIS.slds-notify.slds-notify_toast {
+    min-width: 100%;
+    width: 100%;
+}

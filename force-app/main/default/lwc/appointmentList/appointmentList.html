@@ -1,0 +1,40 @@
+<template>
+    <lightning-button label="Generate PDF" onclick={handleGeneratePdf}></lightning-button>
+    
+    <template if:true={appointments}>
+        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+            <thead>
+                <tr class="slds-line-height_reset">
+                    <th scope="col">
+                        <div class="slds-truncate" title="Doctor">Doctor</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Patient">Patient</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Appointment Time">Appointment Time</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <template for:each={appointments} for:item="appointment">
+                    <tr key={appointment.Id} class="slds-hint-parent">
+                        <td>
+                            <div class="slds-truncate" title={appointment.Doctor__c}>{appointment.Doctor__c}</div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate" title={appointment.Account_name__c}>{appointment.Account_name__c}</div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate" title={appointment.appointment_time__c}>{appointment.appointment_time__c}</div>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </template>
+    
+    <template if:true={error}>
+        <p>{error}</p>
+    </template>
+</template>

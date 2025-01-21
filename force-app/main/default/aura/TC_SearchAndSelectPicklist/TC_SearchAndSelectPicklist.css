@@ -1,0 +1,36 @@
+.THIS .verticalAlign {
+    cursor: pointer;
+    padding: 0px 5px;
+}
+
+.THIS .slds-dropdown {
+    padding: 0px;
+}
+
+.THIS .fullWidth {
+    width: 100%;
+}
+
+.THIS .disabledItem {
+    color: #bbb;
+    cursor: no-drop;
+}
+
+.THIS .recordListBox {
+    margin-top: 0px;
+    overflow-y: scroll;
+}
+
+.THIS .slds-listbox li {
+    padding: .45rem 0.7rem;
+    display: flex;
+}
+
+.THIS .inputBox input {
+    padding-left: 10px;
+}
+
+.THIS .eachItem:hover {
+    background-color: #F1F1F1;
+    cursor: pointer;
+}

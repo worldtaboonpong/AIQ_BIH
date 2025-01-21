@@ -1,0 +1,73 @@
+<!--Parent Lightning Compomemt-->
+<aura:component controller="BIH_GenerateInvitionLetterCtrl" Implements="flexipage:availableForRecordHome,force:hasRecordId">
+    <!--Init handler which is call doInit js function on component Load-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <!-- <aura:attribute name="ShowModule" type="boolean" default="false" /> -->
+    <!--Event handler for Add and Delete Row Event which is fire from Child Component-->
+    <aura:handler name="DeleteRowEvt" event="c:DeleteRowEvt" action="{!c.removeDeletedRow}" />
+    <aura:handler name="AddRowEvt" event="c:AddNewRowEvt" action="{!c.addNewRow}" />
+    <aura:attribute name="PersonType" type="String" />
+    <aura:attribute name="specialtyPicklist" type="String[]" />
+    <!-- <aura:handler name="verifyRowEvt" event="c:VerifyRowEvt" action="{!c.verifyRowEvt}" />
+    <aura:handler name="accountEvt" event="c:AccountEvt" action="{!c.accountEvt}" /> -->
+
+    <!--Aura Attribute for store Contact Object List as Array-->
+    <aura:attribute name="personList" type="Invitation_Letter_Person__c[]" />
+    <aura:attribute name="personListForDelete" type="Invitation_Letter_Person__c[]" />
+    <aura:attribute name="letterObj" type="Invitation_Letter__c" />
+
+    <!--Table Part-->
+    <h3 class="slds-section__title slds-theme_shade" style="margin: 1rem 0;">
+        <aura:if isTrue="{!v.PersonType == 'patient'}">
+            <span class="slds-truncate slds-p-horizontal_small" title="Patients Name">Patients Name</span>
+        </aura:if>
+        <aura:if isTrue="{!v.PersonType == 'attendant'}">
+            <span class="slds-truncate slds-p-horizontal_small" title="Attendant Name">Attendant Name</span>
+        </aura:if>
+    </h3>
+    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+        <thead>
+            <tr class="slds-text-title_caps">
+                <th scope="col">
+                    <div class="slds-truncate">No.</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="First Name">Person Name</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Last Name">Passport Number</div>
+                </th>
+                <aura:if isTrue="{!v.PersonType == 'patient'}">
+                    <th scope="col">
+                        <div class="slds-truncate" title="Last Name">Appointment Date</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Last Name">Specialty</div>
+                    </th>
+                </aura:if>
+                <!-- <aura:if isTrue="{!v.PersonType == 'attentdent'}">
+                    <th scope="col">
+                        <div class="slds-truncate" title="Last Name"></div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Last Name"></div>
+                    </th>
+                </aura:if> -->
+                
+            </tr>
+        </thead>
+        <tbody>
+            <!--Iterate the child Component for display Table rows 
+               with pass the List Item Index for track the Every child Component 
+               and pass each List Contact Instance -->
+            <aura:iteration items="{!v.personList}" var="item" indexVar="index">
+                <c:BIH_DynamicItemInvitationLetterPerson specialtyPicklist="{!v.specialtyPicklist}" PersonInstance="{!item}" rowIndex="{!index}" PersonType="{!v.PersonType}" />
+            </aura:iteration>
+        </tbody>
+    </table>
+    <br />
+    <!--Save Button which is call Save js function on click -->
+    <!-- <button class="slds-button slds-button_brand" onclick="{!c.Save}">Add</button> -->
+
+
+</aura:component>

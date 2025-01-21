@@ -1,0 +1,109 @@
+<aura:component controller="BIH_GenerateInvitionLetterCtrl"
+    Implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:isUrlAddressable">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    
+    <!-- <aura:attribute name="toPickList" type="String[]" default="BKK,CNX" /> -->
+    <aura:attribute name="toPickList" type="String[]" default="Bangladesh,Other Country" />
+    <aura:attribute name="selectedCase" type="Id" default="" />
+    <aura:attribute name="caseObj" type="Case" default="" />
+    <aura:attribute name="letterObj" type="Object" />
+    <aura:attribute name="letterPersonTypePatientObj" type="Object[]" />
+    <aura:attribute name="letterPersonTypeAttendantObj" type="Object[]" />
+    <aura:attribute name="isOtherCountry" type="Boolean" default="false" />
+    <aura:attribute name="personListForDelete" type="Invitation_Letter_Person__c[]" />
+    <aura:attribute name="countryPicklist" type="String[]" />
+    <aura:attribute name="specialtyPicklist" type="String[]" />
+    <aura:attribute name="embassyPicklist" type="String[]" />
+    <!-- <aura:registerEvent name="oSaveAndGenerate" type="c:saveEvt" /> -->
+    <!-- <aura:method name="SaveAndGenerate" action="{!c.onSaveAndGenerate}" /> -->
+
+
+    <aura:attribute name="loading" type="Boolean" default="false" />
+    <div class="container-content" style="position:relative">
+        <aura:if isTrue="{! v.loading }">
+            <lightning:spinner alternativeText="Loading" />
+        </aura:if>
+        <div class="slds-form">
+            <div class="slds-form-element slds-form-element_horizontal">
+                <div class="slds-size_1-of-2">
+                    <lightning:input type="date" name="date" label="Date" value="{!v.letterObj.Generate_Date__c}" />
+                </div>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <lightning:input type="text" readonly="true" name="from_letter" label="From : "
+                    value="{!v.letterObj.LetterFrom__c}" />
+            </div>
+            <!-- <div class="slds-form-element slds-form-element_horizontal">
+                <div class="slds-size_1-of-2">
+                    <lightning:select name="to_letter" label="To : " value="{!v.letterObj.LetterCountry__c}">
+                        <aura:iteration items="{!v.countryPicklist}" var="c">
+                            <option text="{!c}" value="{!c}"></option>
+                        </aura:iteration>
+                    </lightning:select>
+                </div>
+            </div> -->
+            <div class="slds-form-element slds-form-element_horizontal">
+                <div class="slds-size_1-of-2">
+                    <lightning:select name="embassy_letter" label="Type : " value="{!v.letterObj.LetterEmbassyType__c}">
+                        <aura:iteration items="{!v.embassyPicklist}" var="c">
+                            <option text="{!c}"></option>
+                        </aura:iteration>
+                    </lightning:select>
+                </div>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <div class="slds-size_1-of-2">
+                    <lightning:select name="to_letter" label="To : " value="{!v.letterObj.LetterTo__c}"
+                        onchange="{!c.onChangeLetterTo}">
+                        <aura:iteration items="{!v.toPickList}" var="c">
+                            <option text="{!c}"></option>
+                        </aura:iteration>
+                    </lightning:select>
+                </div>
+            </div>
+            <aura:if isTrue="{! v.isOtherCountry }">
+                <div class="slds-form-element slds-form-element_horizontal">
+                    <div class="slds-size_1-of-2">
+                        <lightning:input type="text" name="country_letter" label="Country : "
+                            value="{!v.letterObj.LetterCountryText__c}" />
+                    </div>
+                </div>
+            </aura:if>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <div class="slds-size_1-of-2">
+                    <lightning:input readonly="true" type="text" name="ref_number" label="Reference No"
+                        value="{!v.letterObj.LetterRefNo__c}" />
+                </div>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <div class="slds-size_1-of-2">
+                    <lightning:input type="text" name="subject" label="Subject" value="{!v.letterObj.LetterSubject__c}" />
+                </div>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <div class="slds-size_1-of-2">
+                    <lightning:input type="text" name="to_dear" label="Dear" value="{!v.letterObj.LetterDear__c}" />
+                </div>
+            </div>
+            <div class="slds-form-element slds-form-element_horizontal">
+                <lightning:inputRichText formats="['size', 'bold', 'italic', 'underline','list', 'align','clean', 'table', 'header']" labelVisible="true" label="Content" value="{!v.letterObj.Content__c}" />
+                <!-- <lightning:textarea name="content" label="Content" value="{!v.}" /> -->
+            </div>
+
+        </div>
+
+
+        <c:BIH_DynamicInvitationLetterPerson specialtyPicklist="{!v.specialtyPicklist}" letterObj="{!v.letterObj}" personListForDelete="{!v.personListForDelete}"
+            personList="{!v.letterPersonTypePatientObj}" PersonType="patient" />
+        <c:BIH_DynamicInvitationLetterPerson specialtyPicklist="{!v.specialtyPicklist}"  letterObj="{!v.letterObj}" personListForDelete="{!v.personListForDelete}"
+            personList="{!v.letterPersonTypeAttendantObj}" PersonType="attendant" />
+    <div class="container-button">
+        <lightning:button variant="Neutral" label="Cancel" title="Cancel" onclick="{! c.handleClick }" />
+        <lightning:button variant="brand" label="Save &amp; Generate" title="Save &amp; Generate" onclick="{! c.onSaveAndGenerate }" />
+    </div>
+    </div>
+    
+
+
+</aura:component>

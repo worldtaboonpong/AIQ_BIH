@@ -1,0 +1,173 @@
+<aura:component controller="BIH_AppointmentInformationCtrl"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,lightning:isUrlAddressable">
+
+    <!-- Imports -->
+
+    <!-- attributes -->
+
+    <aura:attribute name="activeSections" type="List" default="['A']" />
+    <aura:attribute name="activeSectionsMessage" type="String" default="" />
+    <aura:attribute name="sortedBy" type="String" default="Name" />
+    <aura:attribute name="sortedDirection" type="String" default="asc" />
+    <aura:attribute name="data" type="Object[]" />
+    <aura:attribute name="dataMapDate" type="Object[]" />
+    <aura:attribute name="columns" type="List" />
+    <aura:attribute name="loading" type="Boolean" default="false" />
+    <aura:attribute name="isexpanded" type="Boolean" default="false" />
+    <aura:attribute name="accObj" type="Account" />
+    <!-- handlers-->
+    <aura:handler name="init" value="{! this }" action="{! c.init }" />
+
+
+    <!-- the container element determine the height of the datatable -->
+    <aura:if isTrue="{! v.loading }">
+        <lightning:spinner alternativeText="Loading" />
+    </aura:if>
+    <!-- <div style="height: 300px">
+   
+    <lightning:datatable keyField="id" 
+                         data="{! v.data }" 
+                         columns="{! v.columns }" 
+                         hideCheckboxColumn="true"
+                         onsort="{!c.updateColumnSorting}"
+                         sortedBy="{!v.sortedBy}"  
+                         sortedDirection="{!v.sortedDirection}"/>
+</div> -->
+<!-- <div style="min-height:200px">
+    <aura:iteration items="{!v.data}" var="value">
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_1-of-1">
+                <article class="slds-card">
+                    <div class="slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__figure">
+                                <span class="slds-icon_container slds-icon-standard-account" title="account">
+                                    <lightning:icon iconName="standard:event" alternativeText="Event" />
+                                    <span class="slds-assistive-text">
+                                        <lightning:formattedDateTime value="{!value.visitDateTime}" year="numeric"
+                                            month="short" day="numeric" hour="2-digit" minute="2-digit" />
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="slds-media__body">
+                                <h2 class="slds-card__header-title">
+                                    <a href="javascript:void(0);" class="slds-card__header-link slds-truncate"
+                                        title="Accounts">
+                                        <span>
+                                            <lightning:formattedDateTime value="{!value.visitDateTime +'Z'}" year="numeric"
+                                                month="short" day="numeric" hour="2-digit" minute="2-digit" />
+                                        </span>
+                                    </a>
+                                </h2>
+                            </div>
+                        </header>
+                    </div>
+                    <div class="slds-card__body slds-card__body_inner">
+                        <dl class="slds-list_stacked slds-grid slds-wrap">
+                            <div class="slds-col slds-size_1-of-4">
+                                <dt class="slds-item_label slds-text-color_weak slds-truncate" title="First Label">Visit
+                                    Type</dt>
+                                <dd class="slds-item_detail slds-truncate" title="Description for first label">
+                                    {!value.visitTypeString}</dd>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4">
+                                <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Second Label">
+                                    Appointment Status</dt>
+                                <dd class="slds-item_detail slds-truncate" title="Description for second label">
+                                    {!value.appointmentStatusString}</dd>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4">
+                                <dt class="slds-item_label slds-text-color_weak slds-truncate" title="First Label">
+                                    Doctor
+                                </dt>
+                                <dd class="slds-item_detail slds-truncate" title="{!value.doctorName}">
+                                    {!value.doctorName}</dd>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4">
+                                <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Second Label">
+                                    Location
+                                </dt>
+                                <dd class="slds-item_detail slds-truncate" title="Description for second label">
+                                    {!value.locationName}</dd>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4">
+                                <dt class="slds-item_label slds-text-color_weak slds-truncate" title="First Label">
+                                    Service
+                                </dt>
+                                <dd class="slds-item_detail slds-truncate" title="Description for first label">
+                                    {!value.serviceName}
+                                </dd>
+                            </div>
+                            <div class="slds-col slds-size_2-of-4">
+                                <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Second Label">
+                                    Remark
+                                </dt>
+                                <dd class="slds-item_detail slds-truncate" title="Description for second label">
+                                    <lightning:formattedRichText value="{!value.note}"></lightning:formattedRichText>
+    
+                                </dd>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4">
+                                <dt class="slds-item_label slds-text-color_weak slds-truncate" title="First Label">
+                                    Last Modified By</dt>
+                                <dd class="slds-item_detail slds-truncate" title="Description for first label">
+                                    {!value.updatedUserName}
+                                </dd>
+                            </div>
+    
+                        </dl>
+                    </div>
+                </article>
+            </div>
+    
+    
+    
+        </div>
+    
+    </aura:iteration>
+</div> -->
+
+<lightning:accordion allowMultipleSectionsOpen="true" onsectiontoggle="{! c.handleSectionToggle }"
+        activeSectionName="{! v.activeSections }">
+    <aura:iteration items="{!v.dataMapDate}" var="value">
+        <lightning:accordionSection name="{!value.date}" label="{!value.dateString}">
+            <!-- <aura:iteration items="{!value.appointment}" var="app"> -->
+                <!-- {!app.appointmentDateTime} <br></br> -->
+                <!-- <div style="height: 300px"> -->
+                    <lightning:datatable keyField="id" data="{! value.appointment }" columns="{! v.columns }" hideCheckboxColumn="true" />
+                <!-- </div> -->
+            <!-- </aura:iteration> -->
+        </lightning:accordionSection>
+    </aura:iteration>
+</lightning:accordion>
+<aura:if isTrue="{! ( v.data.length == 0 || v.data == null ) }">
+    <div style="text-align: center;font-size: .8rem; margin: 1rem 0;">
+        ----- DATA NOT FOUND -----
+    </div>
+</aura:if>
+   
+
+    <!-- <div class="{! 'slds-section' + (v.isexpanded ? ' slds-is-open' : '')}">
+        <h3 class="slds-section__title slds-theme_shade">
+            <button aria-controls="divContent" aria-expanded="{!v.isexpanded}" onclick="{!c.changeState}"
+                class="slds-button slds-section__title-action">
+                <lightning:icon aura:id="articleOne" iconName="utility:switch" size="xx-small" alternativeText="switch" />
+                <span class="slds-truncate" title="Section Title">Ponto de Venda</span>
+            </button>
+        </h3>
+        <div class="slds-section__content" aria-hidden="{!!v.isexpanded}" id="divContent">
+            <div class="slds-form slds-form_compound" style="width:40%;">
+                <fieldset class="slds-form-element">
+                    <div class="slds-form-element__group">
+                        <div class="slds-form-element__row">
+                            <div class="slds-form-element slds-size_1-of-2">
+                                <label class="slds-form-element__label" for="input-01">PDV</label>
+                                <input type="text" id="input-01" class="slds-input" />
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </div> -->
+</aura:component>

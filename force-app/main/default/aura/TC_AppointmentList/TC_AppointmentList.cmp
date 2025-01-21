@@ -1,0 +1,171 @@
+<aura:component controller="TC_AppointmentListCtrl" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global">
+    <aura:attribute name="recordId" type="string"/>
+    <aura:attribute name="appointment" type="Appointment__c" default="{
+                                                                      'sObjectType':'Appointment__c', 
+                                                                      'Reason_for_Cancellation__c':null,
+                                                                      'Free_Text_Reason_for_Cancellation__c':'',
+                                                                      'Discontinue_Orders__c':true
+                                                                      }"/>
+    <aura:attribute name="tableUpColumn" type="List"/>
+    <aura:attribute name="tableOtColumn" type="List"/>
+    <aura:attribute type="Object" name="upcomingData"/>
+    <aura:attribute type="Object" name="inPastData"/>
+    <aura:attribute type="Object" name="cancelData"/>
+    <aura:attribute name="isCancel" type="boolean" default="false"/>
+    <aura:attribute name="selSfId" type="string"/>
+    <aura:attribute name="selTcId" type="string"/>
+    <aura:attribute name="isOrders" type="boolean" default="false"/>
+    <aura:attribute name="recordList" type="List" default="[]"/>
+    <aura:attribute name="isView" type="boolean" default="false"/>
+    <aura:attribute type="Object" name="appData"/>
+    <aura:attribute name="appointList" type="List" default="[]"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <lightning:navigation aura:id="navService"/>
+    
+    <lightning:tabset selectedTabId="upcomingId">
+        <lightning:tab label="Upcoming" id="upcomingId">
+            <lightning:button variant="brand" label="Appointment Card" onclick="{!c.doSendEmail}"/>
+            <BR/>
+            <BR/>
+            <lightning:datatable columns="{! v.tableUpColumn }" data="{! v.upcomingData }" 
+                                 keyField="id" hideCheckboxColumn="false"
+                                 onrowaction="{!c.doActionOnRecord}"
+                                 onrowselection="{!c.doActionOnRecordSelect}"/>
+        </lightning:tab>
+        
+        <lightning:tab label="In the Past" id="inThePastId">
+            <lightning:datatable columns="{! v.tableOtColumn }" data="{! v.inPastData }" 
+                                 keyField="id" hideCheckboxColumn="true"
+                                 onrowaction="{!c.doActionOnRecord}"/>
+        </lightning:tab>
+        
+        <lightning:tab label="Cancel" id="cancelId">
+            <lightning:datatable columns="{! v.tableOtColumn }" data="{! v.cancelData }" 
+                                 keyField="id" hideCheckboxColumn="true"
+                                 onrowaction="{!c.doActionOnRecord}"/>
+        </lightning:tab>
+    </lightning:tabset>
+    
+    <aura:if isTrue="{!v.isCancel}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1"
+                 class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Cancel Appointment</h2>
+                </header>
+                
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning:recordEditForm aura:id="appointmentFormId" objectApiName="Appointment__c" density="comfy">
+                        <lightning:inputField fieldName="Reason_for_Cancellation__c" value="{!v.appointment.Reason_for_Cancellation__c}" required="true" />
+                        <lightning:inputField fieldName="Free_Text_Reason_for_Cancellation__c" value="{!v.appointment.Free_Text_Reason_for_Cancellation__c}"/>
+                        <!--lightning:inputField fieldName="Discontinue_Orders__c" value="{!v.appointment.Discontinue_Orders__c}" /-->
+                        <lightning:input type="checkbox" label="Discontinue Orders" name="discontinueOrders" checked="{!v.appointment.Discontinue_Orders__c}"/>
+                    </lightning:recordEditForm>
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="brand" label="Cancel" onclick="{!c.doCancel}"/>
+                    <lightning:button variant="brand" label="Ok" onclick="{!c.doOk}"/>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.isOrders}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1"
+                 class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Appointment Orders</h2>
+                </header>
+                
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p class="slds-p-horizontal_small">
+                        <aura:iteration items="{!v.recordList}" var="record" indexVar="recIndex">
+                            {!recIndex + 1} - {!record.Orderitemdesc}
+                            <BR/>
+                        </aura:iteration>
+                    </p>
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="brand" label="Close" onclick="{!c.doOrdersCancel}"/>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.isView}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1"
+                 class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Appointment Details</h2>
+                </header>
+                
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p class="slds-p-horizontal_small">
+                        <table>
+                            <tr>
+                            	<td style="font-weight:bold;">Doctor</td>
+                                <td>{!v.appData.Doctor}</td>
+                            </tr>  
+                            <tr>
+                            	<td style="font-weight:bold;">Location</td>
+                                <td>{!v.appData.Location}</td>
+                            </tr>
+                            <tr>
+                            	<td style="font-weight:bold;">Appointment Date</td>
+                                <td>{!v.appData.AppDate}</td>
+                            </tr> 
+                            <tr>
+                            	<td style="font-weight:bold;">Appointment Time</td>
+                                <td>{!v.appData.AppTime}</td>
+                            </tr> 
+                            <tr>
+                            	<td style="font-weight:bold;">Service</td>
+                                <td>{!v.appData.Service}</td>
+                            </tr>                            
+                            <tr>
+                            	<td style="font-weight:bold;">Non Fixed Time</td>
+                                <td>{!v.appData.NonFixedTime}</td>
+                            </tr>
+                            <tr>
+                            	<td style="font-weight:bold;">Interpreter Required</td>
+                                <td>{!v.appData.InterpreterRequired}</td>
+                            </tr>
+                            <tr>
+                            	<td style="font-weight:bold;">Interpreter</td>
+                                <td>{!v.appData.Interpreter}</td>
+                            </tr>
+                            <tr>
+                            	<td style="font-weight:bold;">Notes</td>
+                                <td>{!v.appData.Notes}</td>
+                            </tr>
+                            <tr>
+                            	<td style="font-weight:bold;">Patient Letter Notes</td>
+                                <td>{!v.appData.PatientLetterNotes}</td>
+                            </tr>
+                            <tr>
+                            	<td style="font-weight:bold;">Appointment Status</td>
+                                <td>{!v.appData.AppointmentStatus}</td>
+                            </tr>
+                        </table>
+                    </p>
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="brand" label="Close" onclick="{!c.doViewCancel}"/>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+</aura:component>

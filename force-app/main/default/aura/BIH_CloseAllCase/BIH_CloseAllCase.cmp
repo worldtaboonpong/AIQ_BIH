@@ -1,0 +1,62 @@
+<aura:component controller="BIH_CaseUtility" implements="force:lightningQuickAction,force:hasRecordId,lightning:hasPageReference" access="global" >
+	<lightning:workspaceAPI aura:id="workspace" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:method name="onCloseChild" action="{!c.onCloseChild}">
+        <aura:attribute name="caseId" type="Id"/>
+    </aura:method>
+    <aura:attribute name="loading" type="boolean" default="false" />
+    <aura:attribute name="selectedCase" type="String"/>
+    <aura:attribute name="selectedRecordTypeId" type="String"/>
+
+    <aura:attribute name="isCC" type="Boolean" default="false" />
+    <aura:attribute name="closeCaseList" type="Case[]" />
+    <aura:attribute name="closeAllChildCaselst" type="Object[]" />
+    <aura:attribute name="closeAllCaselst" type="Object[]" />
+    <aura:attribute name="FollowUpStep" type="Object" />
+    <aura:attribute name="SessionId" type="String" default="{!$Api.Session_ID}" />
+    
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="close_case_reasonPickList" type="String[]" />
+    <aura:attribute name="case" type="Case" 
+           default="{ 'sobjectType': 'Case' }"/>
+           
+    <div class="slds-form" role="list">
+        <aura:if isTrue="{!v.loading}">
+            <lightning:spinner alternativeText="Loading" />
+        </aura:if>
+        <div class="slds-form__row">
+            <div class="slds-size_1-of-2">
+                <div class="slds-form__item" role="listitem">
+                    <p>
+                        <b>Are you sure you want to close all case ?</b>
+                        <br/>
+                        <br/>
+                        Please select close reason below :
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="slds-form__row">
+            <div class="slds-size_1-of-2">
+                <div class="slds-form__item" role="listitem">
+                     <lightning:select value="{!v.case.Close_Case_Reason__c}" label="Close Case Reason" required="true">       
+                        <option value="">--None--</option> 
+                        <aura:iteration items="{!v.close_case_reasonPickList}" var="reason">
+                                <option value="{!reason}">{!reason}</option>
+                        </aura:iteration> 
+                    </lightning:select> 
+                </div>
+            </div>
+        </div>
+        
+        <div class="slds-form__row">
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+            <lightning:datatable data="{! v.closeCaseList }"
+                                 columns="{! v.columns }"
+                                 keyField="Id"
+                                 hideCheckboxColumn="true"/>
+            </div>
+        </div>
+        
+    </div>
+</aura:component>

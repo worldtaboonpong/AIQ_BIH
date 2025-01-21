@@ -1,0 +1,14 @@
+<template>
+    <lightning-card title="Available Sessions">
+        <template if:true={availableSessions}>
+            <lightning-datatable
+                key-field="id"
+                data={availableSessions}
+                columns={columns}
+            ></lightning-datatable>
+        </template>
+        <template if:false={availableSessions}>
+            <p>No sessions available</p>
+        </template>
+    </lightning-card>
+</template>

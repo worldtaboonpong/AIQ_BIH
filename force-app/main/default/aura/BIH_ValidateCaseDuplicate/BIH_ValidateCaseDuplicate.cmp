@@ -1,0 +1,141 @@
+<aura:component controller="BIH_CaseUtility" implements="force:lightningQuickAction,force:hasRecordId" access="global" >
+
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="caseList" type="Case[]" />
+    <aura:attribute name="mycolumns" type="List"/>
+    <aura:attribute name="selectedCase" type="String"/>
+    <aura:attribute name="ShowModalList" type="boolean" default="false" />
+    <aura:attribute name="isDuplicate" type="boolean" default="false" />
+    <aura:attribute name="caseOwnerValue" type="sObject" default="{}" />
+    <aura:attribute name="indexId" type="Integer" default="0"/>
+    <aura:attribute name="loading" type="Boolean" default="false" />
+    <aura:attribute name="caseListDefault" type="Case[]"/>
+    <aura:attribute name="errors" type="Boolean[]" default="false" />
+    <aura:attribute name="showError" type="Boolean" default="false" />
+
+    <!-- <aura:attribute name="isDefault" type="Boolean" default="true"/> -->
+
+    
+    <aura:if isTrue="{!v.isDuplicate}">
+        <div class="slds-notify slds-notify_toast slds-theme_warning" role="status" style="margin:0px; padding:8px;">
+            <div class="slds-notify__content">
+                <h2 class="slds-text-small">{!v.caseList.length} potential
+                <a href="javascript:void(0);" onclick="{! c.showModal }">duplicate cases</a> were found.</h2>
+            </div>
+        </div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.ShowModalList}">
+        <div style="max-width: 50rem;">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <a class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+                            onclick="{! c.hideModal }">
+                            <lightning:icon iconName="utility:close" class="slds-icon slds-icon_small" size="small"
+                                alternativeText="close" />
+                        </a>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Duplicate Cases
+                        </h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <aura:if isTrue="{! v.loading }">
+                                    <lightning:spinner alternativeText="Loading" />
+                            </aura:if>
+                        <table class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols">
+                            <thead>
+                              <tr class="slds-line-height_reset">
+                                <th class="" scope="col">
+                                  <div class=" slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate" title="Case Number">Case Number
+                                       
+                                  </div>
+                                </th>
+                                <th class="" scope="col">
+                                  <div class=" slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate" title="Subject">Subject
+                                  </div>
+                                </th>
+                                <th class="" scope="col">
+                                  <div class=" slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate" title="Sender">Sender
+                                    
+                                  </div>
+                                </th>
+                                <th class="" scope="col">
+                                  <div class=" slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate" title="Web Email">Web Email
+                                       
+                                  </div>
+                                </th>
+                                <th class="" scope="col" style="width: 300px">
+                                  <div  class=" slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate" title="Owner">Owner
+                                      
+                                  </div>
+                                </th>
+                                <th class="" scope="col">
+                                  <div class=" slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate" title="Create Date">Create Date
+                                      
+                                  </div>
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration indexVar="idx" var="case" items="{! v.caseList }">
+                                    <tr>
+                                        <td role="gridcell" class="slds-cell-wrap" data-label="Case Number">
+                                            <div class="" data-label="Case Number"><lightning:formattedUrl 
+                                                value="{!'/' + case.Id}" 
+                                                label="{!case.CaseNumber}" target="_parent"/></div>
+                                        </td>
+                                        <td role="gridcell" class="slds-cell-wrap" data-label="Subject">
+                                            <div class="" data-label="Subject"> {!case.Subject} </div>
+                                        </td>
+                                        <td role="gridcell" class="slds-cell-wrap" data-label="Sender">
+                                            <div class="" data-label="Sender">{!case.AccountName}</div>
+                                        </td>
+                                        <td role="gridcell" class="slds-cell-wrap" data-label="Web Email">
+                                            <div class="" data-label="Web Email">{!case.SuppliedEmail}</div>
+                                        </td>
+                                        <td role="gridcell" class="" data-label="Owner">
+                                        <div class="container-lookup-section">
+                                            <div class="container-lookup">
+                                                <aura:if isTrue="{!case.ownerType == 'user'}">
+                                                    <c:BIH_CustomLookup Required="true" objectAPIName="User" fieldAPIName="Name"
+                                                    IconName="standard:people" showField="Department" showError="{!v.showError}" selectedRecord="{!case.Owner}"/>
+                                                <aura:set attribute="else">
+                                                    <c:BIH_CustomLookup Required="true" objectAPIName="Group" fieldAPIName="Name"
+                                                    IconName="standard:orders" showError="{!v.showError}" selectedRecord="{!case.Owner}"/>
+                                                </aura:set>
+                                                </aura:if>
+                                            </div>
+                                            <div class="container-button-menu">
+                                            <lightning:buttonMenu value="{!case.ownerType}" name="{!idx}"
+                                            alternativeText="Show menu" onselect="{! c.handleSelect }">
+                                            <lightning:menuItem aura:id="menuItems" label="User" value="user"
+                                                checked="{!case.isOwnerTypeUser}" iconName="standard:people" />
+                                            <lightning:menuItem aura:id="menuItems" label="Queue" value="queue"
+                                                checked="{!!case.isOwnerTypeUser}" iconName="standard:orders" />
+                                            </lightning:buttonMenu>
+                                            </div>
+                                        </div>
+                                        </td>
+                                        <td role="gridcell" class="slds-cell-wrap" data-label="Create Date">
+                                            <div class="" data-label="Create Date"><lightning:formattedDateTime value="{!case.CreatedDate}" day="numeric" 
+                                                month="short" year="numeric" hour="2-digit" minute="2-digit" second="2-digit" hour12="true" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                          </table>
+                        <footer class="slds-modal__footer slds-modal__footer_directional">
+                            <button class="slds-button slds-button_neutral" onclick="{! c.hideModal }">Cancel</button>
+                            <button class="slds-button slds-button_brand" onclick="{! c.onSave }" >Confirm</button>
+                        </footer>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            
+        </div>
+    </aura:if>
+    
+</aura:component>

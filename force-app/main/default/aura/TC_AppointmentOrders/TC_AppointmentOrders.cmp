@@ -1,0 +1,15 @@
+<aura:component controller="TC_AppointmentOrdersCtrl" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global">
+    <aura:attribute name="recordId" type="string"/>
+    <aura:attribute name="recordList" type="List" default="[]"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <lightning:card title="Appointment Orders">
+        <p class="slds-p-horizontal_small">
+            <aura:iteration items="{!v.recordList}" var="record" indexVar="recIndex">
+                {!recIndex + 1} - {!record.Orderitemdesc}
+                <BR/>
+            </aura:iteration>
+        </p>
+    </lightning:card>
+</aura:component>
